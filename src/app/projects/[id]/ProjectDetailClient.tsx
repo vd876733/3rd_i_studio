@@ -226,28 +226,28 @@ export default function ProjectDetailClient({
     let colorClass = "";
     switch (status) {
       case "INQUIRY":
-        colorClass = "bg-slate-100 text-slate-800 dark:bg-slate-900/60 dark:text-slate-300 border-slate-200/50 dark:border-slate-800/50";
+        colorClass = "bg-slate-100 text-slate-800 border-slate-200/50";
         break;
       case "BOOKED":
-        colorClass = "bg-blue-50 text-blue-700 dark:bg-blue-950/20 dark:text-blue-400 border-blue-100 dark:border-blue-900/30";
+        colorClass = "bg-blue-50 text-blue-700 border-blue-105";
         break;
       case "PACKING":
-        colorClass = "bg-amber-50 text-amber-700 dark:bg-amber-950/20 dark:text-amber-400 border-amber-100 dark:border-amber-900/30";
+        colorClass = "bg-amber-50 text-amber-700 border-amber-105";
         break;
       case "DISPATCHED":
-        colorClass = "bg-purple-50 text-purple-700 dark:bg-purple-950/20 dark:text-purple-400 border-purple-100 dark:border-purple-900/30";
+        colorClass = "bg-purple-50 text-purple-700 border-purple-105";
         break;
       case "ON_SITE":
-        colorClass = "bg-indigo-50 text-indigo-700 dark:bg-indigo-950/20 dark:text-indigo-400 border-indigo-100 dark:border-indigo-900/30";
+        colorClass = "bg-indigo-50 text-indigo-700 border-indigo-105";
         break;
       case "RETURNING":
-        colorClass = "bg-cyan-50 text-cyan-700 dark:bg-cyan-950/20 dark:text-cyan-400 border-cyan-100 dark:border-cyan-900/30";
+        colorClass = "bg-cyan-50 text-cyan-700 border-cyan-105";
         break;
       case "COMPLETED":
-        colorClass = "bg-emerald-50 text-emerald-700 dark:bg-emerald-950/20 dark:text-emerald-400 border-emerald-100 dark:border-emerald-900/30";
+        colorClass = "bg-emerald-50 text-emerald-700 border-emerald-105";
         break;
       default:
-        colorClass = "bg-zinc-100 text-zinc-800 border-zinc-200";
+        colorClass = "bg-slate-100 text-slate-800 border-slate-200";
     }
     return (
       <span className={cn("px-3 py-1 rounded-full text-xs font-semibold border uppercase tracking-wider", colorClass)}>
@@ -259,19 +259,19 @@ export default function ProjectDetailClient({
   const getActionColor = (action: string) => {
     switch (action.toUpperCase()) {
       case "INITIAL_DATABASE_SEED":
-        return "bg-slate-500 text-white dark:bg-slate-800 dark:text-slate-300 border-slate-500/20";
+        return "bg-slate-500 text-white border-slate-500/20";
       case "PROJECT_CREATED":
-        return "bg-green-500 text-white dark:bg-green-950/40 dark:text-green-400 border-green-500/20";
+        return "bg-green-500 text-white border-green-500/20";
       case "PROJECT_UPDATED":
-        return "bg-cyan-500 text-white dark:bg-cyan-950/40 dark:text-cyan-400 border-cyan-500/20";
+        return "bg-cyan-500 text-white border-cyan-500/20";
       case "RESERVED":
-        return "bg-cyan-500 text-white dark:bg-cyan-950/40 dark:text-cyan-400 border-cyan-500/20";
+        return "bg-cyan-500 text-white border-cyan-500/20";
       case "PACKED":
-        return "bg-amber-500 text-white dark:bg-amber-950/40 dark:text-amber-400 border-amber-500/20";
+        return "bg-amber-500 text-white border-amber-500/20";
       case "RELEASED":
-        return "bg-rose-500 text-white dark:bg-rose-950/40 dark:text-rose-400 border-rose-500/20";
+        return "bg-rose-500 text-white border-rose-500/20";
       default:
-        return "bg-zinc-500 text-white dark:bg-zinc-800";
+        return "bg-slate-500 text-white";
     }
   };
 
@@ -363,7 +363,7 @@ export default function ProjectDetailClient({
       <div className="space-y-4">
         <Link 
           href="/projects" 
-          className="inline-flex items-center gap-1.5 text-xs text-slate-500 hover:text-slate-900 dark:hover:text-zinc-50 transition-colors"
+          className="inline-flex items-center gap-1.5 text-xs text-slate-600 hover:text-slate-900 transition-colors"
         >
           <ArrowLeft className="w-3.5 h-3.5" />
           <span>Back to Projects</span>
@@ -372,19 +372,19 @@ export default function ProjectDetailClient({
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div className="space-y-1">
             <div className="flex items-center gap-2">
-              <code className="text-xs font-mono font-bold text-slate-400 bg-slate-100 dark:bg-zinc-950 px-2 py-0.5 rounded border border-slate-200/50 dark:border-zinc-800/50">
+              <code className="text-xs font-mono font-bold text-slate-500 bg-slate-100 px-2 py-0.5 rounded border border-slate-200/50">
                 {project.projectCode}
               </code>
               {getStatusBadge(project.status)}
             </div>
-            <h1 className="text-2xl font-bold tracking-tight text-slate-900 dark:text-white">
+            <h1 className="text-2xl font-bold tracking-tight text-slate-900 font-bold">
               {project.name}
             </h1>
           </div>
 
           <button
             onClick={handleOpenEdit}
-            className="inline-flex items-center gap-1.5 px-4.5 py-2.5 border border-slate-200 dark:border-zinc-800 rounded-xl text-slate-700 dark:text-slate-350 hover:bg-slate-50 dark:hover:bg-zinc-900 font-bold text-xs cursor-pointer transition-all bg-white dark:bg-zinc-900 shadow-sm"
+            className="inline-flex items-center gap-1.5 px-4.5 py-2.5 border border-slate-200 rounded-xl text-slate-700 hover:bg-slate-50 font-bold text-xs cursor-pointer transition-all bg-white shadow-sm"
           >
             <Edit className="w-3.5 h-3.5 text-cyan-500" />
             <span>Edit Project Details</span>
@@ -393,7 +393,7 @@ export default function ProjectDetailClient({
       </div>
 
       {/* Tabs Navigation */}
-      <div className="border-b border-zinc-200 dark:border-zinc-800 flex flex-wrap gap-4 md:gap-6">
+      <div className="border-b border-slate-200 flex flex-wrap gap-4 md:gap-6">
         {[
           { id: "site-info", label: "Site Info & Contacts", icon: MapPin },
           { id: "packing", label: "Packing & Boxes", icon: Package },
@@ -432,9 +432,9 @@ export default function ProjectDetailClient({
             {/* Left Col: Location, Schedule & Parking notes */}
             <div className="md:col-span-2 space-y-6">
               {/* Project Quick Overview */}
-              <div className="bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 shadow-sm rounded-xl p-6 space-y-5">
+              <div className="bg-white border border-slate-200 shadow-sm rounded-xl p-6 space-y-5">
                 <div className="flex items-center justify-between">
-                  <h3 className="font-bold text-sm text-slate-900 dark:text-white flex items-center gap-2">
+                  <h3 className="font-bold text-sm text-slate-900 flex items-center gap-2">
                     <MapPin className="w-4.5 h-4.5 text-cyan-500" />
                     <span>Shoot Site Location</span>
                   </h3>
@@ -442,26 +442,26 @@ export default function ProjectDetailClient({
 
                 {project.siteDetails ? (
                   <div className="space-y-4">
-                    <div className="p-4 rounded-xl bg-slate-50 dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 text-slate-900 dark:text-white">
-                      <span className="text-[10px] text-slate-500 dark:text-slate-400 uppercase tracking-wider block font-bold">Complete Address</span>
-                      <p className="text-sm font-medium text-slate-900 dark:text-white mt-1">
+                    <div className="p-4 rounded-xl bg-slate-50 border border-slate-200 text-slate-900">
+                      <span className="text-[10px] text-slate-500 uppercase tracking-wider block font-bold">Complete Address</span>
+                      <p className="text-sm font-medium text-slate-900 mt-1">
                         {project.siteDetails.address}
                       </p>
                     </div>
 
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                       {project.siteDetails.landmark && (
-                        <div className="p-4 rounded-xl bg-slate-50 dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 text-slate-900 dark:text-white">
-                          <span className="text-[10px] text-slate-500 dark:text-slate-400 uppercase tracking-wider block font-bold">Site Landmark</span>
-                          <p className="text-xs font-medium text-slate-900 dark:text-white mt-1">
+                        <div className="p-4 rounded-xl bg-slate-50 border border-slate-200 text-slate-900">
+                          <span className="text-[10px] text-slate-500 uppercase tracking-wider block font-bold">Site Landmark</span>
+                          <p className="text-xs font-medium text-slate-900 mt-1">
                             {project.siteDetails.landmark}
                           </p>
                         </div>
                       )}
                       
-                      <div className="p-4 rounded-xl bg-slate-50 dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 text-slate-900 dark:text-white">
-                        <span className="text-[10px] text-slate-500 dark:text-slate-400 uppercase tracking-wider block font-bold">Call Time (Reporting)</span>
-                        <p className="text-xs font-mono font-medium text-slate-900 dark:text-white mt-1 flex items-center gap-1.5">
+                      <div className="p-4 rounded-xl bg-slate-50 border border-slate-200 text-slate-900">
+                        <span className="text-[10px] text-slate-500 uppercase tracking-wider block font-bold">Call Time (Reporting)</span>
+                        <p className="text-xs font-mono font-medium text-slate-900 mt-1 flex items-center gap-1.5">
                           <Clock className="w-3.5 h-3.5 text-cyan-500 shrink-0" />
                           <span>{project.reportingTime || "N/A"}</span>
                         </p>
@@ -615,16 +615,16 @@ export default function ProjectDetailClient({
             {/* Right Col: Logistics Instructions & Schedule Details */}
             <div className="space-y-6">
               {/* Parking Rules & Logistics */}
-              <div className="bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 shadow-sm rounded-xl p-6 space-y-4">
-                <h3 className="font-bold text-sm text-slate-900 dark:text-white flex items-center gap-2">
+              <div className="bg-white border border-slate-200 shadow-sm rounded-xl p-6 space-y-4">
+                <h3 className="font-bold text-sm text-slate-900 flex items-center gap-2">
                   <Info className="w-4.5 h-4.5 text-cyan-500" />
                   <span>Parking Rules & Site Access</span>
                 </h3>
                 {project.siteDetails?.parkingNotes ? (
-                  <div className="p-4 rounded-xl bg-amber-550/5 text-amber-800 dark:text-amber-400 border border-amber-500/10 flex items-start gap-3">
+                  <div className="p-4 rounded-xl bg-amber-550/5 text-amber-800 border border-amber-500/10 flex items-start gap-3">
                     <AlertTriangle className="w-5 h-5 shrink-0 mt-0.5 text-amber-500" />
                     <p className="text-xs leading-relaxed font-medium">
-                      {project.siteDetails.parkingNotes}
+                       {project.siteDetails.parkingNotes}
                     </p>
                   </div>
                 ) : (
@@ -635,8 +635,8 @@ export default function ProjectDetailClient({
               </div>
 
               {/* Time Slots Details */}
-              <div className="bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 shadow-sm rounded-xl p-6 space-y-4">
-                <h3 className="font-bold text-sm text-slate-900 dark:text-white flex items-center gap-1.5">
+              <div className="bg-white border border-slate-200 shadow-sm rounded-xl p-6 space-y-4">
+                <h3 className="font-bold text-sm text-slate-900 flex items-center gap-1.5">
                   <Calendar className="w-4.5 h-4.5 text-cyan-500" />
                   <span>Production Schedule</span>
                 </h3>
@@ -695,20 +695,20 @@ export default function ProjectDetailClient({
         {activeTab === "checklists" && (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 animate-fadeIn">
             {/* Warehouse Checklist Card */}
-            <div className="bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 shadow-sm rounded-xl p-6 space-y-4 flex flex-col justify-between">
+            <div className="bg-white border border-slate-200 shadow-sm rounded-xl p-6 space-y-4 flex flex-col justify-between">
               <div className="space-y-4">
                 <div className="flex items-center justify-between">
-                  <h3 className="font-bold text-sm text-slate-900 dark:text-white flex items-center gap-2">
+                  <h3 className="font-bold text-sm text-slate-900 flex items-center gap-2">
                     <ClipboardCheck className="w-5 h-5 text-amber-500" />
                     <span>Before Leaving Warehouse</span>
                   </h3>
-                  <span className="text-xs font-bold bg-amber-500/10 text-amber-600 dark:text-amber-400 px-2.5 py-0.5 rounded font-mono">
+                  <span className="text-xs font-bold bg-amber-550/10 text-amber-650 px-2.5 py-0.5 rounded font-mono">
                     {whPercent}% Done
                   </span>
                 </div>
 
                 {/* Progress Bar */}
-                <div className="h-2 w-full bg-zinc-100 dark:bg-zinc-800 rounded-full overflow-hidden">
+                <div className="h-2 w-full bg-slate-100 rounded-full overflow-hidden">
                   <div 
                     className="h-full bg-amber-500 rounded-full transition-all duration-300"
                     style={{ width: `${whPercent}%` }}
@@ -721,16 +721,16 @@ export default function ProjectDetailClient({
                     <div 
                       key={item.id}
                       onClick={() => toggleWhItem(item.id)}
-                      className="flex items-start gap-3 text-xs text-zinc-700 dark:text-zinc-350 cursor-pointer select-none hover:text-zinc-950 dark:hover:text-zinc-50 transition-colors"
+                      className="flex items-start gap-3 text-xs text-slate-600 cursor-pointer select-none hover:text-slate-900 transition-colors"
                     >
-                      <button className="shrink-0 mt-0.5 text-zinc-400 hover:text-zinc-750 dark:text-zinc-600 dark:hover:text-zinc-400">
+                      <button className="shrink-0 mt-0.5 text-slate-400 hover:text-slate-650">
                         {whChecked[item.id] ? (
                           <CheckCircle2 className="w-4 h-4 text-emerald-500" />
                         ) : (
-                          <div className="w-4 h-4 rounded border border-zinc-300 dark:border-zinc-700" />
+                          <div className="w-4 h-4 rounded border border-slate-300" />
                         )}
                       </button>
-                      <span className={cn(whChecked[item.id] && "line-through text-zinc-400 dark:text-zinc-650")}>
+                      <span className={cn(whChecked[item.id] && "line-through text-slate-400")}>
                         {item.label}
                       </span>
                     </div>
@@ -740,20 +740,20 @@ export default function ProjectDetailClient({
             </div>
 
             {/* Site Wrap Checklist Card */}
-            <div className="bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 shadow-sm rounded-xl p-6 space-y-4 flex flex-col justify-between">
+            <div className="bg-white border border-slate-200 shadow-sm rounded-xl p-6 space-y-4 flex flex-col justify-between">
               <div className="space-y-4">
                 <div className="flex items-center justify-between">
-                  <h3 className="font-bold text-sm text-slate-900 dark:text-white flex items-center gap-2">
+                  <h3 className="font-bold text-sm text-slate-900 flex items-center gap-2">
                     <ClipboardCheck className="w-5 h-5 text-indigo-500" />
                     <span>Site Wrapping & Returns</span>
                   </h3>
-                  <span className="text-xs font-bold bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 px-2.5 py-0.5 rounded font-mono">
+                  <span className="text-xs font-bold bg-indigo-550/10 text-indigo-650 px-2.5 py-0.5 rounded font-mono">
                     {sitePercent}% Done
                   </span>
                 </div>
 
                 {/* Progress Bar */}
-                <div className="h-2 w-full bg-zinc-100 dark:bg-zinc-800 rounded-full overflow-hidden">
+                <div className="h-2 w-full bg-slate-100 rounded-full overflow-hidden">
                   <div 
                     className="h-full bg-indigo-500 rounded-full transition-all duration-300"
                     style={{ width: `${sitePercent}%` }}
@@ -766,16 +766,16 @@ export default function ProjectDetailClient({
                     <div 
                       key={item.id}
                       onClick={() => toggleSiteItem(item.id)}
-                      className="flex items-start gap-3 text-xs text-zinc-700 dark:text-zinc-350 cursor-pointer select-none hover:text-zinc-950 dark:hover:text-zinc-50 transition-colors"
+                      className="flex items-start gap-3 text-xs text-slate-650 cursor-pointer select-none hover:text-slate-900 transition-colors"
                     >
-                      <button className="shrink-0 mt-0.5 text-zinc-400 hover:text-zinc-750 dark:text-zinc-600 dark:hover:text-zinc-400">
+                      <button className="shrink-0 mt-0.5 text-slate-400 hover:text-slate-655">
                         {siteChecked[item.id] ? (
                           <CheckCircle2 className="w-4 h-4 text-emerald-500" />
                         ) : (
-                          <div className="w-4 h-4 rounded border border-zinc-300 dark:border-zinc-700" />
+                          <div className="w-4 h-4 rounded border border-slate-300" />
                         )}
                       </button>
-                      <span className={cn(siteChecked[item.id] && "line-through text-zinc-400 dark:text-zinc-650")}>
+                      <span className={cn(siteChecked[item.id] && "line-through text-slate-400")}>
                         {item.label}
                       </span>
                     </div>
@@ -788,34 +788,34 @@ export default function ProjectDetailClient({
 
         {/* AUDIT LOG HISTORY TAB */}
         {activeTab === "audit-history" && (
-          <div className="bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 shadow-sm rounded-xl p-6 space-y-6 animate-fadeIn">
-            <div className="flex items-center justify-between pb-3 border-b border-border">
-              <h3 className="font-bold text-sm text-slate-900 dark:text-white flex items-center gap-2">
+          <div className="bg-white border border-slate-200 shadow-sm rounded-xl p-6 space-y-6 animate-fadeIn">
+            <div className="flex items-center justify-between pb-3 border-b border-slate-200">
+              <h3 className="font-bold text-sm text-slate-900 flex items-center gap-2">
                 <History className="w-5 h-5 text-cyan-500" />
                 <span>Project Change Log Audit</span>
               </h3>
-              <span className="text-[10px] font-bold bg-zinc-105 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-850 px-2.5 py-0.5 rounded font-mono">
+              <span className="text-[10px] font-bold bg-slate-100 border border-slate-200 px-2.5 py-0.5 rounded font-mono">
                 {auditLogs.length} entries
               </span>
             </div>
 
             {auditLogs.length > 0 ? (
-              <div className="relative border-l border-zinc-205 dark:border-zinc-800 pl-5 ml-2.5 space-y-6 py-1">
+              <div className="relative border-l border-slate-200 pl-5 ml-2.5 space-y-6 py-1">
                 {auditLogs.map((log) => (
                   <div key={log.id} className="relative group">
                     {/* Timeline Node Point Dot */}
                     <div className={cn(
-                      "absolute -left-[27.5px] top-1.5 w-3.5 h-3.5 rounded-full border border-white dark:border-zinc-900 flex items-center justify-center text-[8px]",
+                      "absolute -left-[27.5px] top-1.5 w-3.5 h-3.5 rounded-full border border-white flex items-center justify-center text-[8px]",
                       getActionColor(log.action)
                     )} />
 
                     {/* Timeline Entry Card */}
                     <div className="space-y-1">
                       <div className="flex flex-wrap items-center gap-2">
-                        <span className="text-[10px] bg-zinc-100 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-850 px-2 py-0.5 rounded font-mono font-bold uppercase">
+                        <span className="text-[10px] bg-slate-100 border border-slate-200 px-2 py-0.5 rounded font-mono font-bold uppercase">
                           {log.action}
                         </span>
-                        <span className="text-[10px] text-zinc-400 font-semibold font-mono">
+                        <span className="text-[10px] text-slate-400 font-semibold font-mono">
                           {new Date(log.createdAt).toLocaleString("en-US", {
                             dateStyle: "medium",
                             timeStyle: "short",
@@ -823,23 +823,23 @@ export default function ProjectDetailClient({
                         </span>
                       </div>
 
-                      <p className="text-xs text-zinc-700 dark:text-zinc-300 leading-relaxed font-medium">
+                      <p className="text-xs text-slate-650 leading-relaxed font-medium">
                         {log.newValue}
                       </p>
 
-                      <div className="flex items-center gap-1.5 text-[10px] text-zinc-550 pt-0.5">
-                        <User className="w-3 h-3 text-zinc-400" />
+                      <div className="flex items-center gap-1.5 text-[10px] text-slate-500 pt-0.5">
+                        <User className="w-3 h-3 text-slate-400" />
                         <span className="font-semibold">{log.user.name}</span>
-                        <span className="text-zinc-400">({log.user.role})</span>
+                        <span className="text-slate-400">({log.user.role})</span>
                       </div>
                     </div>
                   </div>
                 ))}
               </div>
             ) : (
-              <div className="py-12 text-center border border-dashed border-zinc-250 dark:border-zinc-800 rounded-2xl bg-zinc-50/20">
-                <AlertCircle className="w-8 h-8 text-zinc-305 dark:text-zinc-700 mx-auto mb-2" />
-                <p className="text-xs text-zinc-505 dark:text-zinc-450 italic">No audit trail recorded for this project.</p>
+              <div className="py-12 text-center border border-dashed border-slate-200 rounded-2xl bg-slate-50/50">
+                <AlertCircle className="w-8 h-8 text-slate-400 mx-auto mb-2" />
+                <p className="text-xs text-slate-500 italic">No audit trail recorded for this project.</p>
               </div>
             )}
           </div>

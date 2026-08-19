@@ -119,7 +119,7 @@ export default function MoodBoardClient({
     const canvas = new fabric.Canvas(canvasRef.current, {
       width: 800,
       height: 600,
-      backgroundColor: "#18181b", // zinc-900
+      backgroundColor: "#f8fafc", // light off-white background
       preserveObjectStacking: true,
     });
     fabricCanvasRef.current = canvas;
@@ -130,7 +130,7 @@ export default function MoodBoardClient({
       top: 20,
       fontSize: 12,
       fontFamily: "Courier New, monospace",
-      fill: "#3f3f46", // zinc-700
+      fill: "#94a3b8", // slate-400
       fontWeight: "bold",
       selectable: false,
       hoverCursor: "default",
@@ -706,7 +706,7 @@ export default function MoodBoardClient({
           <button
             onClick={handleExportPNG}
             disabled={isExporting}
-            className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-zinc-800 dark:hover:bg-zinc-700 border border-slate-200 dark:border-zinc-700 text-slate-700 dark:text-zinc-200 font-semibold text-xs transition-colors disabled:opacity-50 cursor-pointer"
+            className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-white hover:bg-slate-50 border border-slate-200 text-slate-700 font-semibold text-xs transition-colors shadow-sm disabled:opacity-50 cursor-pointer"
           >
             {isExporting ? (
               <RefreshCw className="w-4 h-4 animate-spin" />
@@ -719,7 +719,7 @@ export default function MoodBoardClient({
           <button
             onClick={handleExportPDF}
             disabled={isExporting}
-            className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-zinc-800 dark:hover:bg-zinc-700 border border-slate-200 dark:border-zinc-700 text-slate-700 dark:text-zinc-200 font-semibold text-xs transition-colors disabled:opacity-50 cursor-pointer"
+            className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-white hover:bg-slate-50 border border-slate-200 text-slate-700 font-semibold text-xs transition-colors shadow-sm disabled:opacity-50 cursor-pointer"
           >
             {isExporting ? (
               <RefreshCw className="w-4 h-4 animate-spin" />
@@ -735,10 +735,10 @@ export default function MoodBoardClient({
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 flex-1 min-h-[600px]">
         
         {/* Left Column: Available picklist sidebar */}
-        <div className="bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 shadow-sm rounded-xl p-5 flex flex-col gap-4">
+        <div className="bg-white border border-slate-200 shadow-sm rounded-xl p-5 flex flex-col gap-4">
           <div>
-            <h3 className="font-bold text-sm text-slate-900 dark:text-white">Props Repository</h3>
-            <p className="text-[10px] text-slate-500 dark:text-slate-400 mt-0.5">Drag/click items to add to board. Placed items are auto-reserved.</p>
+            <h3 className="font-bold text-sm text-slate-900 font-bold">Props Repository</h3>
+            <p className="text-[10px] text-slate-500 mt-0.5">Drag/click items to add to board. Placed items are auto-reserved.</p>
           </div>
 
           {/* Search bar */}
@@ -749,7 +749,7 @@ export default function MoodBoardClient({
               placeholder="Search props name, SKU..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-9 pr-3 py-2 bg-slate-50 dark:bg-zinc-950 border border-slate-200 dark:border-zinc-800 rounded-xl text-xs focus:outline-none focus:ring-1 focus:ring-cyan-500 text-slate-900 dark:text-white"
+              className="w-full pl-9 pr-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs focus:outline-none focus:ring-1 focus:ring-cyan-500 text-slate-900 placeholder:text-slate-400"
             />
           </div>
 
@@ -762,9 +762,9 @@ export default function MoodBoardClient({
                   draggable={true}
                   onDragStart={(e) => handleDragStartSidebar(e, item)}
                   onClick={() => handleAddItemToCanvas(item)}
-                  className="p-3 rounded-xl bg-slate-50 dark:bg-zinc-800 border border-slate-200 dark:border-zinc-700 text-slate-900 dark:text-white hover:border-slate-300 dark:hover:border-zinc-650 transition-all duration-150 flex gap-3 cursor-grab active:cursor-grabbing hover:shadow-sm"
+                  className="p-3 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 hover:border-slate-350 transition-all duration-150 flex gap-3 cursor-grab active:cursor-grabbing hover:shadow-sm"
                 >
-                  <div className="w-12 h-12 rounded-lg overflow-hidden shrink-0 bg-white dark:bg-zinc-950 border border-slate-200 dark:border-zinc-850">
+                  <div className="w-12 h-12 rounded-lg overflow-hidden shrink-0 bg-white border border-slate-200">
                     <img
                       src={getPhotoUrl(item.photos)}
                       alt={item.name}
@@ -773,13 +773,13 @@ export default function MoodBoardClient({
                   </div>
                   <div className="flex-1 min-w-0 flex flex-col justify-center">
                     <span className="text-[8px] font-mono text-slate-400 font-bold block">{item.sku}</span>
-                    <span className="text-xs font-bold text-slate-900 dark:text-white truncate block mt-0.5">{item.name}</span>
-                    <span className="text-[10px] text-slate-500 dark:text-slate-400 block">{item.category}</span>
+                    <span className="text-xs font-bold text-slate-900 truncate block mt-0.5">{item.name}</span>
+                    <span className="text-[10px] text-slate-550 block">{item.category}</span>
                   </div>
                 </div>
               ))
             ) : (
-              <p className="text-xs text-slate-400 dark:text-zinc-500 italic text-center py-12">No available props found.</p>
+              <p className="text-xs text-slate-500 italic text-center py-12">No available props found.</p>
             )}
           </div>
         </div>
@@ -788,57 +788,57 @@ export default function MoodBoardClient({
         <div className="lg:col-span-3 flex flex-col gap-4">
           
           {/* Controls Bar for Selected Element */}
-          <div className="p-3.5 rounded-xl border border-slate-200 dark:border-zinc-800 bg-slate-100 dark:bg-zinc-800 text-slate-700 dark:text-slate-300 flex flex-wrap items-center gap-3 justify-between min-h-[50px]">
+          <div className="p-3.5 rounded-xl border border-slate-200 bg-slate-100 text-slate-700 flex flex-wrap items-center gap-3 justify-between min-h-[50px]">
             {selectedElementId ? (
               <>
-                <span className="text-xs text-slate-700 dark:text-slate-300 font-semibold truncate max-w-[200px]">
+                <span className="text-xs text-slate-700 font-semibold truncate max-w-[200px]">
                   Selection: {selectedObjectName}
                 </span>
 
                 <div className="flex items-center gap-2">
                   {/* Scale controls */}
-                  <div className="flex border border-slate-200 dark:border-zinc-700 rounded-lg overflow-hidden bg-white dark:bg-zinc-950">
+                  <div className="flex border border-slate-200 rounded-lg overflow-hidden bg-white">
                     <button 
                       onClick={() => handleScaleChange(-0.05)} 
-                      className="px-2.5 py-1 text-xs font-bold hover:bg-slate-100 dark:hover:bg-zinc-800 text-slate-700 dark:text-slate-300 cursor-pointer"
+                      className="px-2.5 py-1 text-xs font-bold hover:bg-slate-100 text-slate-700 cursor-pointer"
                     >
                       A-
                     </button>
                     <button 
                       onClick={() => handleScaleChange(0.05)} 
-                      className="px-2.5 py-1 text-xs font-bold border-l border-slate-200 dark:border-zinc-700 hover:bg-slate-100 dark:hover:bg-zinc-800 text-slate-700 dark:text-slate-300 cursor-pointer"
+                      className="px-2.5 py-1 text-xs font-bold border-l border-slate-200 hover:bg-slate-100 text-slate-700 cursor-pointer"
                     >
                       A+
                     </button>
                   </div>
 
                   {/* Rotate controls */}
-                  <div className="flex border border-slate-200 dark:border-zinc-700 rounded-lg overflow-hidden bg-white dark:bg-zinc-955">
+                  <div className="flex border border-slate-200 rounded-lg overflow-hidden bg-white">
                     <button 
                       onClick={() => handleRotateChange(-15)} 
-                      className="px-2 py-1 hover:bg-slate-100 dark:hover:bg-zinc-800 text-slate-700 dark:text-slate-300 cursor-pointer"
+                      className="px-2 py-1 hover:bg-slate-100 text-slate-700 cursor-pointer"
                     >
                       <RotateCw className="w-3.5 h-3.5 scale-x-[-1]" />
                     </button>
                     <button 
                       onClick={() => handleRotateChange(15)} 
-                      className="px-2 py-1 border-l border-slate-200 dark:border-zinc-700 hover:bg-slate-100 dark:hover:bg-zinc-800 text-slate-700 dark:text-slate-300 cursor-pointer"
+                      className="px-2 py-1 border-l border-slate-200 hover:bg-slate-100 text-slate-700 cursor-pointer"
                     >
                       <RotateCw className="w-3.5 h-3.5" />
                     </button>
                   </div>
 
                   {/* Layer controls */}
-                  <div className="flex border border-slate-200 dark:border-zinc-700 rounded-lg overflow-hidden bg-white dark:bg-zinc-955">
+                  <div className="flex border border-slate-200 rounded-lg overflow-hidden bg-white">
                     <button 
                       onClick={() => handleLayerChange("down")} 
-                      className="px-2.5 py-1 hover:bg-slate-100 dark:hover:bg-zinc-800 text-slate-700 dark:text-slate-300 cursor-pointer"
+                      className="px-2.5 py-1 hover:bg-slate-100 text-slate-700 cursor-pointer"
                     >
                       <ChevronDown className="w-4 h-4" />
                     </button>
                     <button 
                       onClick={() => handleLayerChange("up")} 
-                      className="px-2.5 py-1 border-l border-slate-200 dark:border-zinc-700 hover:bg-slate-100 dark:hover:bg-zinc-800 text-slate-700 dark:text-slate-300 cursor-pointer"
+                      className="px-2.5 py-1 border-l border-slate-200 hover:bg-slate-100 text-slate-700 cursor-pointer"
                     >
                       <ChevronUp className="w-4 h-4" />
                     </button>
@@ -847,7 +847,7 @@ export default function MoodBoardClient({
                   {/* Duplicate */}
                   <button
                     onClick={handleDuplicateElement}
-                    className="p-1.5 border border-slate-200 dark:border-zinc-700 rounded-lg text-slate-600 hover:text-slate-900 dark:text-zinc-300 dark:hover:text-zinc-50 hover:bg-slate-100 dark:hover:bg-zinc-850 bg-white dark:bg-zinc-950 cursor-pointer"
+                    className="p-1.5 border border-slate-200 rounded-lg text-slate-600 hover:text-slate-900 hover:bg-slate-100 bg-white cursor-pointer"
                   >
                     <Copy className="w-4 h-4" />
                   </button>
@@ -855,14 +855,14 @@ export default function MoodBoardClient({
                   {/* Delete */}
                   <button
                     onClick={handleDeleteElement}
-                    className="p-1.5 border border-red-500/20 rounded-lg text-red-500 hover:text-white hover:bg-red-500 transition-colors cursor-pointer bg-white dark:bg-zinc-950"
+                    className="p-1.5 border border-red-500/20 rounded-lg text-red-500 hover:text-white hover:bg-red-500 transition-colors cursor-pointer bg-white"
                   >
                     <Trash2 className="w-4 h-4" />
                   </button>
                 </div>
               </>
             ) : (
-              <span className="text-xs text-slate-500 dark:text-slate-400 italic">Select an item on the canvas below to adjust properties.</span>
+              <span className="text-xs text-slate-500 italic">Select an item on the canvas below to adjust properties.</span>
             )}
           </div>
 
@@ -871,7 +871,7 @@ export default function MoodBoardClient({
             ref={workspaceRef}
             onDragOver={(e) => e.preventDefault()}
             onDrop={handleDrop}
-            className="flex-1 min-h-[500px] max-h-[600px] bg-slate-100 dark:bg-zinc-950 border border-slate-200 dark:border-zinc-800 rounded-2xl overflow-hidden shadow-inner flex items-center justify-center relative"
+            className="flex-1 min-h-[500px] max-h-[600px] bg-slate-50 border border-slate-200 rounded-2xl overflow-hidden shadow-inner flex items-center justify-center relative"
           >
             <canvas ref={canvasRef} />
           </div>

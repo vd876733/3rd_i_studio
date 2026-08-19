@@ -351,7 +351,7 @@ export default function PackingClient({
         <div className="space-y-4">
           <Link 
             href={`/projects/${project.id}`} 
-            className="inline-flex items-center gap-1.5 text-xs text-zinc-500 hover:text-zinc-950 dark:hover:text-zinc-50 transition-colors"
+            className="inline-flex items-center gap-1.5 text-xs text-slate-600 hover:text-slate-900 transition-colors"
           >
             <ArrowLeft className="w-3.5 h-3.5" />
             <span>Back to Project Details</span>
@@ -360,14 +360,14 @@ export default function PackingClient({
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div className="space-y-1">
               <div className="flex items-center gap-2">
-                <code className="text-xs font-mono font-bold text-zinc-400 bg-zinc-100 dark:bg-zinc-950 px-2 py-0.5 rounded border border-zinc-200/50 dark:border-zinc-800/50">
+                <code className="text-xs font-mono font-bold text-slate-500 bg-slate-100 px-2 py-0.5 rounded border border-slate-200/50">
                   {project.projectCode}
                 </code>
-                <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold border bg-amber-50 text-amber-700 dark:bg-amber-950/20 dark:text-amber-400 border-amber-100 dark:border-amber-900/30 uppercase">
+                <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold border bg-amber-50 text-amber-700 border-amber-100 uppercase">
                   {project.status}
                 </span>
               </div>
-              <h1 className="text-2xl font-bold tracking-tight text-zinc-950 dark:text-zinc-50 flex items-center gap-2">
+              <h1 className="text-2xl font-bold tracking-tight text-slate-900 font-bold flex items-center gap-2">
                 <ClipboardList className="w-6 h-6 text-cyan-500" />
                 <span>Project Packing & Box Assignment</span>
               </h1>
@@ -377,18 +377,18 @@ export default function PackingClient({
       )}
 
       {/* Progress Bar & Status Warning */}
-      <section className="bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 shadow-sm rounded-xl p-6 space-y-4">
+      <section className="bg-white border border-slate-200 shadow-sm rounded-xl p-5 text-slate-900 space-y-4">
         <div className="flex items-center justify-between">
-          <span className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase">Project Packing Progress</span>
+          <span className="text-xs font-bold text-slate-900 font-bold uppercase">Project Packing Progress</span>
           <span className="text-sm font-extrabold text-cyan-500">{packedPercent}% Completed</span>
         </div>
-        <div className="w-full bg-slate-100 dark:bg-zinc-800 h-3 rounded-full overflow-hidden">
+        <div className="w-full bg-slate-100 border border-slate-200 h-3 rounded-full overflow-hidden">
           <div 
             className="bg-cyan-500 h-full transition-all duration-300"
             style={{ width: `${packedPercent}%` }}
           />
         </div>
-        <p className="text-[11px] text-slate-500 dark:text-slate-400">
+        <p className="text-[11px] text-slate-500">
           {project.packedItems.length} of {totalReservedItems} items securely packed into transit boxes.
         </p>
       </section>
@@ -398,8 +398,8 @@ export default function PackingClient({
         {/* Left Column: Box Selection & Creation */}
         <div className="space-y-6">
           {/* Active Box Selector */}
-          <div className="bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 shadow-sm rounded-xl p-6 space-y-4">
-            <h3 className="font-bold text-sm text-slate-900 dark:text-white flex items-center gap-2">
+          <div className="bg-white border border-slate-200 shadow-sm rounded-xl p-5 text-slate-900 space-y-4">
+            <h3 className="font-bold text-sm text-slate-900 font-bold flex items-center gap-2">
               <Layers className="w-4.5 h-4.5 text-cyan-500" />
               <span>Select Active Transit Box</span>
             </h3>
@@ -419,29 +419,29 @@ export default function PackingClient({
                       className={cn(
                         "w-full text-left p-3.5 rounded-xl border flex items-center justify-between transition-all duration-150 cursor-pointer",
                         isActive
-                          ? "border-cyan-500/30 bg-cyan-500/[0.03] text-slate-900 dark:text-white font-bold"
-                          : "border-slate-200 dark:border-zinc-800 hover:bg-slate-50 dark:hover:bg-zinc-950/30 text-slate-600 dark:text-zinc-400"
+                          ? "border-cyan-500/30 bg-cyan-500/[0.03] text-slate-900 font-bold"
+                          : "border-slate-200 hover:bg-slate-50 text-slate-600"
                       )}
                     >
                       <span className="text-xs truncate">{box.boxNumber}</span>
-                      <span className="text-[10px] bg-slate-50 dark:bg-zinc-950 border border-slate-200 dark:border-zinc-800 px-2 py-0.5 rounded font-mono font-semibold shrink-0">
+                      <span className="text-[10px] bg-slate-50 border border-slate-200 px-2 py-0.5 rounded font-mono font-semibold shrink-0">
                         {boxItems.length} items
                       </span>
                     </button>
                   );
                 })
               ) : (
-                <p className="text-xs text-slate-400 dark:text-zinc-500 italic">No boxes created yet.</p>
+                <p className="text-xs text-slate-500 italic">No boxes created yet.</p>
               )}
             </div>
           </div>
 
           {/* Active Box Items Breakdown */}
           {activeBoxId && (
-            <div className="bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 shadow-sm rounded-xl p-6 space-y-4">
-              <h4 className="font-bold text-xs uppercase tracking-wide text-slate-500 dark:text-slate-400 flex items-center justify-between">
+            <div className="bg-white border border-slate-200 shadow-sm rounded-xl p-5 text-slate-900 space-y-4">
+              <h4 className="font-bold text-xs uppercase tracking-wide text-slate-900 font-bold flex items-center justify-between">
                 <span>Items in {activeBoxName}</span>
-                <span className="text-[10px] bg-cyan-500/10 text-cyan-600 dark:text-cyan-400 px-2 py-0.5 rounded font-mono shrink-0">
+                <span className="text-[10px] bg-cyan-50/50 text-cyan-600 px-2 py-0.5 rounded font-mono shrink-0">
                   {activeBoxItems.length} packed
                 </span>
               </h4>
@@ -451,22 +451,22 @@ export default function PackingClient({
                   activeBoxItems.map((item) => (
                     <div
                       key={item.id}
-                      className="p-3 rounded-xl border border-slate-200 dark:border-zinc-800 bg-slate-50/20 dark:bg-zinc-955/20 text-xs font-semibold flex items-center justify-between"
+                      className="p-3 rounded-xl border border-slate-200 bg-slate-50/50 text-xs font-semibold flex items-center justify-between"
                     >
-                      <span className="truncate pr-2 text-slate-800 dark:text-white">{item.inventoryItem.name}</span>
+                      <span className="truncate pr-2 text-slate-800">{item.inventoryItem.name}</span>
                       <span className="font-mono text-[9px] text-slate-400 uppercase tracking-wider shrink-0">{item.inventoryItem.sku}</span>
                     </div>
                   ))
                 ) : (
-                  <p className="text-xs text-slate-400 dark:text-zinc-500 italic text-center py-4">No items packed inside this box yet.</p>
+                  <p className="text-xs text-slate-500 italic text-center py-4">No items packed inside this box yet.</p>
                 )}
               </div>
             </div>
           )}
 
           {/* Box Creation Form */}
-          <div className="bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 shadow-sm rounded-xl p-6 space-y-4">
-            <h3 className="font-bold text-sm text-slate-900 dark:text-white">Create New Box</h3>
+          <div className="bg-white border border-slate-200 shadow-sm rounded-xl p-5 text-slate-900 space-y-4">
+            <h3 className="font-bold text-sm text-slate-900 font-bold">Create New Box</h3>
             <form onSubmit={handleCreateBox} className="flex gap-2">
               <input
                 type="text"
@@ -474,7 +474,7 @@ export default function PackingClient({
                 value={newBoxName}
                 onChange={(e) => setNewBoxName(e.target.value)}
                 disabled={isCreatingBox}
-                className="flex-1 bg-slate-50 dark:bg-zinc-950 border border-slate-200 dark:border-zinc-800 rounded-xl px-3 py-2 text-xs focus:outline-none focus:ring-1 focus:ring-cyan-500 text-slate-900 dark:text-white"
+                className="flex-1 bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs focus:outline-none focus:ring-1 focus:ring-cyan-500 text-slate-900 placeholder:text-slate-400"
               />
               <button
                 type="submit"
@@ -490,9 +490,9 @@ export default function PackingClient({
         {/* Center/Right Column: Scan & Items List */}
         <div className="md:col-span-2 space-y-6">
           {/* Packing HUD Scan Terminal / Camera Scanner */}
-          <div className="bg-white dark:bg-zinc-900 text-slate-900 dark:text-white border border-slate-200 dark:border-zinc-800 shadow-sm rounded-xl p-6 space-y-5">
-            <div className="flex items-center justify-between border-b border-slate-100 dark:border-zinc-805 pb-3">
-              <h3 className="font-bold text-sm text-cyan-500 dark:text-cyan-400 flex items-center gap-2">
+          <div className="bg-white border border-slate-200 shadow-sm rounded-xl p-5 text-slate-900 space-y-5">
+            <div className="flex items-center justify-between border-b border-slate-100 pb-3">
+              <h3 className="font-bold text-sm text-slate-900 font-bold flex items-center gap-2">
                 <ScanBarcode className="w-5 h-5 text-cyan-500" />
                 <span>{isCameraActive ? "Camera Scan Viewport" : "Scanning Simulator Mode"}</span>
               </h3>
@@ -504,7 +504,7 @@ export default function PackingClient({
                   "px-3.5 py-1.5 rounded-lg text-[10px] font-bold uppercase tracking-wider flex items-center gap-1.5 transition-colors cursor-pointer",
                   isCameraActive 
                     ? "bg-red-500/15 hover:bg-red-500/25 text-red-400 border border-red-500/20" 
-                    : "bg-cyan-500/10 hover:bg-cyan-500/25 text-cyan-600 dark:text-cyan-400 border border-cyan-500/20"
+                    : "bg-cyan-50 hover:bg-cyan-100 text-cyan-600 border border-cyan-100"
                 )}
               >
                 {isCameraActive ? (
@@ -524,7 +524,7 @@ export default function PackingClient({
             {/* Viewfinder box if camera active */}
             {isCameraActive && (
               <div className="space-y-4">
-                <div className="relative aspect-video rounded-2xl bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 text-slate-900 dark:text-white overflow-hidden shadow-inner flex flex-col items-center justify-center">
+                <div className="relative aspect-video rounded-2xl bg-white border border-slate-200 text-slate-900 overflow-hidden shadow-inner flex flex-col items-center justify-center">
                   <video 
                     ref={videoRef} 
                     className="w-full h-full object-cover" 
@@ -543,12 +543,12 @@ export default function PackingClient({
 
                 {/* Device Camera lens list */}
                 {cameras.length > 1 && (
-                  <div className="flex items-center gap-2 text-xs bg-slate-50 dark:bg-zinc-950 border border-slate-200 dark:border-zinc-800 rounded-xl p-3">
-                    <span className="text-slate-500 dark:text-zinc-400 font-bold uppercase tracking-wider text-[9px]">Select Lens:</span>
+                  <div className="flex items-center gap-2 text-xs bg-slate-50 border border-slate-200 rounded-xl p-3">
+                    <span className="text-slate-500 font-bold uppercase tracking-wider text-[9px]">Select Lens:</span>
                     <select
                       value={selectedCamera}
                       onChange={(e) => handleCameraChange(e.target.value)}
-                      className="flex-1 bg-white dark:bg-zinc-955 border border-slate-200 dark:border-zinc-800 rounded-lg px-2.5 py-1 text-xs text-slate-800 dark:text-white focus:outline-none focus:ring-1 focus:ring-cyan-500"
+                      className="flex-1 bg-white border border-slate-200 rounded-lg px-2.5 py-1 text-xs text-slate-800 focus:outline-none focus:ring-1 focus:ring-cyan-500"
                     >
                       {cameras.map((cam) => (
                         <option key={cam.deviceId} value={cam.deviceId}>
@@ -581,7 +581,7 @@ export default function PackingClient({
                     handlePackBarcode(manualBarcode.trim());
                   }
                 }}
-                className="flex-1 bg-slate-50 dark:bg-zinc-950 text-slate-900 dark:text-white border border-slate-200 dark:border-zinc-800 rounded-xl px-3 py-2.5 text-xs font-mono focus:outline-none focus:ring-1 focus:ring-cyan-500 placeholder-slate-400"
+                className="flex-1 bg-slate-50 border border-slate-200 text-slate-900 rounded-xl px-3 py-2.5 text-xs font-mono focus:outline-none focus:ring-1 focus:ring-cyan-500 placeholder:text-slate-400"
               />
               <button
                 onClick={() => handlePackBarcode(manualBarcode.trim())}
@@ -620,10 +620,10 @@ export default function PackingClient({
           {/* Reserved Items vs Packed Items panels */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
             {/* Reserved Items Picklist */}
-            <div className="bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 shadow-sm rounded-xl p-6 space-y-4">
-              <div className="flex items-center justify-between pb-2 border-b border-slate-100 dark:border-zinc-800">
-                <h4 className="font-bold text-xs uppercase tracking-wide text-slate-500 dark:text-slate-400">Pick List (Reserved)</h4>
-                <span className="text-[10px] bg-amber-500/10 text-amber-600 dark:text-amber-400 px-2 py-0.5 rounded font-mono font-bold">
+            <div className="bg-white border border-slate-200 shadow-sm rounded-xl p-5 text-slate-900 space-y-4">
+              <div className="flex items-center justify-between pb-2 border-b border-slate-100">
+                <h4 className="font-bold text-xs uppercase tracking-wide text-slate-900 font-bold">Pick List (Reserved)</h4>
+                <span className="text-[10px] bg-amber-500/10 text-amber-600 px-2 py-0.5 rounded font-mono font-bold">
                   {availableItems.length} left
                 </span>
               </div>
@@ -637,15 +637,15 @@ export default function PackingClient({
                         setManualBarcode(item.barcode);
                         setPackStatus(null);
                       }}
-                      className="w-full text-left p-3 rounded-xl border border-slate-200 dark:border-zinc-800 hover:border-slate-350 dark:hover:border-zinc-700 bg-slate-50/20 dark:bg-zinc-955/20 flex flex-col gap-1 transition-all duration-150 cursor-pointer"
+                      className="w-full text-left p-3 rounded-xl border border-slate-200 hover:border-slate-350 bg-slate-50 flex flex-col gap-1 transition-all duration-150 cursor-pointer text-slate-900"
                     >
-                      <span className="text-[9px] font-mono font-bold text-slate-400 uppercase">{item.sku}</span>
-                      <span className="text-xs font-bold text-slate-900 dark:text-white truncate">{item.name}</span>
-                      <span className="text-[10px] text-slate-500 dark:text-slate-400 font-mono select-all">Barcode: {item.barcode}</span>
+                      <span className="text-[9px] font-mono font-bold text-slate-500 uppercase">{item.sku}</span>
+                      <span className="text-xs font-bold text-slate-900 truncate">{item.name}</span>
+                      <span className="text-[10px] text-slate-655 font-mono select-all">Barcode: {item.barcode}</span>
                     </button>
                   ))
                 ) : (
-                  <div className="py-8 text-center text-xs text-slate-400 dark:text-zinc-500 italic">
+                  <div className="py-8 text-center text-xs text-slate-500 italic">
                     All reserved items have been packed!
                   </div>
                 )}
@@ -653,10 +653,10 @@ export default function PackingClient({
             </div>
 
             {/* Packed Items List grouped by Box */}
-            <div className="bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 shadow-sm rounded-xl p-6 space-y-4">
-              <div className="flex items-center justify-between pb-2 border-b border-slate-100 dark:border-zinc-800">
-                <h4 className="font-bold text-xs uppercase tracking-wide text-slate-500 dark:text-slate-400">Packed Items Log</h4>
-                <span className="text-[10px] bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 px-2 py-0.5 rounded font-mono font-bold">
+            <div className="bg-white border border-slate-200 shadow-sm rounded-xl p-5 text-slate-900 space-y-4">
+              <div className="flex items-center justify-between pb-2 border-b border-slate-100">
+                <h4 className="font-bold text-xs uppercase tracking-wide text-slate-900 font-bold">Packed Items Log</h4>
+                <span className="text-[10px] bg-emerald-500/10 text-emerald-600 px-2 py-0.5 rounded font-mono font-bold">
                   {project.packedItems.length} packed
                 </span>
               </div>
@@ -669,16 +669,16 @@ export default function PackingClient({
                       className="p-3 rounded-xl border border-emerald-500/10 bg-emerald-500/[0.01] flex flex-col gap-1 text-left"
                     >
                       <div className="flex items-center justify-between">
-                        <span className="text-[9px] font-mono font-bold text-slate-400 uppercase">{packed.inventoryItem.sku}</span>
-                        <span className="text-[9px] bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 px-1.5 py-0.5 rounded font-bold uppercase font-mono">
+                        <span className="text-[9px] font-mono font-bold text-slate-500 uppercase">{packed.inventoryItem.sku}</span>
+                        <span className="text-[9px] bg-emerald-500/10 text-emerald-600 px-1.5 py-0.5 rounded font-bold uppercase font-mono">
                           {packed.box ? packed.box.boxNumber : "Packed"}
                         </span>
                       </div>
-                      <span className="text-xs font-bold text-slate-900 dark:text-white truncate">{packed.inventoryItem.name}</span>
+                      <span className="text-xs font-bold text-slate-900 truncate">{packed.inventoryItem.name}</span>
                     </div>
                   ))
                 ) : (
-                  <div className="py-8 text-center text-xs text-slate-450 dark:text-zinc-500 italic">
+                  <div className="py-8 text-center text-xs text-slate-500 italic">
                     No items packed yet. Select a box and scan barcodes to pack.
                   </div>
                 )}

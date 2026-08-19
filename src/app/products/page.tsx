@@ -61,7 +61,7 @@ export default function ProductsPage() {
         header: ({ column }) => (
           <button
             onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-            className="flex items-center gap-1.5 font-semibold text-xs uppercase tracking-wider text-zinc-500 hover:text-zinc-800 dark:hover:text-zinc-200 transition-colors"
+            className="flex items-center gap-1.5 font-semibold text-xs uppercase tracking-wider text-slate-500 hover:text-slate-800 transition-colors"
           >
             <span>Product Name</span>
             <ArrowUpDown className="w-3.5 h-3.5" />
@@ -69,51 +69,51 @@ export default function ProductsPage() {
         ),
         cell: (info) => (
           <div className="flex items-center gap-3">
-            <div className="w-8 h-8 rounded-lg bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center border border-zinc-200/50 dark:border-zinc-700/50">
-              <Package className="w-4 h-4 text-zinc-600 dark:text-zinc-400" />
+            <div className="w-8 h-8 rounded-lg bg-slate-100 flex items-center justify-center border border-slate-200/50">
+              <Package className="w-4 h-4 text-slate-600" />
             </div>
-            <span className="font-semibold text-zinc-950 dark:text-zinc-50 text-sm">{info.getValue() as string}</span>
+            <span className="font-semibold text-slate-900 text-sm">{info.getValue() as string}</span>
           </div>
         ),
       },
       {
         accessorKey: "barcode",
-        header: () => <span className="font-semibold text-xs uppercase tracking-wider text-zinc-500">Barcode</span>,
-        cell: (info) => <code className="text-xs font-mono font-bold bg-zinc-100 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300 px-2 py-0.5 rounded border border-zinc-200/50 dark:border-zinc-700/50">{info.getValue() as string}</code>,
+        header: () => <span className="font-semibold text-xs uppercase tracking-wider text-slate-500">Barcode</span>,
+        cell: (info) => <code className="text-xs font-mono font-bold bg-slate-150 text-slate-700 px-2 py-0.5 rounded border border-slate-200/50">{info.getValue() as string}</code>,
       },
       {
         accessorKey: "price",
         header: ({ column }) => (
           <button
             onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-            className="flex items-center gap-1.5 font-semibold text-xs uppercase tracking-wider text-zinc-500 hover:text-zinc-800 dark:hover:text-zinc-200 transition-colors"
+            className="flex items-center gap-1.5 font-semibold text-xs uppercase tracking-wider text-slate-500 hover:text-slate-850 transition-colors"
           >
             <span>Price</span>
             <ArrowUpDown className="w-3.5 h-3.5" />
           </button>
         ),
-        cell: (info) => <span className="font-semibold text-zinc-900 dark:text-zinc-100 text-sm">${(info.getValue() as number).toFixed(2)}</span>,
+        cell: (info) => <span className="font-semibold text-slate-900 text-sm">${(info.getValue() as number).toFixed(2)}</span>,
       },
       {
         accessorKey: "stock",
-        header: () => <span className="font-semibold text-xs uppercase tracking-wider text-zinc-500">Stock Qty</span>,
-        cell: (info) => <span className="font-medium text-zinc-600 dark:text-zinc-400 text-sm">{info.getValue() as number} items</span>,
+        header: () => <span className="font-semibold text-xs uppercase tracking-wider text-slate-500">Stock Qty</span>,
+        cell: (info) => <span className="font-medium text-slate-600 text-sm">{info.getValue() as number} items</span>,
       },
       {
         accessorKey: "status",
-        header: () => <span className="font-semibold text-xs uppercase tracking-wider text-zinc-500">Status</span>,
+        header: () => <span className="font-semibold text-xs uppercase tracking-wider text-slate-500">Status</span>,
         cell: (info) => {
           const val = info.getValue() as string;
           let colorClass = "";
           let Icon = CheckCircle2;
           if (val === "In Stock") {
-            colorClass = "bg-emerald-50 text-emerald-700 dark:bg-emerald-950/20 dark:text-emerald-400 border-emerald-100 dark:border-emerald-900/30";
+            colorClass = "bg-emerald-50 text-emerald-700 border-emerald-100";
             Icon = CheckCircle2;
           } else if (val === "Low Stock") {
-            colorClass = "bg-amber-50 text-amber-700 dark:bg-amber-950/20 dark:text-amber-400 border-amber-100 dark:border-amber-900/30";
+            colorClass = "bg-amber-50 text-amber-700 border-amber-100";
             Icon = AlertTriangle;
           } else {
-            colorClass = "bg-rose-50 text-rose-700 dark:bg-rose-950/20 dark:text-rose-400 border-rose-100 dark:border-rose-900/30";
+            colorClass = "bg-rose-50 text-rose-700 border-rose-100";
             Icon = XCircle;
           }
           return (
@@ -126,8 +126,8 @@ export default function ProductsPage() {
       },
       {
         accessorKey: "updatedAt",
-        header: () => <span className="font-semibold text-xs uppercase tracking-wider text-zinc-500">Last Synced</span>,
-        cell: (info) => <span className="text-xs text-zinc-500 dark:text-zinc-400">{info.getValue() as string}</span>,
+        header: () => <span className="font-semibold text-xs uppercase tracking-wider text-slate-500">Last Synced</span>,
+        cell: (info) => <span className="text-xs text-slate-500">{info.getValue() as string}</span>,
       },
     ],
     []
@@ -161,16 +161,16 @@ export default function ProductsPage() {
       {/* Header section */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight text-zinc-950 dark:text-zinc-50 flex items-center gap-2">
+          <h1 className="text-2xl font-bold tracking-tight text-slate-900 font-bold flex items-center gap-2">
             <Package className="w-6 h-6 text-cyan-500" />
             <span>Products Database</span>
           </h1>
-          <p className="text-zinc-500 dark:text-zinc-400 text-sm mt-1">
+          <p className="text-slate-600 text-sm mt-1">
             Displaying mock inventory synced from local database. Powered by TanStack Table.
           </p>
         </div>
         <div>
-          <button className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-cyan-500 hover:bg-cyan-600 text-white font-medium text-sm transition-colors shadow-sm">
+          <button className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-cyan-500 hover:bg-cyan-600 text-white font-medium text-sm transition-colors shadow-sm cursor-pointer">
             <Plus className="w-4 h-4" />
             <span>Add Product</span>
           </button>
@@ -180,35 +180,35 @@ export default function ProductsPage() {
       {/* Filter and Search Bar */}
       <div className="flex flex-col sm:flex-row gap-3">
         <div className="relative flex-1">
-          <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+          <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500" />
           <input
             type="text"
             placeholder="Search products, barcodes, states..."
             value={globalFilter}
             onChange={(e) => setGlobalFilter(e.target.value)}
-            className="w-full pl-10 pr-4 py-2.5 bg-card border border-border rounded-xl text-sm focus:outline-none focus:ring-1 focus:ring-cyan-500 placeholder-muted-foreground text-foreground"
+            className="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-200 text-slate-900 rounded-xl text-sm focus:outline-none focus:ring-1 focus:ring-cyan-500 placeholder-slate-400"
           />
         </div>
-        <button className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-card border border-border text-foreground font-medium text-sm hover:bg-muted/40 transition-colors">
+        <button className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-white border border-slate-200 text-slate-700 font-medium text-sm hover:bg-slate-50 transition-colors cursor-pointer">
           <Filter className="w-4 h-4" />
           <span>Filters</span>
         </button>
       </div>
 
       {/* Table Container */}
-      <div className="border border-border rounded-xl bg-card text-card-foreground shadow-sm overflow-hidden">
+      <div className="border border-slate-200 rounded-xl bg-white text-slate-900 shadow-sm overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full border-collapse text-left">
             <thead>
               {table.getHeaderGroups().map((headerGroup) => (
                 <tr 
                   key={headerGroup.id}
-                  className="border-b border-border bg-muted/50"
+                  className="border-b border-slate-200 bg-slate-100"
                 >
                   {headerGroup.headers.map((header) => (
                     <th 
                       key={header.id} 
-                      className="px-6 py-4 font-semibold text-muted-foreground text-xs"
+                      className="px-6 py-4 font-semibold text-slate-650 text-xs"
                     >
                       {header.isPlaceholder
                         ? null
@@ -221,12 +221,12 @@ export default function ProductsPage() {
                 </tr>
               ))}
             </thead>
-            <tbody className="divide-y divide-border">
+            <tbody className="divide-y divide-slate-200">
               {table.getRowModel().rows.length > 0 ? (
                 table.getRowModel().rows.map((row) => (
                   <tr 
                     key={row.id}
-                    className="hover:bg-muted/30 transition-colors bg-card text-foreground"
+                    className="hover:bg-slate-50 transition-colors bg-white text-slate-900"
                   >
                     {row.getVisibleCells().map((cell) => (
                       <td key={cell.id} className="px-6 py-4 align-middle">
@@ -240,7 +240,7 @@ export default function ProductsPage() {
                 ))
               ) : (
                 <tr>
-                  <td colSpan={columns.length} className="px-6 py-12 text-center text-sm text-muted-foreground">
+                  <td colSpan={columns.length} className="px-6 py-12 text-center text-sm text-slate-550">
                     No products found. Try adjusting your search query.
                   </td>
                 </tr>
@@ -250,8 +250,8 @@ export default function ProductsPage() {
         </div>
 
         {/* Pagination Section */}
-        <div className="flex items-center justify-between px-6 py-4 border-t border-border bg-muted/20">
-          <span className="text-xs text-muted-foreground">
+        <div className="flex items-center justify-between px-6 py-4 border-t border-slate-200 bg-slate-50">
+          <span className="text-xs text-slate-500">
             Showing Page {table.getState().pagination.pageIndex + 1} of{" "}
             {table.getPageCount()}
           </span>
@@ -259,7 +259,7 @@ export default function ProductsPage() {
             <button
               onClick={() => table.previousPage()}
               disabled={!table.getCanPreviousPage()}
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-border text-foreground text-xs font-semibold hover:bg-muted/40 transition-colors disabled:opacity-40"
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-slate-200 text-slate-700 text-xs font-semibold hover:bg-slate-50 transition-colors disabled:opacity-40"
             >
               <ChevronLeft className="w-3.5 h-3.5" />
               <span>Prev</span>
@@ -267,7 +267,7 @@ export default function ProductsPage() {
             <button
               onClick={() => table.nextPage()}
               disabled={!table.getCanNextPage()}
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-border text-foreground text-xs font-semibold hover:bg-muted/40 transition-colors disabled:opacity-40"
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-slate-200 text-slate-700 text-xs font-semibold hover:bg-slate-50 transition-colors disabled:opacity-40"
             >
               <span>Next</span>
               <ChevronRight className="w-3.5 h-3.5" />

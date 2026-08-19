@@ -21,7 +21,7 @@ export function ThemeToggle({ className }: { className?: string }) {
   }
 
   return (
-    <div className={cn("flex items-center gap-1 p-1 bg-zinc-100/60 dark:bg-zinc-900/60 border border-zinc-200 dark:border-zinc-800/80 rounded-xl shrink-0 w-max", className)}>
+    <div className={cn("flex items-center gap-1 p-1 bg-slate-100 border border-slate-200/50 rounded-xl shrink-0 w-max", className)}>
       {[
         { value: "light", icon: Sun, label: "Light" },
         { value: "dark", icon: Moon, label: "Dark" },
@@ -38,8 +38,8 @@ export function ThemeToggle({ className }: { className?: string }) {
             className={cn(
               "p-1.5 rounded-lg transition-all duration-200 cursor-pointer flex items-center justify-center relative group",
               isActive 
-                ? "bg-white text-zinc-950 dark:bg-zinc-950 dark:text-zinc-50 shadow-sm"
-                : "text-zinc-500 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-200"
+                ? "bg-white text-slate-900 shadow-sm"
+                : "text-slate-500 hover:text-slate-900"
             )}
           >
             <Icon className="w-4 h-4 transition-transform duration-200 group-hover:scale-105" />

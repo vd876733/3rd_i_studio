@@ -77,16 +77,16 @@ export default function SettingsPage() {
 
       <div className="space-y-6">
         {/* Profile Settings Card */}
-        <div className="bg-card text-card-foreground border border-border shadow-sm rounded-xl p-6 space-y-4">
-          <h3 className="font-semibold text-sm text-foreground flex items-center gap-2">
-            <User className="w-4 h-4 text-muted-foreground" />
+        <div className="bg-white border border-slate-200 shadow-sm rounded-xl p-6 space-y-4">
+          <h3 className="font-semibold text-sm text-slate-900 font-bold flex items-center gap-2">
+            <User className="w-4 h-4 text-slate-500" />
             <span>Profile Settings</span>
           </h3>
           
           <div className="flex flex-col md:flex-row gap-6 items-start md:items-center">
             <div className="relative group">
-              <div className="w-20 h-20 rounded-full bg-muted border border-border flex items-center justify-center overflow-hidden">
-                <User className="w-10 h-10 text-muted-foreground" />
+              <div className="w-20 h-20 rounded-full bg-slate-100 border border-slate-200 flex items-center justify-center overflow-hidden">
+                <User className="w-10 h-10 text-slate-500" />
               </div>
               <button className="absolute bottom-0 right-0 p-1.5 rounded-full bg-cyan-500 hover:bg-cyan-600 text-white shadow-md transition-colors cursor-pointer">
                 <Camera className="w-3.5 h-3.5" />
@@ -95,21 +95,21 @@ export default function SettingsPage() {
             
             <div className="flex-1 grid grid-cols-1 sm:grid-cols-2 gap-4 w-full">
               <div className="grid gap-2">
-                <label className="text-xs font-semibold text-muted-foreground">Full Name</label>
+                <label className="text-xs font-semibold text-slate-500">Full Name</label>
                 <input
                   type="text"
                   value={profile.name}
                   onChange={(e) => setProfile({ ...profile, name: e.target.value })}
-                  className="w-full px-3 py-2 bg-muted/40 dark:bg-zinc-950 text-foreground border border-border rounded-xl text-xs focus:outline-none focus:ring-1 focus:ring-cyan-500"
+                  className="w-full px-3 py-2 bg-slate-50 border border-slate-200 text-slate-900 rounded-xl text-xs focus:outline-none focus:ring-1 focus:ring-cyan-500"
                 />
               </div>
               <div className="grid gap-2">
-                <label className="text-xs font-semibold text-muted-foreground">Email Address</label>
+                <label className="text-xs font-semibold text-slate-500">Email Address</label>
                 <input
                   type="email"
                   value={profile.email}
                   onChange={(e) => setProfile({ ...profile, email: e.target.value })}
-                  className="w-full px-3 py-2 bg-muted/40 dark:bg-zinc-955 text-foreground border border-border rounded-xl text-xs focus:outline-none focus:ring-1 focus:ring-cyan-500"
+                  className="w-full px-3 py-2 bg-slate-50 border border-slate-200 text-slate-900 rounded-xl text-xs focus:outline-none focus:ring-1 focus:ring-cyan-500"
                 />
               </div>
             </div>
@@ -117,16 +117,16 @@ export default function SettingsPage() {
         </div>
 
         {/* Notification Preferences Card */}
-        <div className="bg-card text-card-foreground border border-border shadow-sm rounded-xl p-6 space-y-4">
-          <h3 className="font-semibold text-sm text-foreground flex items-center gap-2">
-            <Bell className="w-4 h-4 text-muted-foreground" />
+        <div className="bg-white border border-slate-200 shadow-sm rounded-xl p-6 space-y-4">
+          <h3 className="font-semibold text-sm text-slate-900 font-bold flex items-center gap-2">
+            <Bell className="w-4 h-4 text-slate-500" />
             <span>Notification Preferences</span>
           </h3>
           <div className="space-y-4">
-            <div className="flex items-center justify-between py-1 border-b border-border pb-3">
+            <div className="flex items-center justify-between py-1 border-b border-slate-200 pb-3">
               <div className="space-y-0.5">
-                <span className="text-xs font-bold text-foreground block">Email Alerts & Summaries</span>
-                <span className="text-[10px] text-muted-foreground">Receive automated daily summaries and logistics reports.</span>
+                <span className="text-xs font-bold text-slate-900 block">Email Alerts & Summaries</span>
+                <span className="text-[10px] text-slate-500">Receive automated daily summaries and logistics reports.</span>
               </div>
               <label className="relative inline-flex items-center cursor-pointer">
                 <input
@@ -135,14 +135,14 @@ export default function SettingsPage() {
                   onChange={(e) => setNotifications({ ...notifications, emailAlerts: e.target.checked })}
                   className="sr-only peer"
                 />
-                <div className="w-9 h-5 bg-slate-200 dark:bg-zinc-800 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all dark:border-gray-600 peer-checked:bg-cyan-500"></div>
+                <div className="w-9 h-5 bg-slate-200 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-cyan-500"></div>
               </label>
             </div>
             
             <div className="flex items-center justify-between py-1">
               <div className="space-y-0.5">
-                <span className="text-xs font-bold text-foreground block">Project Status Alerts</span>
-                <span className="text-[10px] text-muted-foreground">Get notified when a project is updated, packed, or shipped.</span>
+                <span className="text-xs font-bold text-slate-900 block">Project Status Alerts</span>
+                <span className="text-[10px] text-slate-500">Get notified when a project is updated, packed, or shipped.</span>
               </div>
               <label className="relative inline-flex items-center cursor-pointer">
                 <input
@@ -151,25 +151,25 @@ export default function SettingsPage() {
                   onChange={(e) => setNotifications({ ...notifications, statusAlerts: e.target.checked })}
                   className="sr-only peer"
                 />
-                <div className="w-9 h-5 bg-slate-200 dark:bg-zinc-800 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all dark:border-gray-600 peer-checked:bg-cyan-500"></div>
+                <div className="w-9 h-5 bg-slate-200 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-cyan-500"></div>
               </label>
             </div>
           </div>
         </div>
 
         {/* Display & Regional Settings Card */}
-        <div className="bg-card text-card-foreground border border-border shadow-sm rounded-xl p-6 space-y-4">
-          <h3 className="font-semibold text-sm text-foreground flex items-center gap-2">
-            <Globe className="w-4 h-4 text-muted-foreground" />
+        <div className="bg-white border border-slate-200 shadow-sm rounded-xl p-6 space-y-4">
+          <h3 className="font-semibold text-sm text-slate-900 font-bold flex items-center gap-2">
+            <Globe className="w-4 h-4 text-slate-500" />
             <span>Display & Regional Settings</span>
           </h3>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div className="grid gap-2">
-              <label className="text-xs font-semibold text-muted-foreground">Preferred Timezone</label>
+              <label className="text-xs font-semibold text-slate-500">Preferred Timezone</label>
               <select
                 value={regional.timezone}
                 onChange={(e) => setRegional({ ...regional, timezone: e.target.value })}
-                className="w-full px-3 py-2 bg-muted/40 dark:bg-zinc-950 border border-border rounded-xl text-xs text-foreground focus:outline-none focus:ring-1 focus:ring-cyan-500"
+                className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-900 focus:outline-none focus:ring-1 focus:ring-cyan-500"
               >
                 <option value="UTC-08:00 (PST)">UTC-08:00 (PST)</option>
                 <option value="UTC-05:00 (EST)">UTC-05:00 (EST)</option>
@@ -179,11 +179,11 @@ export default function SettingsPage() {
               </select>
             </div>
             <div className="grid gap-2">
-              <label className="text-xs font-semibold text-muted-foreground">Date Format</label>
+              <label className="text-xs font-semibold text-slate-500">Date Format</label>
               <select
                 value={regional.dateFormat}
                 onChange={(e) => setRegional({ ...regional, dateFormat: e.target.value })}
-                className="w-full px-3 py-2 bg-muted/40 dark:bg-zinc-950 border border-border rounded-xl text-xs text-foreground focus:outline-none focus:ring-1 focus:ring-cyan-500"
+                className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-900 focus:outline-none focus:ring-1 focus:ring-cyan-500"
               >
                 <option value="YYYY-MM-DD">YYYY-MM-DD</option>
                 <option value="DD/MM/YYYY">DD/MM/YYYY</option>
@@ -191,27 +191,27 @@ export default function SettingsPage() {
               </select>
             </div>
             <div className="grid gap-2">
-              <label className="text-xs font-semibold text-muted-foreground">Default Studio Location</label>
+              <label className="text-xs font-semibold text-slate-500">Default Studio Location</label>
               <input
                 type="text"
                 value={regional.defaultLocation}
                 onChange={(e) => setRegional({ ...regional, defaultLocation: e.target.value })}
-                className="w-full px-3 py-2 bg-muted/40 dark:bg-zinc-955 text-foreground border border-border rounded-xl text-xs focus:outline-none focus:ring-1 focus:ring-cyan-500"
+                className="w-full px-3 py-2 bg-slate-50 border border-slate-200 text-slate-900 rounded-xl text-xs focus:outline-none focus:ring-1 focus:ring-cyan-500"
               />
             </div>
           </div>
         </div>
 
         {/* Appearance & Preferences Card */}
-        <div className="bg-card text-card-foreground border border-border shadow-sm rounded-xl p-6 space-y-4">
-          <h3 className="font-semibold text-sm text-foreground flex items-center gap-2">
-            <SettingsIcon className="w-4 h-4 text-muted-foreground" />
+        <div className="bg-white border border-slate-200 shadow-sm rounded-xl p-6 space-y-4">
+          <h3 className="font-semibold text-sm text-slate-900 font-bold flex items-center gap-2">
+            <SettingsIcon className="w-4 h-4 text-slate-500" />
             <span>Appearance & Preferences</span>
           </h3>
           <div className="flex items-center justify-between py-1.5">
             <div className="space-y-0.5">
-              <span className="text-xs font-bold text-foreground block">Application Theme</span>
-              <span className="text-[10px] text-muted-foreground">Select light theme, dark theme, or sync with your system defaults.</span>
+              <span className="text-xs font-bold text-slate-900 block">Application Theme</span>
+              <span className="text-[10px] text-slate-500">Select light theme, dark theme, or sync with your system defaults.</span>
             </div>
             <ThemeToggle />
           </div>

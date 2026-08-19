@@ -230,18 +230,18 @@ export default function MobileScanPage() {
     <div className="flex-1 p-6 md:p-8 space-y-6 max-w-4xl mx-auto w-full">
       {/* Title */}
       <div>
-        <h1 className="text-2xl font-bold tracking-tight text-zinc-955 dark:text-zinc-50 flex items-center gap-2">
+        <h1 className="text-2xl font-bold tracking-tight text-slate-900 font-bold flex items-center gap-2">
           <ScanBarcode className="w-6 h-6 text-cyan-500" />
           <span>Mobile Barcode Scanner</span>
         </h1>
-        <p className="text-zinc-500 dark:text-zinc-400 text-sm mt-1">
+        <p className="text-slate-600 text-sm mt-1">
           Instant inventory scanner. Automatically queries local DB or falls back to local cache when offline.
         </p>
       </div>
 
       {/* Connection Offline Bar */}
       {(isSystemOffline || isOfflineUsed) && (
-        <div className="p-4 rounded-xl bg-amber-500/10 border border-amber-500/20 text-amber-800 dark:text-amber-400 flex items-center gap-3">
+        <div className="p-4 rounded-xl bg-amber-500/10 border border-amber-500/20 text-amber-800 flex items-center gap-3">
           <WifiOff className="w-5 h-5 text-amber-500 shrink-0" />
           <div className="text-xs font-semibold">
             {isSystemOffline ? (
@@ -256,7 +256,7 @@ export default function MobileScanPage() {
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         {/* Left Column: Viewfinder camera box */}
         <div className="md:col-span-2 space-y-4">
-          <div className="relative aspect-video rounded-xl bg-card border border-border text-card-foreground overflow-hidden shadow-sm flex flex-col items-center justify-center">
+          <div className="relative aspect-video rounded-xl bg-white border border-slate-200 shadow-sm text-slate-900 overflow-hidden flex flex-col items-center justify-center">
             {/* Live Camera Stream */}
             <video 
               ref={videoRef} 
@@ -266,10 +266,10 @@ export default function MobileScanPage() {
             {/* Offline/Not Scanning HUD */}
             {!isScanning && (
               <div className="text-center p-6 space-y-3">
-                <div className="w-12 h-12 rounded-full bg-muted flex items-center justify-center mx-auto text-muted-foreground border border-border">
+                <div className="w-12 h-12 rounded-full bg-slate-100 flex items-center justify-center mx-auto text-slate-500 border border-slate-200">
                   <VideoOff className="w-6 h-6" />
                 </div>
-                <p className="text-muted-foreground text-sm font-medium">Camera is offline</p>
+                <p className="text-slate-600 text-sm font-medium">Camera is offline</p>
                 <button
                   onClick={startScanner}
                   disabled={!selectedDevice}
@@ -296,7 +296,7 @@ export default function MobileScanPage() {
           </div>
 
           {/* Device Controls */}
-          <div className="flex flex-wrap items-center gap-3 p-4 rounded-xl bg-card border border-border shadow-sm text-card-foreground">
+          <div className="flex flex-wrap items-center gap-3 p-4 rounded-xl bg-white border border-slate-200 shadow-sm text-slate-900">
             {isScanning ? (
               <button
                 onClick={stopScanner}
@@ -319,7 +319,7 @@ export default function MobileScanPage() {
             {/* Selector list */}
             {devices.length > 1 && (
               <div className="flex-1 min-w-[180px] flex items-center gap-2">
-                <span className="text-xs text-muted-foreground font-medium">Lens:</span>
+                <span className="text-xs text-slate-650 font-medium">Lens:</span>
                 <select
                   value={selectedDevice}
                   onChange={(e) => {
@@ -329,7 +329,7 @@ export default function MobileScanPage() {
                       setTimeout(startScanner, 100);
                     }
                   }}
-                  className="flex-1 bg-white dark:bg-zinc-950 border border-slate-200 dark:border-zinc-800 rounded-xl px-3 py-1.5 text-xs focus:outline-none focus:ring-1 focus:ring-cyan-500 text-slate-800 dark:text-zinc-200"
+                  className="flex-1 bg-slate-50 border border-slate-200 text-slate-900 rounded-xl px-3 py-1.5 text-xs focus:outline-none focus:ring-1 focus:ring-cyan-500"
                 >
                   {devices.map((device) => (
                     <option key={device.deviceId} value={device.deviceId}>
@@ -344,19 +344,19 @@ export default function MobileScanPage() {
 
         {/* Right Column: Dynamic Scan Query Output Card */}
         <div className="space-y-4">
-          <div className="bg-card text-card-foreground border border-border shadow-sm rounded-xl p-6 h-full flex flex-col justify-between">
-            <h3 className="font-semibold text-foreground text-sm">Decoded Item Specs</h3>
+          <div className="bg-white border border-slate-200 shadow-sm rounded-xl p-6 h-full flex flex-col justify-between text-slate-900">
+            <h3 className="font-semibold text-slate-900 font-bold text-sm">Decoded Item Specs</h3>
             
             <div className="flex-1 flex flex-col justify-center py-6">
               {isLoading ? (
                 <div className="text-center space-y-3">
                   <RefreshCw className="w-8 h-8 text-cyan-500 animate-spin mx-auto" />
-                  <p className="text-xs text-muted-foreground">Querying database for item details...</p>
+                  <p className="text-xs text-slate-600">Querying database for item details...</p>
                 </div>
               ) : itemData ? (
                 <div className="space-y-4 text-left">
                   {/* Photo preview */}
-                  <div className="relative aspect-video rounded-2xl overflow-hidden border border-border bg-muted shadow-sm">
+                  <div className="relative aspect-video rounded-2xl overflow-hidden border border-slate-200 bg-slate-50 shadow-sm">
                     <img
                       src={getPhotoUrl(itemData.photos)}
                       alt={itemData.name}
@@ -371,30 +371,30 @@ export default function MobileScanPage() {
 
                   {/* Name and SKU */}
                   <div className="space-y-1">
-                    <code className="text-[10px] font-mono font-bold text-slate-400 uppercase tracking-wide block">{itemData.sku}</code>
-                    <h4 className="text-md font-bold text-foreground leading-tight">{itemData.name}</h4>
-                    <span className="inline-block text-[10px] font-semibold text-muted-foreground bg-muted px-2 py-0.5 rounded border border-border mt-1 font-mono">
+                    <code className="text-[10px] font-mono font-bold text-slate-500 uppercase tracking-wide block">{itemData.sku}</code>
+                    <h4 className="text-md font-bold text-slate-900 font-bold leading-tight">{itemData.name}</h4>
+                    <span className="inline-block text-[10px] font-semibold text-slate-600 bg-slate-50 px-2 py-0.5 rounded border border-slate-200 mt-1 font-mono">
                       {itemData.barcode}
                     </span>
                   </div>
 
                   {/* Locations Grid */}
-                  <div className="grid grid-cols-2 gap-3 pt-3 border-t border-border">
-                    <div className="p-3 rounded-xl bg-slate-50 dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 text-slate-900 dark:text-white flex items-start gap-2">
+                  <div className="grid grid-cols-2 gap-3 pt-3 border-t border-slate-200">
+                    <div className="p-3 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 flex items-start gap-2">
                       <MapPin className="w-4 h-4 text-cyan-500 shrink-0 mt-0.5" />
                       <div>
-                        <span className="text-[9px] text-slate-400 uppercase tracking-wider block">Rack & Shelf</span>
-                        <span className="text-xs font-bold text-slate-700 dark:text-zinc-300 block mt-0.5">
+                        <span className="text-[9px] text-slate-500 uppercase tracking-wider block">Rack & Shelf</span>
+                        <span className="text-xs font-bold text-slate-700 block mt-0.5">
                           {itemData.rackNumber} / {itemData.shelfNumber}
                         </span>
                       </div>
                     </div>
 
-                    <div className="p-3 rounded-xl bg-slate-50 dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 text-slate-900 dark:text-white flex items-start gap-2">
+                    <div className="p-3 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 flex items-start gap-2">
                       <Package className="w-4 h-4 text-cyan-500 shrink-0 mt-0.5" />
                       <div>
-                        <span className="text-[9px] text-slate-400 uppercase tracking-wider block">Assigned Box</span>
-                        <span className="text-xs font-bold text-slate-700 dark:text-zinc-300 block mt-0.5 truncate">
+                        <span className="text-[9px] text-slate-500 uppercase tracking-wider block">Assigned Box</span>
+                        <span className="text-xs font-bold text-slate-700 block mt-0.5 truncate">
                           {itemData.boxNumber || "Not Boxed"}
                         </span>
                       </div>
@@ -403,10 +403,10 @@ export default function MobileScanPage() {
                 </div>
               ) : error ? (
                 <div className="text-center space-y-3">
-                  <div className="w-12 h-12 rounded-full bg-rose-50 dark:bg-rose-955/20 text-rose-600 dark:text-rose-400 flex items-center justify-center mx-auto border border-rose-100 dark:border-rose-900/30">
+                  <div className="w-12 h-12 rounded-full bg-rose-50 text-rose-600 flex items-center justify-center mx-auto border border-rose-100">
                     <AlertTriangle className="w-6 h-6" />
                   </div>
-                  <p className="text-xs text-rose-600 dark:text-rose-400 font-medium px-4 leading-relaxed">{error}</p>
+                  <p className="text-xs text-rose-600 font-medium px-4 leading-relaxed">{error}</p>
                   {scanResult && (
                     <button
                       onClick={() => handleBarcodeScanned(scanResult)}
@@ -418,21 +418,21 @@ export default function MobileScanPage() {
                   )}
                 </div>
               ) : (
-                <div className="text-center space-y-2 p-6 border border-dashed border-border rounded-xl bg-muted/20">
-                  <span className="text-xs text-muted-foreground italic block">No active barcode scan.</span>
-                  <span className="text-[10px] text-muted-foreground">Decoded barcode values will trigger instant DB query lookup.</span>
+                <div className="text-center space-y-2 p-6 border border-dashed border-slate-200 rounded-xl bg-slate-50/50">
+                  <span className="text-xs text-slate-500 italic block">No active barcode scan.</span>
+                  <span className="text-[10px] text-slate-600">Decoded barcode values will trigger instant DB query lookup.</span>
                 </div>
               )}
             </div>
 
             {/* Quick manual scan input for testing if camera isn't accessible */}
-            <div className="border-t border-border pt-4 mt-auto">
-              <span className="text-[9px] text-muted-foreground uppercase tracking-wider block mb-1.5 font-bold">Manual Scan Simulation</span>
+            <div className="border-t border-slate-200 pt-4 mt-auto">
+              <span className="text-[9px] text-slate-500 uppercase tracking-wider block mb-1.5 font-bold">Manual Scan Simulation</span>
               <div className="flex gap-2">
                 <input
                   type="text"
                   placeholder="Enter barcode (e.g. BARCODE-99002)..."
-                  className="flex-1 bg-slate-50 dark:bg-zinc-950 text-slate-900 dark:text-white border border-slate-200 dark:border-zinc-800 rounded-xl px-3 py-1.5 text-xs focus:outline-none focus:ring-1 focus:ring-cyan-500"
+                  className="flex-1 bg-slate-50 border border-slate-200 text-slate-900 rounded-xl px-3 py-1.5 text-xs focus:outline-none focus:ring-1 focus:ring-cyan-500"
                   onKeyDown={(e) => {
                     if (e.key === "Enter") {
                       const val = (e.target as HTMLInputElement).value.trim();
