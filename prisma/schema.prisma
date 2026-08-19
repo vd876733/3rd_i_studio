@@ -1,0 +1,147 @@
+// This is your Prisma schema file for Styling OS ERP,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.db"
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+enum Role {
+  ADMIN
+  STYLIST
+  PACKER
+  DRIVER
+}
+
+enum ProjectStatus {
+  INQUIRY
+  BOOKED
+  PACKING
+  DISPATCHED
+  ON_SITE
+  RETURNING
+  COMPLETED
+}
+
+enum InventoryStatus {
+  AVAILABLE
+  RESERVED
+  PACKED
+  ON_SITE
+  DAMAGED
+  LOST
+}
+
+model User {
+  id                String              @id @default(cuid())
+  name              String
+  email             String              @unique
+  role              Role
+  passwordHash      String
+  auditLogs         AuditLog[]
+  packedItems       ProjectPackedItem[]
+  projectsAsStylist Project[]           @relation("ProjectStylist")
+  projectsAsPacker  Project[]           @relation("ProjectPacker")
+  projectsAsDriver  Project[]           @relation("ProjectDriver")
+  createdAt         DateTime            @default(now())
+  updatedAt         DateTime            @updatedAt
+}
+
+model Client {
+  id             String    @id @default(cuid())
+  name           String
+  email          String?
+  contactNumbers String
+  projects       Project[]
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+}
+
+model SiteDetails {
+  id             String   @id @default(cuid())
+  address        String
+  googleMapsUrl  String?
+  parkingNotes   String?
+  contactNumbers String
+  projectId      String   @unique
+  project        Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+}
+
+model Project {
+  id            String              @id @default(cuid())
+  projectCode   String              @unique
+  name          String
+  status        ProjectStatus
+  shootDate     DateTime
+  reportingTime String?
+  clientId      String
+  client        Client              @relation(fields: [clientId], references: [id])
+  siteDetails   SiteDetails?
+  packedItems   ProjectPackedItem[]
+  boxes         Box[]
+  leadStylistId String?
+  leadStylist   User?               @relation("ProjectStylist", fields: [leadStylistId], references: [id], onDelete: SetNull)
+  leadPackerId  String?
+  leadPacker    User?               @relation("ProjectPacker", fields: [leadPackerId], references: [id], onDelete: SetNull)
+  leadDriverId  String?
+  leadDriver    User?               @relation("ProjectDriver", fields: [leadDriverId], references: [id], onDelete: SetNull)
+  moodBoardState Json?
+  createdAt     DateTime            @default(now())
+  updatedAt     DateTime            @updatedAt
+}
+
+model InventoryItem {
+  id              String              @id @default(cuid())
+  sku             String              @unique
+  barcode         String              @unique
+  name            String
+  category        String
+  rackNumber      String
+  shelfNumber     String
+  currentStatus   InventoryStatus
+  replacementCost Float
+  photos          Json                // SQLite supports Json type in Prisma
+  packedItems     ProjectPackedItem[]
+  createdAt       DateTime            @default(now())
+  updatedAt       DateTime            @updatedAt
+}
+
+model Box {
+  id          String              @id @default(cuid())
+  boxNumber   String
+  projectId   String
+  project     Project             @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  packedItems ProjectPackedItem[]
+  createdAt   DateTime            @default(now())
+  updatedAt   DateTime            @updatedAt
+}
+
+model ProjectPackedItem {
+  id              String        @id @default(cuid())
+  projectId       String
+  project         Project       @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  inventoryItemId String
+  inventoryItem   InventoryItem @relation(fields: [inventoryItemId], references: [id])
+  boxId           String?
+  box             Box?          @relation(fields: [boxId], references: [id], onDelete: SetNull)
+  packedById      String?
+  packedBy        User?         @relation(fields: [packedById], references: [id], onDelete: SetNull)
+  scannedAt       DateTime      @default(now())
+}
+
+model AuditLog {
+  id         String   @id @default(cuid())
+  userId     String
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  action     String
+  entityType String
+  oldValue   String?
+  newValue   String?
+  createdAt  DateTime @default(now())
+}
