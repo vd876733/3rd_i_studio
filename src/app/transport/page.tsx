@@ -276,11 +276,11 @@ export default function TransportPage() {
             <ArrowLeft className="w-3.5 h-3.5" />
             <span>Back to Projects</span>
           </Link>
-          <h1 className="text-2xl font-bold tracking-tight text-zinc-950 dark:text-zinc-50 flex items-center gap-2">
+          <h1 className="text-2xl font-bold tracking-tight text-slate-900 flex items-center gap-2">
             <Truck className="w-6 h-6 text-cyan-500" />
             <span>Vehicle Logistics & Fleet Control</span>
           </h1>
-          <p className="text-zinc-500 dark:text-zinc-400 text-sm mt-1">
+          <p className="text-slate-500 text-sm mt-1">
             Dispatch fleet vehicles, pair transport crew drivers, and manage equipment transit schedules.
           </p>
         </div>
@@ -299,8 +299,8 @@ export default function TransportPage() {
         <div className={cn(
           "px-4 py-3 rounded-xl text-xs font-semibold border flex items-center gap-2 max-w-md animate-fadeIn shadow-sm fixed bottom-6 right-6 z-55",
           notification.success 
-            ? "bg-emerald-500/5 text-emerald-600 dark:text-emerald-400 border-emerald-500/15" 
-            : "bg-rose-500/5 text-rose-600 dark:text-rose-400 border-rose-500/15"
+            ? "bg-emerald-500/5 text-emerald-600 border-emerald-500/15" 
+            : "bg-rose-500/5 text-rose-600 border-rose-500/15"
         )}>
           {notification.success ? <CheckCircle2 className="w-4 h-4 text-emerald-500" /> : <AlertTriangle className="w-4 h-4 text-rose-500" />}
           <span>{notification.message}</span>
@@ -350,13 +350,13 @@ export default function TransportPage() {
               let statusBadge = "";
               switch (v.status) {
                 case "AVAILABLE":
-                  statusBadge = "bg-emerald-50 text-emerald-700 dark:bg-emerald-950/20 dark:text-emerald-400 border-emerald-100 dark:border-emerald-900/30";
+                  statusBadge = "bg-emerald-50 text-emerald-700 border-emerald-100";
                   break;
                 case "IN_TRANSIT":
-                  statusBadge = "bg-amber-50 text-amber-700 dark:bg-amber-955/20 dark:text-amber-400 border-amber-100 dark:border-amber-900/30";
+                  statusBadge = "bg-amber-50 text-amber-700 border-amber-100";
                   break;
                 case "MAINTENANCE":
-                  statusBadge = "bg-rose-50 text-rose-700 dark:bg-rose-955/20 dark:text-rose-400 border-rose-100 dark:border-rose-900/30";
+                  statusBadge = "bg-rose-50 text-rose-700 border-rose-100";
                   break;
               }
 
@@ -381,7 +381,7 @@ export default function TransportPage() {
                       <div className="flex items-center gap-2.5 text-xs text-muted-foreground">
                         <User className="w-4 h-4 text-zinc-400 shrink-0" />
                         <div>
-                          <span className="text-[9px] uppercase tracking-wider block font-bold text-zinc-400 dark:text-zinc-500">Active Driver</span>
+                          <span className="text-[9px] uppercase tracking-wider block font-bold text-slate-500">Active Driver</span>
                           <span className="font-bold text-foreground">
                             {v.driverName || "Unassigned"}
                           </span>
@@ -391,7 +391,7 @@ export default function TransportPage() {
                       <div className="flex items-center gap-2.5 text-xs text-muted-foreground">
                         <Package className="w-4 h-4 text-zinc-400 shrink-0" />
                         <div>
-                          <span className="text-[9px] uppercase tracking-wider block font-bold text-zinc-400 dark:text-zinc-500">Active Project</span>
+                          <span className="text-[9px] uppercase tracking-wider block font-bold text-slate-500">Active Project</span>
                           <span className="font-bold text-foreground">
                             {v.projectName ? `${v.projectName} (${v.projectCode})` : "No active production"}
                           </span>

@@ -410,8 +410,8 @@ export default function ProjectDetailClient({
               className={cn(
                 "pb-3 text-sm font-semibold border-b-2 transition-all duration-200 px-1 flex items-center gap-1.5 cursor-pointer relative",
                 isActive
-                  ? "border-cyan-500 text-cyan-600 dark:text-cyan-400 font-bold"
-                  : "border-transparent text-zinc-500 hover:text-zinc-800 dark:hover:text-zinc-200"
+                  ? "border-cyan-500 text-cyan-600 font-bold"
+                  : "border-transparent text-zinc-500 hover:text-zinc-800"
               )}
             >
               <Icon className="w-4 h-4" />
@@ -491,7 +491,7 @@ export default function ProjectDetailClient({
 
               {/* Contacts Grid */}
               <div className="space-y-4">
-                <h3 className="font-bold text-sm text-zinc-900 dark:text-zinc-50 flex items-center gap-2">
+                <h3 className="font-bold text-sm text-slate-900 flex items-center gap-2">
                   <UserCheck className="w-4.5 h-4.5 text-cyan-500" />
                   <span>Production Contacts & Cards</span>
                 </h3>
@@ -500,7 +500,7 @@ export default function ProjectDetailClient({
                   {/* 1. Client Card */}
                   <div className="p-5 rounded-2xl border border-border bg-card text-card-foreground shadow-sm hover:shadow-md transition-shadow relative overflow-hidden group">
                     <div className="absolute top-0 right-0 w-24 h-24 bg-gradient-to-br from-cyan-500/5 to-transparent rounded-full -mr-8 -mt-8 transition-transform group-hover:scale-110" />
-                    <span className="text-[9px] font-bold bg-cyan-100 dark:bg-cyan-955/40 text-cyan-700 dark:text-cyan-400 px-2.5 py-0.5 rounded uppercase tracking-wider block w-max font-bold">
+                    <span className="text-[9px] font-bold bg-cyan-100 text-cyan-700 px-2.5 py-0.5 rounded uppercase tracking-wider block w-max font-bold">
                       Client Partner
                     </span>
                     <h4 className="text-sm font-bold text-foreground mt-3">
@@ -523,7 +523,7 @@ export default function ProjectDetailClient({
                   {/* 2. Stylist Card */}
                   <div className="p-5 rounded-2xl border border-border bg-card text-card-foreground shadow-sm hover:shadow-md transition-shadow relative overflow-hidden group">
                     <div className="absolute top-0 right-0 w-24 h-24 bg-gradient-to-br from-cyan-500/5 to-transparent rounded-full -mr-8 -mt-8 transition-transform group-hover:scale-110" />
-                    <span className="text-[9px] font-bold bg-cyan-100 dark:bg-cyan-955/40 text-cyan-700 dark:text-cyan-400 px-2.5 py-0.5 rounded uppercase tracking-wider block w-max font-bold">
+                    <span className="text-[9px] font-bold bg-cyan-100 text-cyan-700 px-2.5 py-0.5 rounded uppercase tracking-wider block w-max font-bold">
                       Lead Stylist
                     </span>
                     <h4 className="text-sm font-bold text-foreground mt-3">
@@ -542,7 +542,7 @@ export default function ProjectDetailClient({
                   {/* 3. Site Supervisor Card */}
                   <div className="p-5 rounded-2xl border border-border bg-card text-card-foreground shadow-sm hover:shadow-md transition-shadow relative overflow-hidden group">
                     <div className="absolute top-0 right-0 w-24 h-24 bg-gradient-to-br from-amber-500/5 to-transparent rounded-full -mr-8 -mt-8 transition-transform group-hover:scale-110" />
-                    <span className="text-[9px] font-bold bg-amber-100 dark:bg-amber-955/40 text-amber-700 dark:text-amber-400 px-2.5 py-0.5 rounded uppercase tracking-wider block w-max font-bold">
+                    <span className="text-[9px] font-bold bg-amber-100 text-amber-700 px-2.5 py-0.5 rounded uppercase tracking-wider block w-max font-bold">
                       Site Supervisor
                     </span>
                     <h4 className="text-sm font-bold text-foreground mt-3">
@@ -577,13 +577,13 @@ export default function ProjectDetailClient({
                   {/* 4. Photographer Card */}
                   <div className="p-5 rounded-2xl border border-border bg-card text-card-foreground shadow-sm hover:shadow-md transition-shadow relative overflow-hidden group">
                     <div className="absolute top-0 right-0 w-24 h-24 bg-gradient-to-br from-indigo-500/5 to-transparent rounded-full -mr-8 -mt-8 transition-transform group-hover:scale-110" />
-                    <span className="text-[9px] font-bold bg-indigo-100 dark:bg-indigo-950/40 text-indigo-700 dark:text-indigo-400 px-2.5 py-0.5 rounded uppercase tracking-wider block w-max font-bold">
+                    <span className="text-[9px] font-bold bg-indigo-100 text-indigo-700 px-2.5 py-0.5 rounded uppercase tracking-wider block w-max font-bold">
                       Photographer
                     </span>
-                    <h4 className="text-sm font-bold text-zinc-850 dark:text-zinc-200 mt-3">
+                    <h4 className="text-sm font-bold text-slate-900 mt-3">
                       {project.siteDetails?.photographerName || "Not Configured"}
                     </h4>
-                    <div className="mt-4 space-y-2.5 text-xs text-zinc-550 dark:text-zinc-400">
+                    <div className="mt-4 space-y-2.5 text-xs text-slate-500">
                       {project.siteDetails?.photographerEmail ? (
                         <a href={`mailto:${project.siteDetails.photographerEmail}`} className="flex items-center gap-2 hover:text-indigo-500 transition-colors">
                           <Mail className="w-3.5 h-3.5 shrink-0 text-zinc-400" />

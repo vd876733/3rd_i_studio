@@ -234,17 +234,17 @@ export default function InventoryClient({ initialItems }: { initialItems: Invent
   const getStatusColor = (status: string) => {
     switch (status) {
       case "AVAILABLE":
-        return "bg-emerald-50 text-emerald-700 border-emerald-100 dark:bg-emerald-950/20 dark:text-emerald-400 dark:border-emerald-900/30";
+        return "bg-emerald-50 text-emerald-700 border-emerald-100";
       case "RESERVED":
-        return "bg-blue-50 text-blue-700 border-blue-100 dark:bg-blue-950/20 dark:text-blue-400 dark:border-blue-900/30";
+        return "bg-blue-50 text-blue-700 border-blue-100";
       case "PACKED":
-        return "bg-amber-50 text-amber-700 border-amber-100 dark:bg-amber-950/20 dark:text-amber-400 dark:border-amber-900/30";
+        return "bg-amber-50 text-amber-700 border-amber-100";
       case "ON_SITE":
-        return "bg-indigo-50 text-indigo-700 border-indigo-100 dark:bg-indigo-950/20 dark:text-indigo-400 dark:border-indigo-900/30";
+        return "bg-indigo-50 text-indigo-700 border-indigo-100";
       case "DAMAGED":
-        return "bg-rose-50 text-rose-700 border-rose-100 dark:bg-rose-950/20 dark:text-rose-400 dark:border-rose-900/30";
+        return "bg-rose-50 text-rose-700 border-rose-100";
       case "LOST":
-        return "bg-slate-100 text-slate-800 border-slate-200 dark:bg-slate-900/60 dark:text-slate-300 dark:border-slate-800/50";
+        return "bg-slate-100 text-slate-800 border-slate-200";
       default:
         return "bg-zinc-100 text-zinc-800 border-zinc-200";
     }

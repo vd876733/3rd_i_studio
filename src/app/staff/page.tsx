@@ -236,11 +236,11 @@ export default function StaffPage() {
             <ArrowLeft className="w-3.5 h-3.5" />
             <span>Back to Projects</span>
           </Link>
-          <h1 className="text-2xl font-bold tracking-tight text-zinc-950 dark:text-zinc-50 flex items-center gap-2">
+          <h1 className="text-2xl font-bold tracking-tight text-slate-900 flex items-center gap-2">
             <CalendarIcon className="w-6 h-6 text-cyan-500" />
             <span>Staff Availability & Deployments</span>
           </h1>
-          <p className="text-zinc-500 dark:text-zinc-400 text-sm mt-1">
+          <p className="text-slate-500 text-sm mt-1">
             Track stylist, packer, and driver availability. Log leave overrides and site dispatch schedules.
           </p>
         </div>
@@ -251,8 +251,8 @@ export default function StaffPage() {
         <div className={cn(
           "px-4 py-3 rounded-xl text-xs font-semibold border flex items-center gap-2 max-w-md animate-fadeIn shadow-sm fixed bottom-6 right-6 z-55",
           notification.success 
-            ? "bg-emerald-500/5 text-emerald-600 dark:text-emerald-400 border-emerald-500/15" 
-            : "bg-rose-500/5 text-rose-600 dark:text-rose-400 border-rose-500/15"
+            ? "bg-emerald-500/5 text-emerald-600 border-emerald-500/15" 
+            : "bg-rose-500/5 text-rose-600 border-rose-500/15"
         )}>
           <CheckCircle2 className="w-4 h-4 text-emerald-500" />
           <span>{notification.message}</span>
@@ -278,13 +278,13 @@ export default function StaffPage() {
                 let badgeClass = "";
                 switch (todayStatus.status) {
                   case "AVAILABLE":
-                    badgeClass = "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400";
+                    badgeClass = "bg-emerald-500/10 text-emerald-600";
                     break;
                   case "ON_SITE":
-                    badgeClass = "bg-blue-500/10 text-blue-600 dark:text-blue-400";
+                    badgeClass = "bg-blue-500/10 text-blue-600";
                     break;
                   case "ON_LEAVE":
-                    badgeClass = "bg-rose-500/10 text-rose-600 dark:text-rose-400";
+                    badgeClass = "bg-rose-500/10 text-rose-600";
                     break;
                 }
 
@@ -400,8 +400,8 @@ export default function StaffPage() {
                               className={cn(
                                 "px-1.5 py-0.5 rounded text-[8px] font-semibold truncate block max-w-full border",
                                 isLeave 
-                                  ? "bg-rose-50 text-rose-700 dark:bg-rose-955/20 dark:text-rose-400 border-rose-500/20" 
-                                  : "bg-blue-50 text-blue-700 dark:bg-blue-955/20 dark:text-blue-400 border-blue-500/20"
+                                  ? "bg-rose-50 text-rose-700 border-rose-200" 
+                                  : "bg-blue-50 text-blue-700 border-blue-200"
                               )}
                             >
                               {a.member.name.split(" ")[0]} ({isLeave ? "Leave" : "Site"})

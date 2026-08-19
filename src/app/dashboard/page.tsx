@@ -71,13 +71,13 @@ export default async function DashboardPage() {
 
   // Define Pipeline columns
   const PIPELINE_STAGES: { status: ProjectStatus; label: string; borderClass: string; textClass: string; dotClass: string }[] = [
-    { status: ProjectStatus.INQUIRY, label: "Inquiry", borderClass: "border-slate-200 dark:border-zinc-800", textClass: "text-slate-600 dark:text-zinc-400", dotClass: "bg-slate-400" },
-    { status: ProjectStatus.BOOKED, label: "Booked", borderClass: "border-blue-200 dark:border-blue-900/50", textClass: "text-blue-600 dark:text-blue-400", dotClass: "bg-blue-500" },
-    { status: ProjectStatus.PACKING, label: "Packing", borderClass: "border-amber-200 dark:border-amber-900/50", textClass: "text-amber-600 dark:text-amber-400", dotClass: "bg-amber-500" },
-    { status: ProjectStatus.DISPATCHED, label: "Dispatched", borderClass: "border-purple-200 dark:border-purple-900/50", textClass: "text-purple-600 dark:text-purple-400", dotClass: "bg-purple-500" },
-    { status: ProjectStatus.ON_SITE, label: "On Site", borderClass: "border-indigo-200 dark:border-indigo-900/50", textClass: "text-indigo-600 dark:text-indigo-400", dotClass: "bg-indigo-500" },
-    { status: ProjectStatus.RETURNING, label: "Returning", borderClass: "border-cyan-200 dark:border-cyan-900/50", textClass: "text-cyan-600 dark:text-cyan-400", dotClass: "bg-cyan-500" },
-    { status: ProjectStatus.COMPLETED, label: "Completed", borderClass: "border-emerald-200 dark:border-emerald-900/50", textClass: "text-emerald-600 dark:text-emerald-400", dotClass: "bg-emerald-500" },
+    { status: ProjectStatus.INQUIRY,    label: "Inquiry",    borderClass: "border-slate-200",   textClass: "text-slate-600",   dotClass: "bg-slate-400" },
+    { status: ProjectStatus.BOOKED,     label: "Booked",     borderClass: "border-blue-200",    textClass: "text-blue-600",    dotClass: "bg-blue-500" },
+    { status: ProjectStatus.PACKING,    label: "Packing",    borderClass: "border-amber-200",   textClass: "text-amber-600",   dotClass: "bg-amber-500" },
+    { status: ProjectStatus.DISPATCHED, label: "Dispatched", borderClass: "border-purple-200",  textClass: "text-purple-600",  dotClass: "bg-purple-500" },
+    { status: ProjectStatus.ON_SITE,    label: "On Site",    borderClass: "border-indigo-200",  textClass: "text-indigo-600",  dotClass: "bg-indigo-500" },
+    { status: ProjectStatus.RETURNING,  label: "Returning",  borderClass: "border-cyan-200",    textClass: "text-cyan-600",    dotClass: "bg-cyan-500" },
+    { status: ProjectStatus.COMPLETED,  label: "Completed",  borderClass: "border-emerald-200", textClass: "text-emerald-600", dotClass: "bg-emerald-500" },
   ];
 
   return (

@@ -48,11 +48,11 @@ export default function SettingsPage() {
     <div className="flex-1 p-6 md:p-8 space-y-6 max-w-4xl mx-auto w-full">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight text-zinc-955 dark:text-zinc-50 flex items-center gap-2">
+          <h1 className="text-2xl font-bold tracking-tight text-slate-900 flex items-center gap-2">
             <SettingsIcon className="w-6 h-6 text-cyan-500" />
             <span>Application Settings</span>
           </h1>
-          <p className="text-zinc-500 dark:text-zinc-400 text-sm mt-1">
+          <p className="text-slate-500 text-sm mt-1">
             Configure your personal profile, notification thresholds, and regional preferences.
           </p>
         </div>
