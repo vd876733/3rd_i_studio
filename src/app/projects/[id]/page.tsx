@@ -113,6 +113,8 @@ export default async function ProjectDetailPage({ params }: PageProps) {
     shootDate: project.shootDate.toISOString(),
     reportingTime: project.reportingTime,
     moodBoardState: project.moodBoardState,
+    warehouseChecklist: (project as any).warehouseChecklist,
+    siteChecklist: (project as any).siteChecklist,
     client: {
       id: project.client.id,
       name: project.client.name,

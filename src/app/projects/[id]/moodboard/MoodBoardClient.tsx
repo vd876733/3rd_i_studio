@@ -56,13 +56,23 @@ interface ProjectData {
 export default function MoodBoardClient({
   project,
   availableItems: initialAvailableItems,
-  embedded = false
+  embedded = false,
+  onAuditLogCreated,
+  onAvailableItemsChange,
 }: {
   project: ProjectData;
   availableItems: InventoryItem[];
   embedded?: boolean;
+  onAuditLogCreated?: (action: string, newValue: string) => void;
+  onAvailableItemsChange?: (items: InventoryItem[]) => void;
 }) {
   const [availableItems, setAvailableItems] = useState<InventoryItem[]>(initialAvailableItems);
+
+  // Sync availableItems when initialAvailableItems prop changes
+  useEffect(() => {
+    setAvailableItems(initialAvailableItems);
+  }, [initialAvailableItems]);
+
   const [selectedElementId, setSelectedElementId] = useState<string | null>(null);
   const [selectedObjectName, setSelectedObjectName] = useState<string | null>(null);
   
@@ -348,7 +358,18 @@ export default function MoodBoardClient({
         if (!res.ok) throw new Error("Failed to reserve item");
         
         // Remove item from sidebar available list
-        setAvailableItems((prev) => prev.filter((i) => i.id !== item.id));
+        setAvailableItems((prev) => {
+          const updated = prev.filter((i) => i.id !== item.id);
+          if (onAvailableItemsChange) onAvailableItemsChange(updated);
+          return updated;
+        });
+
+        if (onAuditLogCreated) {
+          onAuditLogCreated(
+            "RESERVED",
+            `Reserved item '${item.name}' (SKU: ${item.sku}) for Project '${project.name}' (${project.projectCode}) via Moodboard canvas placement`
+          );
+        }
       } catch (err) {
         console.error("Reserve API failed:", err);
       }
@@ -493,8 +514,17 @@ export default function MoodBoardClient({
         setAvailableItems((prev) => {
           const exists = prev.some(i => i.id === releasedItem.id);
           if (exists) return prev;
-          return [...prev, releasedItem].sort((a, b) => a.sku.localeCompare(b.sku));
+          const updated = [...prev, releasedItem].sort((a, b) => a.sku.localeCompare(b.sku));
+          if (onAvailableItemsChange) onAvailableItemsChange(updated);
+          return updated;
         });
+
+        if (onAuditLogCreated) {
+          onAuditLogCreated(
+            "RELEASED",
+            `Released item '${targetName}' (SKU: ${targetSku}) from Project '${project.name}' (${project.projectCode}) back to available pool`
+          );
+        }
       } catch (err) {
         console.error("Release API failed:", err);
       }
@@ -549,6 +579,13 @@ export default function MoodBoardClient({
       
       setSaveStatus({ success: true, message: "Moodboard layout saved successfully!" });
       setTimeout(() => setSaveStatus(null), 3000);
+
+      if (onAuditLogCreated) {
+        onAuditLogCreated(
+          "PROJECT_UPDATED",
+          `Saved moodboard layout configuration state for Project '${project.name}' (${project.projectCode})`
+        );
+      }
     } catch (err: any) {
       console.error(err);
       setSaveStatus({ success: false, message: err.message || "Failed to save configuration layout." });

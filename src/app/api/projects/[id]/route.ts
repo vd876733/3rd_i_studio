@@ -19,7 +19,9 @@ export async function PATCH(
       status, 
       leadStylistId, 
       leadPackerId, 
-      leadDriverId 
+      leadDriverId,
+      warehouseChecklist,
+      siteChecklist
     } = body;
 
     const existingProject = await prisma.project.findUnique({
@@ -41,7 +43,9 @@ export async function PATCH(
         leadStylistId: leadStylistId !== undefined ? (leadStylistId || null) : undefined,
         leadPackerId: leadPackerId !== undefined ? (leadPackerId || null) : undefined,
         leadDriverId: leadDriverId !== undefined ? (leadDriverId || null) : undefined,
-      },
+        warehouseChecklist: warehouseChecklist !== undefined ? warehouseChecklist : undefined,
+        siteChecklist: siteChecklist !== undefined ? siteChecklist : undefined,
+      } as any,
     });
 
     // Write audit log

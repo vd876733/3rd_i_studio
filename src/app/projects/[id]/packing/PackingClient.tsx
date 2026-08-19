@@ -66,13 +66,28 @@ export default function PackingClient({
   project: initialProject,
   availableItems: initialAvailableItems,
   embedded = false,
+  onProjectChange,
+  onAuditLogCreated,
+  onAvailableItemsChange,
 }: {
-  project: ProjectData;
+  project: any;
   availableItems: ReservedItemData[];
   embedded?: boolean;
+  onProjectChange?: (project: any) => void;
+  onAuditLogCreated?: (action: string, newValue: string) => void;
+  onAvailableItemsChange?: (items: ReservedItemData[]) => void;
 }) {
   const [project, setProject] = useState<ProjectData>(initialProject);
   const [availableItems, setAvailableItems] = useState<ReservedItemData[]>(initialAvailableItems);
+
+  useEffect(() => {
+    setProject(initialProject);
+  }, [initialProject]);
+
+  useEffect(() => {
+    setAvailableItems(initialAvailableItems);
+  }, [initialAvailableItems]);
+
   const [activeBoxId, setActiveBoxId] = useState<string>(
     initialProject.boxes.length > 0 ? initialProject.boxes[0].id : ""
   );
@@ -149,10 +164,14 @@ export default function PackingClient({
       
       const newBox = await res.json();
       
-      setProject((prev) => ({
-        ...prev,
-        boxes: [...prev.boxes, newBox],
-      }));
+      setProject((prev) => {
+        const updated = {
+          ...prev,
+          boxes: [...prev.boxes, newBox],
+        };
+        if (onProjectChange) onProjectChange(updated);
+        return updated;
+      });
       
       // Auto-select the newly created box
       setActiveBoxId(newBox.id);
@@ -193,15 +212,28 @@ export default function PackingClient({
 
       // Update local state:
       // 1. Add item to project packedItems list
-      setProject((prev) => ({
-        ...prev,
-        packedItems: [...prev.packedItems, newPackedItem],
-      }));
+      setProject((prev) => {
+        const updated = {
+          ...prev,
+          packedItems: [...prev.packedItems, newPackedItem],
+        };
+        if (onProjectChange) onProjectChange(updated);
+        return updated;
+      });
 
       // 2. Remove item from the available list of items to pack
-      setAvailableItems((prev) => 
-        prev.filter((item) => item.barcode !== barcodeToPack)
-      );
+      setAvailableItems((prev) => {
+        const updated = prev.filter((item) => item.barcode !== barcodeToPack);
+        if (onAvailableItemsChange) onAvailableItemsChange(updated);
+        return updated;
+      });
+
+      if (onAuditLogCreated) {
+        onAuditLogCreated(
+          "PACKED",
+          `Packed item '${newPackedItem.inventoryItem.name}' (SKU: ${newPackedItem.inventoryItem.sku}) into Transit Box '${newPackedItem.box.boxNumber}'`
+        );
+      }
 
       // Trigger success confirmation HUD
       setPackStatus({ 

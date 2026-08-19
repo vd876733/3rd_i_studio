@@ -100,6 +100,8 @@ model Project {
   leadDriverId  String?
   leadDriver    User?               @relation("ProjectDriver", fields: [leadDriverId], references: [id], onDelete: SetNull)
   moodBoardState Json?
+  warehouseChecklist Json?
+  siteChecklist Json?
   createdAt     DateTime            @default(now())
   updatedAt     DateTime            @updatedAt
 }

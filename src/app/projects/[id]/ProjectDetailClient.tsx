@@ -78,6 +78,8 @@ interface ProjectDetailData {
   leadDriver: UserProfile | null;
   boxes: any[];
   packedItems: any[];
+  warehouseChecklist?: any;
+  siteChecklist?: any;
 }
 
 const WAREHOUSE_CHECKLIST_ITEMS = [
@@ -98,8 +100,8 @@ const SITE_CHECKLIST_ITEMS = [
 
 export default function ProjectDetailClient({
   project: initialProject,
-  availableItemsForPacking,
-  availableItemsForMoodboard,
+  availableItemsForPacking: initialAvailableItemsForPacking,
+  availableItemsForMoodboard: initialAvailableItemsForMoodboard,
   auditLogs: initialAuditLogs,
   clients = [],
   staff = [],
@@ -113,13 +115,32 @@ export default function ProjectDetailClient({
 }) {
   const [project, setProject] = useState<ProjectDetailData>(initialProject);
   const [auditLogs, setAuditLogs] = useState<any[]>(initialAuditLogs);
+  const [availableItemsForMoodboard, setAvailableItemsForMoodboard] = useState<any[]>(initialAvailableItemsForMoodboard);
+  const [availableItemsForPacking, setAvailableItemsForPacking] = useState<any[]>(initialAvailableItemsForPacking);
   const [activeTab, setActiveTab] = useState<
     "site-info" | "packing" | "moodboard" | "checklists" | "audit-history"
   >("site-info");
 
+  const handleAddAuditLog = (action: string, newValue: string) => {
+    const newLog = {
+      id: `log-${Date.now()}`,
+      action,
+      entityType: "InventoryItem",
+      newValue,
+      oldValue: null,
+      createdAt: new Date().toISOString(),
+      user: { id: "current-user", name: "Admin User", role: "ADMIN", email: "admin@stylingos.com" }
+    };
+    setAuditLogs((prev) => [newLog, ...prev]);
+  };
+
   // Checklist states
-  const [whChecked, setWhChecked] = useState<Record<string, boolean>>({});
-  const [siteChecked, setSiteChecked] = useState<Record<string, boolean>>({});
+  const [whChecked, setWhChecked] = useState<Record<string, boolean>>(
+    project.warehouseChecklist ? (project.warehouseChecklist as Record<string, boolean>) : {}
+  );
+  const [siteChecked, setSiteChecked] = useState<Record<string, boolean>>(
+    project.siteChecklist ? (project.siteChecklist as Record<string, boolean>) : {}
+  );
   const [isMounted, setIsMounted] = useState(false);
 
   // Edit project state
@@ -137,37 +158,61 @@ export default function ProjectDetailClient({
   const [leadPackerId, setLeadPackerId] = useState("");
   const [leadDriverId, setLeadDriverId] = useState("");
 
-  // Restore checklist state from localStorage on client-side mount
+  // Sync checklist states when project details update
   useEffect(() => {
     setIsMounted(true);
-    const storedWh = localStorage.getItem(`chk_wh_${project.id}`);
-    const storedSite = localStorage.getItem(`chk_site_${project.id}`);
-    if (storedWh) {
-      try {
-        setWhChecked(JSON.parse(storedWh));
-      } catch (e) {
-        console.error(e);
-      }
+    if (project.warehouseChecklist) {
+      setWhChecked(project.warehouseChecklist as Record<string, boolean>);
+    } else {
+      setWhChecked({});
     }
-    if (storedSite) {
-      try {
-        setSiteChecked(JSON.parse(storedSite));
-      } catch (e) {
-        console.error(e);
-      }
+    if (project.siteChecklist) {
+      setSiteChecked(project.siteChecklist as Record<string, boolean>);
+    } else {
+      setSiteChecked({});
     }
-  }, [project.id]);
+  }, [project.id, project.warehouseChecklist, project.siteChecklist]);
 
-  const toggleWhItem = (itemId: string) => {
+  const toggleWhItem = async (itemId: string) => {
     const updated = { ...whChecked, [itemId]: !whChecked[itemId] };
     setWhChecked(updated);
-    localStorage.setItem(`chk_wh_${project.id}`, JSON.stringify(updated));
+    
+    try {
+      const res = await fetch(`/api/projects/${project.id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ warehouseChecklist: updated }),
+      });
+      if (!res.ok) throw new Error("Failed to save checklist state");
+      
+      setProject((prev) => ({
+        ...prev,
+        warehouseChecklist: updated,
+      }));
+    } catch (err) {
+      console.error("Error saving warehouse checklist:", err);
+    }
   };
 
-  const toggleSiteItem = (itemId: string) => {
+  const toggleSiteItem = async (itemId: string) => {
     const updated = { ...siteChecked, [itemId]: !siteChecked[itemId] };
     setSiteChecked(updated);
-    localStorage.setItem(`chk_site_${project.id}`, JSON.stringify(updated));
+    
+    try {
+      const res = await fetch(`/api/projects/${project.id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ siteChecklist: updated }),
+      });
+      if (!res.ok) throw new Error("Failed to save checklist state");
+      
+      setProject((prev) => ({
+        ...prev,
+        siteChecklist: updated,
+      }));
+    } catch (err) {
+      console.error("Error saving site checklist:", err);
+    }
   };
 
   // Calculate percentages
@@ -624,6 +669,9 @@ export default function ProjectDetailClient({
               project={project}
               availableItems={availableItemsForPacking}
               embedded={true}
+              onProjectChange={setProject}
+              onAuditLogCreated={handleAddAuditLog}
+              onAvailableItemsChange={setAvailableItemsForPacking}
             />
           </div>
         )}
@@ -635,6 +683,8 @@ export default function ProjectDetailClient({
               project={project}
               availableItems={availableItemsForMoodboard}
               embedded={true}
+              onAuditLogCreated={handleAddAuditLog}
+              onAvailableItemsChange={setAvailableItemsForMoodboard}
             />
           </div>
         )}
