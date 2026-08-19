@@ -55,7 +55,7 @@ export default function Navigation() {
                 className={cn(
                   "flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all duration-200 group relative",
                   isActive
-                    ? "bg-zinc-900 text-white shadow-sm shadow-black/10 dark:bg-zinc-100 dark:text-zinc-950"
+                    ? "bg-primary text-primary-foreground shadow-sm shadow-black/10"
                     : "text-zinc-600 hover:text-zinc-900 hover:bg-zinc-100 dark:text-zinc-400 dark:hover:text-zinc-50 dark:hover:bg-zinc-800/50"
                 )}
               >

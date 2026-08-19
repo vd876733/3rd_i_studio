@@ -263,15 +263,15 @@ export default function StaffPage() {
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 flex-1">
         
         {/* Sidebar directory */}
-        <div className="p-5 rounded-2xl border border-zinc-250/20 dark:border-zinc-850/20 bg-white/50 dark:bg-zinc-900/20 flex flex-col gap-4">
+        <div className="p-5 rounded-2xl border border-border bg-card text-card-foreground shadow-sm flex flex-col gap-4">
           <div>
-            <h3 className="font-bold text-sm text-zinc-900 dark:text-zinc-50">Staff Directory</h3>
-            <p className="text-[10px] text-zinc-500 mt-0.5">Current active crew status for today.</p>
+            <h3 className="font-bold text-sm text-foreground">Staff Directory</h3>
+            <p className="text-[10px] text-muted-foreground mt-0.5">Current active crew status for today.</p>
           </div>
 
           <div className="space-y-2.5 overflow-y-auto max-h-[500px]">
             {loading ? (
-              <p className="text-xs text-zinc-400 italic text-center py-6">Loading directory...</p>
+              <p className="text-xs text-muted-foreground italic text-center py-6">Loading directory...</p>
             ) : staff.length > 0 ? (
               staff.map((u) => {
                 const todayStatus = getStaffStatusOnDate(u.id, today);
@@ -289,10 +289,10 @@ export default function StaffPage() {
                 }
 
                 return (
-                  <div key={u.id} className="p-3 rounded-xl border border-zinc-150 dark:border-zinc-800 bg-white dark:bg-zinc-900 shadow-sm flex items-center justify-between gap-2.5">
+                  <div key={u.id} className="p-3 rounded-xl border border-border bg-muted/30 shadow-sm flex items-center justify-between gap-2.5">
                     <div className="min-w-0">
-                      <span className="text-xs font-bold text-zinc-850 dark:text-zinc-200 block truncate">{u.name}</span>
-                      <span className="text-[9px] text-zinc-400 font-bold uppercase tracking-wider block mt-0.5">{u.role}</span>
+                      <span className="text-xs font-bold text-foreground block truncate">{u.name}</span>
+                      <span className="text-[9px] text-muted-foreground font-bold uppercase tracking-wider block mt-0.5">{u.role}</span>
                     </div>
                     <span className={cn("px-2 py-0.5 rounded text-[8px] font-bold uppercase tracking-wide shrink-0", badgeClass)}>
                       {todayStatus.status}
@@ -301,7 +301,7 @@ export default function StaffPage() {
                 );
               })
             ) : (
-              <p className="text-xs text-zinc-400 italic text-center py-6">No crew records found.</p>
+              <p className="text-xs text-muted-foreground italic text-center py-6">No crew records found.</p>
             )}
           </div>
         </div>
@@ -309,39 +309,39 @@ export default function StaffPage() {
         {/* Calendar Workspace (Span 3) */}
         <div className="lg:col-span-3 flex flex-col gap-4">
           {/* Calendar Controller Header */}
-          <div className="p-4 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50/50 dark:bg-zinc-900/50 flex items-center justify-between">
-            <h3 className="font-bold text-sm text-zinc-900 dark:text-zinc-50">
+          <div className="p-4 rounded-xl border border-border bg-muted/30 flex items-center justify-between">
+            <h3 className="font-bold text-sm text-foreground">
               {monthNames[month]} {year}
             </h3>
 
             <div className="flex items-center gap-2">
               <button 
                 onClick={handlePrevMonth}
-                className="p-1.5 border border-zinc-200 dark:border-zinc-850 rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-900 cursor-pointer"
+                className="p-1.5 border border-border rounded-lg hover:bg-muted cursor-pointer text-muted-foreground"
               >
-                <ChevronLeft className="w-4 h-4 text-zinc-650 dark:text-zinc-350" />
+                <ChevronLeft className="w-4 h-4" />
               </button>
               <button
                 onClick={() => setCurrentDate(new Date(today.getFullYear(), today.getMonth(), 1))}
-                className="px-3 py-1.5 border border-zinc-200 dark:border-zinc-850 rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-900 text-[10px] font-bold uppercase cursor-pointer text-zinc-650 dark:text-zinc-350"
+                className="px-3 py-1.5 border border-border rounded-lg hover:bg-muted text-[10px] font-bold uppercase cursor-pointer text-muted-foreground"
               >
                 Today
               </button>
               <button 
                 onClick={handleNextMonth}
-                className="p-1.5 border border-zinc-200 dark:border-zinc-850 rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-900 cursor-pointer"
+                className="p-1.5 border border-border rounded-lg hover:bg-muted cursor-pointer text-muted-foreground"
               >
-                <ChevronRight className="w-4 h-4 text-zinc-650 dark:text-zinc-350" />
+                <ChevronRight className="w-4 h-4" />
               </button>
             </div>
           </div>
 
           {/* Calendar Grid */}
-          <div className="border border-zinc-200 dark:border-zinc-800 rounded-2xl overflow-hidden bg-white dark:bg-zinc-950 shadow-sm flex-1 flex flex-col">
+          <div className="border border-border rounded-2xl overflow-hidden bg-card text-card-foreground shadow-sm flex-1 flex flex-col">
             {/* Days of Week Header */}
-            <div className="grid grid-cols-7 border-b border-zinc-200 dark:border-zinc-800 bg-zinc-50/50 dark:bg-zinc-900/20">
+            <div className="grid grid-cols-7 border-b border-border bg-muted/40">
               {daysOfWeek.map((day, idx) => (
-                <div key={idx} className="p-3 text-center text-[10px] font-bold text-zinc-400 dark:text-zinc-500 uppercase tracking-wider border-r last:border-r-0 border-zinc-200 dark:border-zinc-800">
+                <div key={idx} className="p-3 text-center text-[10px] font-bold text-muted-foreground uppercase tracking-wider border-r last:border-r-0 border-border">
                   {day}
                 </div>
               ))}
@@ -350,7 +350,7 @@ export default function StaffPage() {
             {/* Calendar Cells */}
             <div className="grid grid-cols-7 grid-rows-6 flex-1">
               {loading ? (
-                <div className="col-span-full row-span-full flex flex-col items-center justify-center gap-3 text-zinc-400 py-32">
+                <div className="col-span-full row-span-full flex flex-col items-center justify-center gap-3 text-muted-foreground py-32">
                   <RefreshCw className="w-8 h-8 animate-spin text-cyan-500" />
                   <span className="text-xs font-semibold">Generating availability grids...</span>
                 </div>
@@ -376,15 +376,15 @@ export default function StaffPage() {
                         setIsSchedulerOpen(true);
                       }}
                       className={cn(
-                        "p-2.5 border-r border-b last:border-r-0 border-zinc-200 dark:border-zinc-800/80 flex flex-col justify-between min-h-[90px] cursor-pointer hover:bg-zinc-50/50 dark:hover:bg-zinc-900/10 transition-colors relative",
-                        !cell.isCurrentMonth && "bg-zinc-50/20 dark:bg-zinc-950/20 opacity-40",
+                        "p-2.5 border-r border-b last:border-r-0 border-border flex flex-col justify-between min-h-[90px] cursor-pointer hover:bg-muted/40 transition-colors relative",
+                        !cell.isCurrentMonth && "bg-muted/20 opacity-40",
                         isToday && "ring-1 ring-inset ring-cyan-500 bg-cyan-500/5"
                       )}
                     >
                       {/* Day Label */}
                       <span className={cn(
                         "text-[10px] font-bold rounded-full w-5 h-5 flex items-center justify-center",
-                        isToday ? "bg-cyan-500 text-white" : "text-zinc-550 dark:text-zinc-400"
+                        isToday ? "bg-cyan-500 text-white" : "text-muted-foreground"
                       )}>
                         {cell.day}
                       </span>
@@ -400,8 +400,8 @@ export default function StaffPage() {
                               className={cn(
                                 "px-1.5 py-0.5 rounded text-[8px] font-semibold truncate block max-w-full border",
                                 isLeave 
-                                  ? "bg-rose-50 text-rose-700 dark:bg-rose-950/10 dark:text-rose-400 border-rose-500/10" 
-                                  : "bg-blue-50 text-blue-700 dark:bg-blue-950/10 dark:text-blue-400 border-blue-500/10"
+                                  ? "bg-rose-50 text-rose-700 dark:bg-rose-955/20 dark:text-rose-400 border-rose-500/20" 
+                                  : "bg-blue-50 text-blue-700 dark:bg-blue-955/20 dark:text-blue-400 border-blue-500/20"
                               )}
                             >
                               {a.member.name.split(" ")[0]} ({isLeave ? "Leave" : "Site"})
@@ -409,7 +409,7 @@ export default function StaffPage() {
                           );
                         })}
                         {dayAvailabilities.length > 3 && (
-                          <div className="text-[7px] text-zinc-400 dark:text-zinc-500 font-bold pl-1 uppercase">
+                          <div className="text-[7px] text-muted-foreground font-bold pl-1 uppercase">
                             + {dayAvailabilities.length - 3} more crew
                           </div>
                         )}
@@ -426,28 +426,28 @@ export default function StaffPage() {
       {/* Scheduler Modal */}
       {isSchedulerOpen && selectedDate && (
         <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-          <div className="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 max-w-md w-full rounded-2xl shadow-xl overflow-hidden p-6 space-y-4 animate-scaleUp">
+          <div className="bg-card text-card-foreground border border-border max-w-md w-full rounded-2xl shadow-xl overflow-hidden p-6 space-y-4 animate-scaleUp">
             <div className="flex items-center justify-between">
-              <h3 className="font-bold text-lg text-zinc-900 dark:text-zinc-50 flex items-center gap-2">
+              <h3 className="font-bold text-lg text-foreground flex items-center gap-2">
                 <CalendarDays className="w-5 h-5 text-cyan-500" />
                 <span>Override Schedule</span>
               </h3>
-              <button onClick={() => setIsSchedulerOpen(false)} className="p-1 rounded-lg text-zinc-400 hover:bg-zinc-50 dark:hover:bg-zinc-950">
+              <button onClick={() => setIsSchedulerOpen(false)} className="p-1 rounded-lg text-zinc-400 hover:bg-muted">
                 <X className="w-5 h-5" />
               </button>
             </div>
 
-            <p className="text-zinc-500 text-xs">
-              Configure deployment status overrides for date: <strong className="font-bold font-mono text-zinc-800 dark:text-zinc-200">{selectedDate.toLocaleDateString(undefined, { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</strong>
+            <p className="text-muted-foreground text-xs">
+              Configure deployment status overrides for date: <strong className="font-bold font-mono text-foreground">{selectedDate.toLocaleDateString(undefined, { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</strong>
             </p>
 
             <form onSubmit={handleScheduleAvailability} className="space-y-4 pt-2">
               <div className="space-y-1">
-                <label className="text-xs font-semibold text-zinc-500 block">Select Staff Crew</label>
+                <label className="text-xs font-semibold text-muted-foreground block">Select Staff Crew</label>
                 <select
                   value={selectedUserId}
                   onChange={(e) => setSelectedUserId(e.target.value)}
-                  className="w-full px-3 py-2 bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-xl text-xs focus:outline-none focus:ring-1 focus:ring-cyan-500"
+                  className="w-full px-3 py-2 bg-background text-foreground border border-border rounded-xl text-xs focus:outline-none focus:ring-1 focus:ring-cyan-500"
                 >
                   {staff.map((u) => (
                     <option key={u.id} value={u.id}>{u.name} ({u.role})</option>
@@ -456,11 +456,11 @@ export default function StaffPage() {
               </div>
 
               <div className="space-y-1">
-                <label className="text-xs font-semibold text-zinc-500 block">Availability Override Status</label>
+                <label className="text-xs font-semibold text-muted-foreground block">Availability Override Status</label>
                 <select
                   value={selectedStatus}
                   onChange={(e) => setSelectedStatus(e.target.value)}
-                  className="w-full px-3 py-2 bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-xl text-xs focus:outline-none focus:ring-1 focus:ring-cyan-500"
+                  className="w-full px-3 py-2 bg-background text-foreground border border-border rounded-xl text-xs focus:outline-none focus:ring-1 focus:ring-cyan-500"
                 >
                   <option value="AVAILABLE">AVAILABLE (Idle / Back to Pool)</option>
                   <option value="ON_LEAVE">ON LEAVE (Vacation / Sick / Off)</option>
@@ -469,13 +469,13 @@ export default function StaffPage() {
               </div>
 
               <div className="space-y-1">
-                <label className="text-xs font-semibold text-zinc-500 block">Notes & Details</label>
+                <label className="text-xs font-semibold text-muted-foreground block">Notes & Details</label>
                 <textarea
                   placeholder="e.g. Annual summer leave, medical appointment..."
                   value={notes}
                   onChange={(e) => setNotes(e.target.value)}
                   rows={3}
-                  className="w-full px-3 py-2 bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-xl text-xs focus:outline-none focus:ring-1 focus:ring-cyan-500 resize-none"
+                  className="w-full px-3 py-2 bg-background text-foreground border border-border rounded-xl text-xs focus:outline-none focus:ring-1 focus:ring-cyan-500 resize-none"
                 />
               </div>
 
@@ -483,7 +483,7 @@ export default function StaffPage() {
                 <button
                   type="button"
                   onClick={() => setIsSchedulerOpen(false)}
-                  className="flex-1 px-4 py-2.5 border border-zinc-200 dark:border-zinc-800 rounded-xl text-xs font-bold text-zinc-700 dark:text-zinc-300 hover:bg-zinc-50 dark:hover:bg-zinc-950"
+                  className="flex-1 px-4 py-2.5 border border-border rounded-xl text-xs font-bold text-muted-foreground hover:bg-muted"
                 >
                   Cancel
                 </button>

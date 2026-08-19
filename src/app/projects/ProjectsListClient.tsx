@@ -283,13 +283,13 @@ export default function ProjectsListClient({
       <div className="flex flex-col sm:flex-row gap-4 items-center justify-between">
         {/* Search Input */}
         <div className="relative flex-1 w-full">
-          <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-400" />
+          <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-450" />
           <input
             type="text"
             placeholder="Search projects by name, code, client..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full pl-10 pr-4 py-2.5 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-xl text-sm focus:outline-none focus:ring-1 focus:ring-cyan-500 placeholder-zinc-400"
+            className="w-full pl-10 pr-4 py-2.5 bg-background text-foreground border border-border rounded-xl text-sm focus:outline-none focus:ring-1 focus:ring-cyan-500 placeholder-zinc-400"
           />
         </div>
 
@@ -300,7 +300,7 @@ export default function ProjectsListClient({
             <select
               value={statusFilter}
               onChange={(e) => setStatusFilter(e.target.value)}
-              className="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-1 focus:ring-cyan-500 text-zinc-700 dark:text-zinc-300"
+              className="bg-background border border-border rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-1 focus:ring-cyan-500 text-foreground"
             >
               <option value="ALL">All Stages</option>
               <option value="INQUIRY">Inquiry</option>
@@ -329,31 +329,31 @@ export default function ProjectsListClient({
           filteredProjects.map((project) => (
             <div 
               key={project.id}
-              className="p-6 rounded-2xl bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 shadow-sm flex flex-col justify-between hover:shadow-md hover:border-zinc-300 dark:hover:border-zinc-700 transition-all duration-200"
+              className="p-6 rounded-2xl bg-card text-card-foreground border border-border shadow-sm flex flex-col justify-between hover:shadow-md hover:border-border transition-all duration-200"
             >
               {/* Top Row: Code and Status */}
               <div className="space-y-2">
                 <div className="flex items-center justify-between">
-                  <code className="text-xs font-mono font-bold text-zinc-400 bg-zinc-50 dark:bg-zinc-950 px-2 py-0.5 rounded border border-zinc-100 dark:border-zinc-800">
+                  <code className="text-xs font-mono font-bold text-muted-foreground bg-muted px-2 py-0.5 rounded border border-border">
                     {project.projectCode}
                   </code>
                   {getStatusBadge(project.status)}
                 </div>
                 
                 {/* Project Name */}
-                <h3 className="text-lg font-bold text-zinc-900 dark:text-zinc-50 leading-snug">
+                <h3 className="text-lg font-bold text-foreground leading-snug">
                   {project.name}
                 </h3>
                 
                 {/* Client Metadata */}
-                <p className="text-sm text-zinc-500 dark:text-zinc-400 font-medium">
+                <p className="text-sm text-muted-foreground font-medium">
                   Client: {project.client.name}
                 </p>
               </div>
 
               {/* Schedule and Details */}
-              <div className="mt-5 space-y-3 pt-5 border-t border-zinc-100 dark:border-zinc-800">
-                <div className="flex items-center gap-2 text-xs text-zinc-600 dark:text-zinc-400">
+              <div className="mt-5 space-y-3 pt-5 border-t border-border">
+                <div className="flex items-center gap-2 text-xs text-muted-foreground">
                   <Calendar className="w-4 h-4 text-zinc-400" />
                   <span>
                     Shoot Date: {new Date(project.shootDate).toLocaleDateString(undefined, {
@@ -365,13 +365,13 @@ export default function ProjectsListClient({
                   </span>
                 </div>
                 {project.reportingTime && (
-                  <div className="flex items-center gap-2 text-xs text-zinc-600 dark:text-zinc-400">
+                  <div className="flex items-center gap-2 text-xs text-muted-foreground">
                     <Clock className="w-4 h-4 text-zinc-400" />
                     <span>Call Time: {project.reportingTime}</span>
                   </div>
                 )}
                 {project.siteDetails && (
-                  <div className="flex items-center gap-2 text-xs text-zinc-600 dark:text-zinc-400">
+                  <div className="flex items-center gap-2 text-xs text-muted-foreground">
                     <MapPin className="w-4 h-4 text-zinc-400 shrink-0" />
                     <span className="truncate">Site: {project.siteDetails.address}</span>
                   </div>
@@ -379,27 +379,27 @@ export default function ProjectsListClient({
               </div>
 
               {/* Team Assignments */}
-              <div className="mt-5 p-4 rounded-xl bg-zinc-50/50 dark:bg-zinc-950/40 border border-zinc-100 dark:border-zinc-850 space-y-2.5">
-                <span className="text-[10px] text-zinc-400 dark:text-zinc-500 uppercase tracking-wider font-bold block">Assigned Crew</span>
+              <div className="mt-5 p-4 rounded-xl bg-muted/40 border border-border space-y-2.5">
+                <span className="text-[10px] text-muted-foreground uppercase tracking-wider font-bold block">Assigned Crew</span>
                 <div className="grid grid-cols-3 gap-2">
                   {/* Stylist */}
                   <div className="flex flex-col gap-0.5">
-                    <span className="text-[9px] text-zinc-400 uppercase">Stylist</span>
-                    <span className="text-xs font-semibold text-zinc-700 dark:text-zinc-300 truncate">
+                    <span className="text-[9px] text-muted-foreground uppercase">Stylist</span>
+                    <span className="text-xs font-semibold text-foreground truncate">
                       {project.leadStylist ? project.leadStylist.name.split(" ")[0] : "Unassigned"}
                     </span>
                   </div>
                   {/* Packer */}
                   <div className="flex flex-col gap-0.5">
-                    <span className="text-[9px] text-zinc-400 uppercase">Packer</span>
-                    <span className="text-xs font-semibold text-zinc-700 dark:text-zinc-300 truncate">
+                    <span className="text-[9px] text-muted-foreground uppercase">Packer</span>
+                    <span className="text-xs font-semibold text-foreground truncate">
                       {project.leadPacker ? project.leadPacker.name.split(" ")[0] : "Unassigned"}
                     </span>
                   </div>
                   {/* Driver */}
                   <div className="flex flex-col gap-0.5">
-                    <span className="text-[9px] text-zinc-400 uppercase">Driver</span>
-                    <span className="text-xs font-semibold text-zinc-700 dark:text-zinc-300 truncate">
+                    <span className="text-[9px] text-muted-foreground uppercase">Driver</span>
+                    <span className="text-xs font-semibold text-foreground truncate">
                       {project.leadDriver ? project.leadDriver.name.split(" ")[0] : "Unassigned"}
                     </span>
                   </div>
@@ -407,12 +407,12 @@ export default function ProjectsListClient({
               </div>
 
               {/* Action Buttons */}
-              <div className="mt-6 flex items-center justify-between pt-4 border-t border-zinc-100 dark:border-zinc-800">
+              <div className="mt-6 flex items-center justify-between pt-4 border-t border-border">
                 <button
                   onClick={() => handleOpenEdit(project)}
-                  className="inline-flex items-center gap-1.5 px-3 py-2 border border-zinc-200 dark:border-zinc-850 rounded-xl text-zinc-650 dark:text-zinc-350 hover:bg-zinc-50 dark:hover:bg-zinc-950 font-bold text-xs cursor-pointer transition-colors"
+                  className="inline-flex items-center gap-1.5 px-3 py-2 border border-border rounded-xl text-muted-foreground hover:bg-muted font-bold text-xs cursor-pointer transition-colors"
                 >
-                  <Edit className="w-3.5 h-3.5" />
+                  <Edit className="w-3.5 h-3.5 text-cyan-500" />
                   <span>Edit Details</span>
                 </button>
 
@@ -427,10 +427,10 @@ export default function ProjectsListClient({
             </div>
           ))
         ) : (
-          <div className="col-span-full py-16 text-center border border-dashed border-zinc-200 dark:border-zinc-800 rounded-3xl bg-white/50 dark:bg-zinc-900/10">
+          <div className="col-span-full py-16 text-center border border-dashed border-border rounded-3xl bg-card text-card-foreground">
             <Briefcase className="w-10 h-10 text-zinc-300 dark:text-zinc-700 mx-auto mb-3" />
-            <h3 className="font-bold text-zinc-700 dark:text-zinc-300">No projects found</h3>
-            <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-1">Try modifying your search criteria or status filter.</p>
+            <h3 className="font-bold text-foreground">No projects found</h3>
+            <p className="text-xs text-muted-foreground mt-1">Try modifying your search criteria or status filter.</p>
           </div>
         )}
       </div>
@@ -438,13 +438,13 @@ export default function ProjectsListClient({
       {/* Create Project Modal */}
       {isCreateOpen && (
         <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-          <div className="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 max-w-lg w-full rounded-2xl shadow-xl overflow-hidden p-6 space-y-4 animate-scaleUp">
+          <div className="bg-card text-card-foreground border border-border max-w-lg w-full rounded-2xl shadow-xl overflow-hidden p-6 space-y-4 animate-scaleUp">
             <div className="flex items-center justify-between">
-              <h3 className="font-bold text-lg text-zinc-900 dark:text-zinc-50 flex items-center gap-2">
+              <h3 className="font-bold text-lg text-foreground flex items-center gap-2">
                 <Briefcase className="w-5 h-5 text-cyan-500" />
                 <span>Create Production Project</span>
               </h3>
-              <button onClick={() => setIsCreateOpen(false)} className="p-1 rounded-lg text-zinc-400 hover:bg-zinc-50 dark:hover:bg-zinc-950">
+              <button onClick={() => setIsCreateOpen(false)} className="p-1 rounded-lg text-zinc-400 hover:bg-muted">
                 <X className="w-5 h-5" />
               </button>
             </div>
@@ -452,37 +452,37 @@ export default function ProjectsListClient({
             <form onSubmit={handleCreateProject} className="space-y-4 pt-2">
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-1">
-                  <label className="text-xs font-semibold text-zinc-500 block">Project Name</label>
+                  <label className="text-xs font-semibold text-muted-foreground block">Project Name</label>
                   <input
                     type="text"
                     required
                     placeholder="e.g. Vogue Summer Cover"
                     value={name}
                     onChange={(e) => setName(e.target.value)}
-                    className="w-full px-3 py-2 bg-white dark:bg-zinc-955 border border-zinc-200 dark:border-zinc-800 rounded-xl text-xs focus:outline-none focus:ring-1 focus:ring-cyan-500"
+                    className="w-full px-3 py-2 bg-background text-foreground border border-border rounded-xl text-xs focus:outline-none focus:ring-1 focus:ring-cyan-500"
                   />
                 </div>
 
                 <div className="space-y-1">
-                  <label className="text-xs font-semibold text-zinc-500 block">Project Code</label>
+                  <label className="text-xs font-semibold text-muted-foreground block">Project Code</label>
                   <input
                     type="text"
                     required
                     placeholder="e.g. PRJ-9901"
                     value={projectCode}
                     onChange={(e) => setProjectCode(e.target.value)}
-                    className="w-full px-3 py-2 bg-white dark:bg-zinc-955 border border-zinc-200 dark:border-zinc-800 rounded-xl text-xs focus:outline-none focus:ring-1 focus:ring-cyan-500 font-mono uppercase"
+                    className="w-full px-3 py-2 bg-background text-foreground border border-border rounded-xl text-xs focus:outline-none focus:ring-1 focus:ring-cyan-500 font-mono uppercase"
                   />
                 </div>
               </div>
 
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-1">
-                  <label className="text-xs font-semibold text-zinc-500 block">Client Partner</label>
+                  <label className="text-xs font-semibold text-muted-foreground block">Client Partner</label>
                   <select
                     value={clientId}
                     onChange={(e) => setClientId(e.target.value)}
-                    className="w-full px-3 py-2 bg-white dark:bg-zinc-955 border border-zinc-200 dark:border-zinc-800 rounded-xl text-xs focus:outline-none focus:ring-1 focus:ring-cyan-500"
+                    className="w-full px-3 py-2 bg-background text-foreground border border-border rounded-xl text-xs focus:outline-none focus:ring-1 focus:ring-cyan-500"
                   >
                     {clients.map((c) => (
                       <option key={c.id} value={c.id}>{c.name}</option>
@@ -491,11 +491,11 @@ export default function ProjectsListClient({
                 </div>
 
                 <div className="space-y-1">
-                  <label className="text-xs font-semibold text-zinc-500 block">Production Stage</label>
+                  <label className="text-xs font-semibold text-muted-foreground block">Production Stage</label>
                   <select
                     value={status}
                     onChange={(e) => setStatus(e.target.value)}
-                    className="w-full px-3 py-2 bg-white dark:bg-zinc-955 border border-zinc-200 dark:border-zinc-800 rounded-xl text-xs focus:outline-none focus:ring-1 focus:ring-cyan-500"
+                    className="w-full px-3 py-2 bg-background text-foreground border border-border rounded-xl text-xs focus:outline-none focus:ring-1 focus:ring-cyan-500"
                   >
                     <option value="INQUIRY">INQUIRY</option>
                     <option value="BOOKED">BOOKED</option>
@@ -510,39 +510,39 @@ export default function ProjectsListClient({
 
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-1">
-                  <label className="text-xs font-semibold text-zinc-500 block">Shoot Date</label>
+                  <label className="text-xs font-semibold text-muted-foreground block">Shoot Date</label>
                   <input
                     type="date"
                     required
                     value={shootDate}
                     onChange={(e) => setShootDate(e.target.value)}
-                    className="w-full px-3 py-2 bg-white dark:bg-zinc-955 border border-zinc-200 dark:border-zinc-800 rounded-xl text-xs focus:outline-none focus:ring-1 focus:ring-cyan-500 font-mono"
+                    className="w-full px-3 py-2 bg-background text-foreground border border-border rounded-xl text-xs focus:outline-none focus:ring-1 focus:ring-cyan-500 font-mono"
                   />
                 </div>
 
                 <div className="space-y-1">
-                  <label className="text-xs font-semibold text-zinc-500 block">Reporting Time (Call Time)</label>
+                  <label className="text-xs font-semibold text-muted-foreground block">Reporting Time (Call Time)</label>
                   <input
                     type="text"
                     placeholder="e.g. 08:30 AM"
                     value={reportingTime}
                     onChange={(e) => setReportingTime(e.target.value)}
-                    className="w-full px-3 py-2 bg-white dark:bg-zinc-955 border border-zinc-200 dark:border-zinc-800 rounded-xl text-xs focus:outline-none focus:ring-1 focus:ring-cyan-500 font-mono"
+                    className="w-full px-3 py-2 bg-background text-foreground border border-border rounded-xl text-xs focus:outline-none focus:ring-1 focus:ring-cyan-500 font-mono"
                   />
                 </div>
               </div>
 
               {/* Crew dropdowns */}
-              <div className="border-t border-zinc-150 dark:border-zinc-850 pt-4 space-y-4">
-                <h4 className="text-xs font-bold text-zinc-800 dark:text-zinc-200 uppercase tracking-wide">Assign Production Crew</h4>
+              <div className="border-t border-border pt-4 space-y-4">
+                <h4 className="text-xs font-bold text-foreground uppercase tracking-wide">Assign Production Crew</h4>
                 
                 <div className="grid grid-cols-3 gap-4">
                   <div className="space-y-1">
-                    <label className="text-[10px] font-semibold text-zinc-400 block uppercase">Lead Stylist</label>
+                    <label className="text-[10px] font-semibold text-muted-foreground block uppercase">Lead Stylist</label>
                     <select
                       value={leadStylistId}
                       onChange={(e) => setLeadStylistId(e.target.value)}
-                      className="w-full px-2 py-1.5 bg-white dark:bg-zinc-955 border border-zinc-200 dark:border-zinc-800 rounded-xl text-[11px] focus:outline-none focus:ring-1 focus:ring-cyan-500"
+                      className="w-full px-2 py-1.5 bg-background text-foreground border border-border rounded-xl text-[11px] focus:outline-none focus:ring-1 focus:ring-cyan-500"
                     >
                       <option value="">Unassigned</option>
                       {stylistsList.map((s) => (
@@ -552,11 +552,11 @@ export default function ProjectsListClient({
                   </div>
 
                   <div className="space-y-1">
-                    <label className="text-[10px] font-semibold text-zinc-400 block uppercase">Lead Packer</label>
+                    <label className="text-[10px] font-semibold text-muted-foreground block uppercase">Lead Packer</label>
                     <select
                       value={leadPackerId}
                       onChange={(e) => setLeadPackerId(e.target.value)}
-                      className="w-full px-2 py-1.5 bg-white dark:bg-zinc-955 border border-zinc-200 dark:border-zinc-800 rounded-xl text-[11px] focus:outline-none focus:ring-1 focus:ring-cyan-500"
+                      className="w-full px-2 py-1.5 bg-background text-foreground border border-border rounded-xl text-[11px] focus:outline-none focus:ring-1 focus:ring-cyan-500"
                     >
                       <option value="">Unassigned</option>
                       {packersList.map((s) => (
@@ -566,11 +566,11 @@ export default function ProjectsListClient({
                   </div>
 
                   <div className="space-y-1">
-                    <label className="text-[10px] font-semibold text-zinc-400 block uppercase">Lead Driver</label>
+                    <label className="text-[10px] font-semibold text-muted-foreground block uppercase">Lead Driver</label>
                     <select
                       value={leadDriverId}
                       onChange={(e) => setLeadDriverId(e.target.value)}
-                      className="w-full px-2 py-1.5 bg-white dark:bg-zinc-955 border border-zinc-200 dark:border-zinc-800 rounded-xl text-[11px] focus:outline-none focus:ring-1 focus:ring-cyan-500"
+                      className="w-full px-2 py-1.5 bg-background text-foreground border border-border rounded-xl text-[11px] focus:outline-none focus:ring-1 focus:ring-cyan-500"
                     >
                       <option value="">Unassigned</option>
                       {driversList.map((s) => (
@@ -585,7 +585,7 @@ export default function ProjectsListClient({
                 <button
                   type="button"
                   onClick={() => setIsCreateOpen(false)}
-                  className="flex-1 px-4 py-2.5 border border-zinc-200 dark:border-zinc-800 rounded-xl text-xs font-bold text-zinc-700 dark:text-zinc-300 hover:bg-zinc-50 dark:hover:bg-zinc-950"
+                  className="flex-1 px-4 py-2.5 border border-border rounded-xl text-xs font-bold text-muted-foreground hover:bg-muted"
                 >
                   Cancel
                 </button>
@@ -606,13 +606,13 @@ export default function ProjectsListClient({
       {/* Edit Project Modal */}
       {isEditOpen && selectedProject && (
         <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-          <div className="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 max-w-lg w-full rounded-2xl shadow-xl overflow-hidden p-6 space-y-4 animate-scaleUp">
+          <div className="bg-card text-card-foreground border border-border max-w-lg w-full rounded-2xl shadow-xl overflow-hidden p-6 space-y-4 animate-scaleUp">
             <div className="flex items-center justify-between">
-              <h3 className="font-bold text-lg text-zinc-900 dark:text-zinc-50 flex items-center gap-2">
+              <h3 className="font-bold text-lg text-foreground flex items-center gap-2">
                 <Edit className="w-5 h-5 text-cyan-500" />
                 <span>Modify Project Details</span>
               </h3>
-              <button onClick={() => setIsEditOpen(false)} className="p-1 rounded-lg text-zinc-400 hover:bg-zinc-50 dark:hover:bg-zinc-950">
+              <button onClick={() => setIsEditOpen(false)} className="p-1 rounded-lg text-zinc-400 hover:bg-muted">
                 <X className="w-5 h-5" />
               </button>
             </div>
@@ -620,35 +620,35 @@ export default function ProjectsListClient({
             <form onSubmit={handleUpdateProject} className="space-y-4 pt-2">
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-1">
-                  <label className="text-xs font-semibold text-zinc-500 block">Project Name</label>
+                  <label className="text-xs font-semibold text-muted-foreground block">Project Name</label>
                   <input
                     type="text"
                     required
                     value={name}
                     onChange={(e) => setName(e.target.value)}
-                    className="w-full px-3 py-2 bg-white dark:bg-zinc-955 border border-zinc-200 dark:border-zinc-800 rounded-xl text-xs focus:outline-none focus:ring-1 focus:ring-cyan-500"
+                    className="w-full px-3 py-2 bg-background text-foreground border border-border rounded-xl text-xs focus:outline-none focus:ring-1 focus:ring-cyan-500"
                   />
                 </div>
 
                 <div className="space-y-1">
-                  <label className="text-xs font-semibold text-zinc-500 block">Project Code</label>
+                  <label className="text-xs font-semibold text-muted-foreground block">Project Code</label>
                   <input
                     type="text"
                     required
                     value={projectCode}
                     onChange={(e) => setProjectCode(e.target.value)}
-                    className="w-full px-3 py-2 bg-white dark:bg-zinc-955 border border-zinc-200 dark:border-zinc-800 rounded-xl text-xs focus:outline-none focus:ring-1 focus:ring-cyan-500 font-mono uppercase"
+                    className="w-full px-3 py-2 bg-background text-foreground border border-border rounded-xl text-xs focus:outline-none focus:ring-1 focus:ring-cyan-500 font-mono uppercase"
                   />
                 </div>
               </div>
 
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-1">
-                  <label className="text-xs font-semibold text-zinc-500 block">Client Partner</label>
+                  <label className="text-xs font-semibold text-muted-foreground block">Client Partner</label>
                   <select
                     value={clientId}
                     onChange={(e) => setClientId(e.target.value)}
-                    className="w-full px-3 py-2 bg-white dark:bg-zinc-955 border border-zinc-200 dark:border-zinc-800 rounded-xl text-xs focus:outline-none focus:ring-1 focus:ring-cyan-500"
+                    className="w-full px-3 py-2 bg-background text-foreground border border-border rounded-xl text-xs focus:outline-none focus:ring-1 focus:ring-cyan-500"
                   >
                     {clients.map((c) => (
                       <option key={c.id} value={c.id}>{c.name}</option>
@@ -657,11 +657,11 @@ export default function ProjectsListClient({
                 </div>
 
                 <div className="space-y-1">
-                  <label className="text-xs font-semibold text-zinc-500 block">Production Stage</label>
+                  <label className="text-xs font-semibold text-muted-foreground block">Production Stage</label>
                   <select
                     value={status}
                     onChange={(e) => setStatus(e.target.value)}
-                    className="w-full px-3 py-2 bg-white dark:bg-zinc-955 border border-zinc-200 dark:border-zinc-800 rounded-xl text-xs focus:outline-none focus:ring-1 focus:ring-cyan-500"
+                    className="w-full px-3 py-2 bg-background text-foreground border border-border rounded-xl text-xs focus:outline-none focus:ring-1 focus:ring-cyan-500"
                   >
                     <option value="INQUIRY">INQUIRY</option>
                     <option value="BOOKED">BOOKED</option>
@@ -676,38 +676,38 @@ export default function ProjectsListClient({
 
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-1">
-                  <label className="text-xs font-semibold text-zinc-500 block">Shoot Date</label>
+                  <label className="text-xs font-semibold text-muted-foreground block">Shoot Date</label>
                   <input
                     type="date"
                     required
                     value={shootDate}
                     onChange={(e) => setShootDate(e.target.value)}
-                    className="w-full px-3 py-2 bg-white dark:bg-zinc-955 border border-zinc-200 dark:border-zinc-800 rounded-xl text-xs focus:outline-none focus:ring-1 focus:ring-cyan-500 font-mono"
+                    className="w-full px-3 py-2 bg-background text-foreground border border-border rounded-xl text-xs focus:outline-none focus:ring-1 focus:ring-cyan-500 font-mono"
                   />
                 </div>
 
                 <div className="space-y-1">
-                  <label className="text-xs font-semibold text-zinc-500 block">Reporting Time (Call Time)</label>
+                  <label className="text-xs font-semibold text-muted-foreground block">Reporting Time (Call Time)</label>
                   <input
                     type="text"
                     value={reportingTime}
                     onChange={(e) => setReportingTime(e.target.value)}
-                    className="w-full px-3 py-2 bg-white dark:bg-zinc-955 border border-zinc-200 dark:border-zinc-800 rounded-xl text-xs focus:outline-none focus:ring-1 focus:ring-cyan-500 font-mono"
+                    className="w-full px-3 py-2 bg-background text-foreground border border-border rounded-xl text-xs focus:outline-none focus:ring-1 focus:ring-cyan-500 font-mono"
                   />
                 </div>
               </div>
 
               {/* Crew dropdowns */}
-              <div className="border-t border-zinc-150 dark:border-zinc-850 pt-4 space-y-4">
-                <h4 className="text-xs font-bold text-zinc-800 dark:text-zinc-200 uppercase tracking-wide">Assign Production Crew</h4>
+              <div className="border-t border-border pt-4 space-y-4">
+                <h4 className="text-xs font-bold text-foreground uppercase tracking-wide">Assign Production Crew</h4>
                 
                 <div className="grid grid-cols-3 gap-4">
                   <div className="space-y-1">
-                    <label className="text-[10px] font-semibold text-zinc-400 block uppercase">Lead Stylist</label>
+                    <label className="text-[10px] font-semibold text-muted-foreground block uppercase">Lead Stylist</label>
                     <select
                       value={leadStylistId}
                       onChange={(e) => setLeadStylistId(e.target.value)}
-                      className="w-full px-2 py-1.5 bg-white dark:bg-zinc-955 border border-zinc-200 dark:border-zinc-800 rounded-xl text-[11px] focus:outline-none focus:ring-1 focus:ring-cyan-500"
+                      className="w-full px-2 py-1.5 bg-background text-foreground border border-border rounded-xl text-[11px] focus:outline-none focus:ring-1 focus:ring-cyan-500"
                     >
                       <option value="">Unassigned</option>
                       {stylistsList.map((s) => (
@@ -717,11 +717,11 @@ export default function ProjectsListClient({
                   </div>
 
                   <div className="space-y-1">
-                    <label className="text-[10px] font-semibold text-zinc-400 block uppercase">Lead Packer</label>
+                    <label className="text-[10px] font-semibold text-muted-foreground block uppercase">Lead Packer</label>
                     <select
                       value={leadPackerId}
                       onChange={(e) => setLeadPackerId(e.target.value)}
-                      className="w-full px-2 py-1.5 bg-white dark:bg-zinc-955 border border-zinc-200 dark:border-zinc-800 rounded-xl text-[11px] focus:outline-none focus:ring-1 focus:ring-cyan-500"
+                      className="w-full px-2 py-1.5 bg-background text-foreground border border-border rounded-xl text-[11px] focus:outline-none focus:ring-1 focus:ring-cyan-500"
                     >
                       <option value="">Unassigned</option>
                       {packersList.map((s) => (
@@ -731,11 +731,11 @@ export default function ProjectsListClient({
                   </div>
 
                   <div className="space-y-1">
-                    <label className="text-[10px] font-semibold text-zinc-400 block uppercase">Lead Driver</label>
+                    <label className="text-[10px] font-semibold text-muted-foreground block uppercase">Lead Driver</label>
                     <select
                       value={leadDriverId}
                       onChange={(e) => setLeadDriverId(e.target.value)}
-                      className="w-full px-2 py-1.5 bg-white dark:bg-zinc-955 border border-zinc-200 dark:border-zinc-800 rounded-xl text-[11px] focus:outline-none focus:ring-1 focus:ring-cyan-500"
+                      className="w-full px-2 py-1.5 bg-background text-foreground border border-border rounded-xl text-[11px] focus:outline-none focus:ring-1 focus:ring-cyan-500"
                     >
                       <option value="">Unassigned</option>
                       {driversList.map((s) => (
@@ -750,7 +750,7 @@ export default function ProjectsListClient({
                 <button
                   type="button"
                   onClick={() => setIsEditOpen(false)}
-                  className="flex-1 px-4 py-2.5 border border-zinc-200 dark:border-zinc-800 rounded-xl text-xs font-bold text-zinc-700 dark:text-zinc-300 hover:bg-zinc-50 dark:hover:bg-zinc-950"
+                  className="flex-1 px-4 py-2.5 border border-border rounded-xl text-xs font-bold text-muted-foreground hover:bg-muted"
                 >
                   Cancel
                 </button>

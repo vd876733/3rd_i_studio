@@ -431,12 +431,14 @@ export default function ProjectDetailClient({
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 animate-fadeIn">
             {/* Left Col: Location, Schedule & Parking notes */}
             <div className="md:col-span-2 space-y-6">
-              {/* Site Details Card */}
-              <div className="p-6 rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900/40 shadow-sm space-y-5">
-                <h3 className="font-bold text-sm text-zinc-900 dark:text-zinc-50 flex items-center gap-2">
-                  <MapPin className="w-4.5 h-4.5 text-cyan-500" />
-                  <span>Shoot Site Location</span>
-                </h3>
+              {/* Project Quick Overview */}
+              <div className="p-6 rounded-2xl border border-border bg-card text-card-foreground shadow-sm space-y-5">
+                <div className="flex items-center justify-between">
+                  <h3 className="font-bold text-sm text-zinc-900 dark:text-zinc-50 flex items-center gap-2">
+                    <MapPin className="w-4.5 h-4.5 text-cyan-500" />
+                    <span>Shoot Site Location</span>
+                  </h3>
+                </div>
 
                 {project.siteDetails ? (
                   <div className="space-y-4">
@@ -496,15 +498,15 @@ export default function ProjectDetailClient({
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   {/* 1. Client Card */}
-                  <div className="p-5 rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900/40 shadow-sm hover:shadow-md transition-shadow relative overflow-hidden group">
+                  <div className="p-5 rounded-2xl border border-border bg-card text-card-foreground shadow-sm hover:shadow-md transition-shadow relative overflow-hidden group">
                     <div className="absolute top-0 right-0 w-24 h-24 bg-gradient-to-br from-cyan-500/5 to-transparent rounded-full -mr-8 -mt-8 transition-transform group-hover:scale-110" />
-                    <span className="text-[9px] font-bold bg-cyan-100 dark:bg-cyan-950/40 text-cyan-700 dark:text-cyan-400 px-2.5 py-0.5 rounded uppercase tracking-wider block w-max font-bold">
+                    <span className="text-[9px] font-bold bg-cyan-100 dark:bg-cyan-955/40 text-cyan-700 dark:text-cyan-400 px-2.5 py-0.5 rounded uppercase tracking-wider block w-max font-bold">
                       Client Partner
                     </span>
-                    <h4 className="text-sm font-bold text-zinc-850 dark:text-zinc-200 mt-3">
+                    <h4 className="text-sm font-bold text-foreground mt-3">
                       {project.client.name}
                     </h4>
-                    <div className="mt-4 space-y-2.5 text-xs text-zinc-550 dark:text-zinc-400">
+                    <div className="mt-4 space-y-2.5 text-xs text-muted-foreground">
                       {project.client.email && (
                         <a href={`mailto:${project.client.email}`} className="flex items-center gap-2 hover:text-cyan-500 transition-colors">
                           <Mail className="w-3.5 h-3.5 shrink-0 text-zinc-400" />
@@ -519,15 +521,15 @@ export default function ProjectDetailClient({
                   </div>
 
                   {/* 2. Stylist Card */}
-                  <div className="p-5 rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900/40 shadow-sm hover:shadow-md transition-shadow relative overflow-hidden group">
+                  <div className="p-5 rounded-2xl border border-border bg-card text-card-foreground shadow-sm hover:shadow-md transition-shadow relative overflow-hidden group">
                     <div className="absolute top-0 right-0 w-24 h-24 bg-gradient-to-br from-cyan-500/5 to-transparent rounded-full -mr-8 -mt-8 transition-transform group-hover:scale-110" />
-                    <span className="text-[9px] font-bold bg-cyan-100 dark:bg-cyan-950/40 text-cyan-700 dark:text-cyan-400 px-2.5 py-0.5 rounded uppercase tracking-wider block w-max font-bold">
+                    <span className="text-[9px] font-bold bg-cyan-100 dark:bg-cyan-955/40 text-cyan-700 dark:text-cyan-400 px-2.5 py-0.5 rounded uppercase tracking-wider block w-max font-bold">
                       Lead Stylist
                     </span>
-                    <h4 className="text-sm font-bold text-zinc-850 dark:text-zinc-200 mt-3">
+                    <h4 className="text-sm font-bold text-foreground mt-3">
                       {project.leadStylist?.name || "Unassigned"}
                     </h4>
-                    <div className="mt-4 space-y-2.5 text-xs text-zinc-550 dark:text-zinc-400">
+                    <div className="mt-4 space-y-2.5 text-xs text-muted-foreground">
                       {project.leadStylist?.email && (
                         <a href={`mailto:${project.leadStylist.email}`} className="flex items-center gap-2 hover:text-cyan-500 transition-colors">
                           <Mail className="w-3.5 h-3.5 shrink-0 text-zinc-400" />
@@ -538,15 +540,15 @@ export default function ProjectDetailClient({
                   </div>
 
                   {/* 3. Site Supervisor Card */}
-                  <div className="p-5 rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900/40 shadow-sm hover:shadow-md transition-shadow relative overflow-hidden group">
+                  <div className="p-5 rounded-2xl border border-border bg-card text-card-foreground shadow-sm hover:shadow-md transition-shadow relative overflow-hidden group">
                     <div className="absolute top-0 right-0 w-24 h-24 bg-gradient-to-br from-amber-500/5 to-transparent rounded-full -mr-8 -mt-8 transition-transform group-hover:scale-110" />
                     <span className="text-[9px] font-bold bg-amber-100 dark:bg-amber-955/40 text-amber-700 dark:text-amber-400 px-2.5 py-0.5 rounded uppercase tracking-wider block w-max font-bold">
                       Site Supervisor
                     </span>
-                    <h4 className="text-sm font-bold text-zinc-850 dark:text-zinc-200 mt-3">
+                    <h4 className="text-sm font-bold text-foreground mt-3">
                       {project.siteDetails?.siteSupervisorName || "Not Configured"}
                     </h4>
-                    <div className="mt-4 space-y-2.5 text-xs text-zinc-550 dark:text-zinc-400">
+                    <div className="mt-4 space-y-2.5 text-xs text-muted-foreground">
                       {project.siteDetails?.siteSupervisorEmail ? (
                         <a href={`mailto:${project.siteDetails.siteSupervisorEmail}`} className="flex items-center gap-2 hover:text-amber-500 transition-colors">
                           <Mail className="w-3.5 h-3.5 shrink-0 text-zinc-400" />
@@ -564,7 +566,7 @@ export default function ProjectDetailClient({
                           <span>{project.siteDetails.siteSupervisorPhone}</span>
                         </a>
                       ) : (
-                        <div className="flex items-center gap-2 text-zinc-450 italic font-mono">
+                        <div className="flex items-center gap-2 text-zinc-455 italic font-mono">
                           <Phone className="w-3.5 h-3.5 shrink-0 text-zinc-455" />
                           <span>No phone configured</span>
                         </div>
@@ -573,7 +575,7 @@ export default function ProjectDetailClient({
                   </div>
 
                   {/* 4. Photographer Card */}
-                  <div className="p-5 rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900/40 shadow-sm hover:shadow-md transition-shadow relative overflow-hidden group">
+                  <div className="p-5 rounded-2xl border border-border bg-card text-card-foreground shadow-sm hover:shadow-md transition-shadow relative overflow-hidden group">
                     <div className="absolute top-0 right-0 w-24 h-24 bg-gradient-to-br from-indigo-500/5 to-transparent rounded-full -mr-8 -mt-8 transition-transform group-hover:scale-110" />
                     <span className="text-[9px] font-bold bg-indigo-100 dark:bg-indigo-950/40 text-indigo-700 dark:text-indigo-400 px-2.5 py-0.5 rounded uppercase tracking-wider block w-max font-bold">
                       Photographer
@@ -613,8 +615,8 @@ export default function ProjectDetailClient({
             {/* Right Col: Logistics Instructions & Schedule Details */}
             <div className="space-y-6">
               {/* Parking Rules & Logistics */}
-              <div className="p-6 rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900/40 shadow-sm space-y-4">
-                <h3 className="font-bold text-sm text-zinc-900 dark:text-zinc-50 flex items-center gap-2">
+              <div className="p-6 rounded-2xl border border-border bg-card text-card-foreground shadow-sm space-y-4">
+                <h3 className="font-bold text-sm text-foreground flex items-center gap-2">
                   <Info className="w-4.5 h-4.5 text-cyan-500" />
                   <span>Parking Rules & Site Access</span>
                 </h3>
@@ -626,22 +628,22 @@ export default function ProjectDetailClient({
                     </p>
                   </div>
                 ) : (
-                  <div className="p-4 rounded-xl bg-zinc-50 dark:bg-zinc-950 border border-zinc-150 text-center">
-                    <p className="text-xs text-zinc-505 italic">No customized site access rules configured.</p>
+                  <div className="p-4 rounded-xl bg-muted border border-border text-center">
+                    <p className="text-xs text-muted-foreground italic">No customized site access rules configured.</p>
                   </div>
                 )}
               </div>
 
               {/* Time Slots Details */}
-              <div className="p-6 rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900/40 shadow-sm space-y-4">
-                <h3 className="font-bold text-sm text-zinc-900 dark:text-zinc-50 flex items-center gap-1.5">
+              <div className="p-6 rounded-2xl border border-border bg-card text-card-foreground shadow-sm space-y-4">
+                <h3 className="font-bold text-sm text-foreground flex items-center gap-1.5">
                   <Calendar className="w-4.5 h-4.5 text-cyan-500" />
                   <span>Production Schedule</span>
                 </h3>
                 <div className="space-y-3.5">
-                  <div className="flex justify-between items-center text-xs pb-2 border-b border-zinc-100 dark:border-zinc-800/80">
-                    <span className="text-zinc-400 font-bold uppercase tracking-wider text-[10px]">Shoot Date</span>
-                    <span className="font-bold text-zinc-850 dark:text-zinc-150">
+                  <div className="flex justify-between items-center text-xs pb-2 border-b border-border">
+                    <span className="text-muted-foreground font-bold uppercase tracking-wider text-[10px]">Shoot Date</span>
+                    <span className="font-bold text-foreground">
                       {new Date(project.shootDate).toLocaleDateString("en-US", {
                         weekday: "long",
                         year: "numeric",
@@ -651,7 +653,7 @@ export default function ProjectDetailClient({
                     </span>
                   </div>
                   <div className="flex justify-between items-center text-xs">
-                    <span className="text-zinc-400 font-bold uppercase tracking-wider text-[10px]">Call Time</span>
+                    <span className="text-muted-foreground font-bold uppercase tracking-wider text-[10px]">Call Time</span>
                     <span className="font-mono font-bold text-cyan-500">
                       {project.reportingTime || "N/A"}
                     </span>
@@ -693,10 +695,10 @@ export default function ProjectDetailClient({
         {activeTab === "checklists" && (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 animate-fadeIn">
             {/* Warehouse Checklist Card */}
-            <div className="p-6 rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900/40 shadow-sm space-y-4 flex flex-col justify-between">
+            <div className="p-6 rounded-2xl border border-border bg-card text-card-foreground shadow-sm space-y-4 flex flex-col justify-between">
               <div className="space-y-4">
                 <div className="flex items-center justify-between">
-                  <h3 className="font-bold text-sm text-zinc-900 dark:text-zinc-50 flex items-center gap-2">
+                  <h3 className="font-bold text-sm text-foreground flex items-center gap-2">
                     <ClipboardCheck className="w-5 h-5 text-amber-500" />
                     <span>Before Leaving Warehouse</span>
                   </h3>
@@ -738,10 +740,10 @@ export default function ProjectDetailClient({
             </div>
 
             {/* Site Wrap Checklist Card */}
-            <div className="p-6 rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900/40 shadow-sm space-y-4 flex flex-col justify-between">
+            <div className="p-6 rounded-2xl border border-border bg-card text-card-foreground shadow-sm space-y-4 flex flex-col justify-between">
               <div className="space-y-4">
                 <div className="flex items-center justify-between">
-                  <h3 className="font-bold text-sm text-zinc-900 dark:text-zinc-50 flex items-center gap-2">
+                  <h3 className="font-bold text-sm text-foreground flex items-center gap-2">
                     <ClipboardCheck className="w-5 h-5 text-indigo-500" />
                     <span>Site Wrapping & Returns</span>
                   </h3>
@@ -786,9 +788,9 @@ export default function ProjectDetailClient({
 
         {/* AUDIT LOG HISTORY TAB */}
         {activeTab === "audit-history" && (
-          <div className="p-6 rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900/40 shadow-sm space-y-6 animate-fadeIn">
-            <div className="flex items-center justify-between pb-3 border-b border-zinc-150 dark:border-zinc-800">
-              <h3 className="font-bold text-sm text-zinc-900 dark:text-zinc-50 flex items-center gap-2">
+          <div className="p-6 rounded-2xl border border-border bg-card text-card-foreground shadow-sm space-y-6 animate-fadeIn">
+            <div className="flex items-center justify-between pb-3 border-b border-border">
+              <h3 className="font-bold text-sm text-foreground flex items-center gap-2">
                 <History className="w-5 h-5 text-cyan-500" />
                 <span>Project Change Log Audit</span>
               </h3>
@@ -847,13 +849,13 @@ export default function ProjectDetailClient({
       {/* Edit Modal (Crew Assignments) */}
       {isEditOpen && (
         <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-          <div className="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 max-w-lg w-full rounded-2xl shadow-xl overflow-hidden p-6 space-y-4 animate-scaleUp">
+          <div className="bg-card text-card-foreground border border-border max-w-lg w-full rounded-2xl shadow-xl overflow-hidden p-6 space-y-4 animate-scaleUp">
             <div className="flex items-center justify-between">
-              <h3 className="font-bold text-lg text-zinc-900 dark:text-zinc-50 flex items-center gap-2">
+              <h3 className="font-bold text-lg text-foreground flex items-center gap-2">
                 <Edit className="w-5 h-5 text-cyan-500" />
                 <span>Edit Project details</span>
               </h3>
-              <button onClick={() => setIsEditOpen(false)} className="p-1 rounded-lg text-zinc-400 hover:bg-zinc-50 dark:hover:bg-zinc-950">
+              <button onClick={() => setIsEditOpen(false)} className="p-1 rounded-lg text-zinc-400 hover:bg-muted">
                 <X className="w-5 h-5" />
               </button>
             </div>
@@ -861,35 +863,35 @@ export default function ProjectDetailClient({
             <form onSubmit={handleUpdateProject} className="space-y-4 pt-2">
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-1">
-                  <label className="text-xs font-semibold text-zinc-500 block">Project Name</label>
+                  <label className="text-xs font-semibold text-muted-foreground block">Project Name</label>
                   <input
                     type="text"
                     required
                     value={name}
                     onChange={(e) => setName(e.target.value)}
-                    className="w-full px-3 py-2 bg-white dark:bg-zinc-955 border border-zinc-200 dark:border-zinc-800 rounded-xl text-xs focus:outline-none focus:ring-1 focus:ring-cyan-500"
+                    className="w-full px-3 py-2 bg-background text-foreground border border-border rounded-xl text-xs focus:outline-none focus:ring-1 focus:ring-cyan-500"
                   />
                 </div>
 
                 <div className="space-y-1">
-                  <label className="text-xs font-semibold text-zinc-500 block">Project Code</label>
+                  <label className="text-xs font-semibold text-muted-foreground block">Project Code</label>
                   <input
                     type="text"
                     required
                     value={projectCode}
                     onChange={(e) => setProjectCode(e.target.value)}
-                    className="w-full px-3 py-2 bg-white dark:bg-zinc-955 border border-zinc-200 dark:border-zinc-800 rounded-xl text-xs focus:outline-none focus:ring-1 focus:ring-cyan-500 font-mono uppercase"
+                    className="w-full px-3 py-2 bg-background text-foreground border border-border rounded-xl text-xs focus:outline-none focus:ring-1 focus:ring-cyan-500 font-mono uppercase"
                   />
                 </div>
               </div>
 
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-1">
-                  <label className="text-xs font-semibold text-zinc-500 block">Client Partner</label>
+                  <label className="text-xs font-semibold text-muted-foreground block">Client Partner</label>
                   <select
                     value={clientId}
                     onChange={(e) => setClientId(e.target.value)}
-                    className="w-full px-3 py-2 bg-white dark:bg-zinc-955 border border-zinc-200 dark:border-zinc-800 rounded-xl text-xs focus:outline-none focus:ring-1 focus:ring-cyan-500"
+                    className="w-full px-3 py-2 bg-background text-foreground border border-border rounded-xl text-xs focus:outline-none focus:ring-1 focus:ring-cyan-500"
                   >
                     {clients.map((c) => (
                       <option key={c.id} value={c.id}>{c.name}</option>
@@ -898,11 +900,11 @@ export default function ProjectDetailClient({
                 </div>
 
                 <div className="space-y-1">
-                  <label className="text-xs font-semibold text-zinc-500 block">Production Stage</label>
+                  <label className="text-xs font-semibold text-muted-foreground block">Production Stage</label>
                   <select
                     value={status}
                     onChange={(e) => setStatus(e.target.value)}
-                    className="w-full px-3 py-2 bg-white dark:bg-zinc-955 border border-zinc-200 dark:border-zinc-800 rounded-xl text-xs focus:outline-none focus:ring-1 focus:ring-cyan-500"
+                    className="w-full px-3 py-2 bg-background text-foreground border border-border rounded-xl text-xs focus:outline-none focus:ring-1 focus:ring-cyan-500"
                   >
                     <option value="INQUIRY">INQUIRY</option>
                     <option value="BOOKED">BOOKED</option>
@@ -917,38 +919,38 @@ export default function ProjectDetailClient({
 
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-1">
-                  <label className="text-xs font-semibold text-zinc-500 block">Shoot Date</label>
+                  <label className="text-xs font-semibold text-muted-foreground block">Shoot Date</label>
                   <input
                     type="date"
                     required
                     value={shootDate}
                     onChange={(e) => setShootDate(e.target.value)}
-                    className="w-full px-3 py-2 bg-white dark:bg-zinc-955 border border-zinc-200 dark:border-zinc-800 rounded-xl text-xs focus:outline-none focus:ring-1 focus:ring-cyan-500 font-mono"
+                    className="w-full px-3 py-2 bg-background text-foreground border border-border rounded-xl text-xs focus:outline-none focus:ring-1 focus:ring-cyan-500 font-mono"
                   />
                 </div>
 
                 <div className="space-y-1">
-                  <label className="text-xs font-semibold text-zinc-500 block">Reporting Time (Call Time)</label>
+                  <label className="text-xs font-semibold text-muted-foreground block">Reporting Time (Call Time)</label>
                   <input
                     type="text"
                     value={reportingTime}
                     onChange={(e) => setReportingTime(e.target.value)}
-                    className="w-full px-3 py-2 bg-white dark:bg-zinc-955 border border-zinc-200 dark:border-zinc-800 rounded-xl text-xs focus:outline-none focus:ring-1 focus:ring-cyan-500 font-mono"
+                    className="w-full px-3 py-2 bg-background text-foreground border border-border rounded-xl text-xs focus:outline-none focus:ring-1 focus:ring-cyan-500 font-mono"
                   />
                 </div>
               </div>
 
               {/* Crew assignments */}
-              <div className="border-t border-zinc-150 dark:border-zinc-850 pt-4 space-y-4">
-                <h4 className="text-xs font-bold text-zinc-800 dark:text-zinc-200 uppercase tracking-wide">Assign Production Crew</h4>
+              <div className="border-t border-border pt-4 space-y-4">
+                <h4 className="text-xs font-bold text-foreground uppercase tracking-wide">Assign Production Crew</h4>
                 
                 <div className="grid grid-cols-3 gap-4">
                   <div className="space-y-1">
-                    <label className="text-[10px] font-semibold text-zinc-400 block uppercase">Lead Stylist</label>
+                    <label className="text-[10px] font-semibold text-muted-foreground block uppercase">Lead Stylist</label>
                     <select
                       value={leadStylistId}
                       onChange={(e) => setLeadStylistId(e.target.value)}
-                      className="w-full px-2 py-1.5 bg-white dark:bg-zinc-955 border border-zinc-200 dark:border-zinc-800 rounded-xl text-[11px] focus:outline-none focus:ring-1 focus:ring-cyan-500"
+                      className="w-full px-2 py-1.5 bg-background text-foreground border border-border rounded-xl text-[11px] focus:outline-none focus:ring-1 focus:ring-cyan-500"
                     >
                       <option value="">Unassigned</option>
                       {stylistsList.map((s) => (
@@ -958,11 +960,11 @@ export default function ProjectDetailClient({
                   </div>
 
                   <div className="space-y-1">
-                    <label className="text-[10px] font-semibold text-zinc-400 block uppercase">Lead Packer</label>
+                    <label className="text-[10px] font-semibold text-muted-foreground block uppercase">Lead Packer</label>
                     <select
                       value={leadPackerId}
                       onChange={(e) => setLeadPackerId(e.target.value)}
-                      className="w-full px-2 py-1.5 bg-white dark:bg-zinc-955 border border-zinc-200 dark:border-zinc-800 rounded-xl text-[11px] focus:outline-none focus:ring-1 focus:ring-cyan-500"
+                      className="w-full px-2 py-1.5 bg-background text-foreground border border-border rounded-xl text-[11px] focus:outline-none focus:ring-1 focus:ring-cyan-500"
                     >
                       <option value="">Unassigned</option>
                       {packersList.map((s) => (
@@ -972,11 +974,11 @@ export default function ProjectDetailClient({
                   </div>
 
                   <div className="space-y-1">
-                    <label className="text-[10px] font-semibold text-zinc-400 block uppercase">Lead Driver</label>
+                    <label className="text-[10px] font-semibold text-muted-foreground block uppercase">Lead Driver</label>
                     <select
                       value={leadDriverId}
                       onChange={(e) => setLeadDriverId(e.target.value)}
-                      className="w-full px-2 py-1.5 bg-white dark:bg-zinc-955 border border-zinc-200 dark:border-zinc-800 rounded-xl text-[11px] focus:outline-none focus:ring-1 focus:ring-cyan-500"
+                      className="w-full px-2 py-1.5 bg-background text-foreground border border-border rounded-xl text-[11px] focus:outline-none focus:ring-1 focus:ring-cyan-500"
                     >
                       <option value="">Unassigned</option>
                       {driversList.map((s) => (
@@ -991,7 +993,7 @@ export default function ProjectDetailClient({
                 <button
                   type="button"
                   onClick={() => setIsEditOpen(false)}
-                  className="flex-1 px-4 py-2.5 border border-zinc-200 dark:border-zinc-800 rounded-xl text-xs font-bold text-zinc-700 dark:text-zinc-300 hover:bg-zinc-50 dark:hover:bg-zinc-950"
+                  className="flex-1 px-4 py-2.5 border border-border rounded-xl text-xs font-bold text-muted-foreground hover:bg-muted"
                 >
                   Cancel
                 </button>

@@ -18,7 +18,9 @@ import {
   PlusCircle,
   X,
   Briefcase,
-  Save
+  Save,
+  Package,
+  UserCheck
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -236,6 +238,26 @@ export default function TransportPage() {
     }
   };
 
+  const handleUpdateVehicleStatus = async (id: string, newStatus: string) => {
+    setActionLoading(true);
+    try {
+      const res = await fetch(`/api/transport/${id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ status: newStatus }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "Failed to update vehicle status");
+
+      showNotification(true, `Vehicle status updated to ${newStatus.replace("_", " ")}`);
+      fetchData();
+    } catch (err: any) {
+      alert(err.message || "Failed to update vehicle status");
+    } finally {
+      setActionLoading(false);
+    }
+  };
+
   // Stats helper
   const totalVehicles = vehicles.length;
   const transitCount = vehicles.filter((v) => v.status === "IN_TRANSIT").length;
@@ -295,10 +317,10 @@ export default function TransportPage() {
         ].map((s, idx) => {
           const Icon = s.icon;
           return (
-            <div key={idx} className="p-5 rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900/40 shadow-sm flex items-center justify-between">
+            <div key={idx} className="p-5 rounded-2xl border border-border bg-card text-card-foreground shadow-sm flex items-center justify-between">
               <div className="space-y-1">
-                <span className="text-[10px] text-zinc-400 dark:text-zinc-500 uppercase tracking-wider font-bold block">{s.label}</span>
-                <span className="text-2xl font-bold text-zinc-900 dark:text-zinc-50">{s.value}</span>
+                <span className="text-[10px] text-muted-foreground uppercase tracking-wider font-bold block">{s.label}</span>
+                <span className="text-2xl font-bold text-foreground">{s.value}</span>
               </div>
               <div className={cn("p-3 rounded-xl shrink-0", s.color)}>
                 <Icon className="w-5 h-5" />
@@ -311,7 +333,7 @@ export default function TransportPage() {
       {/* Main content grid */}
       <div className="flex-1 min-h-[400px]">
         {loading ? (
-          <div className="flex flex-col items-center justify-center py-24 gap-3 text-zinc-400">
+          <div className="flex flex-col items-center justify-center py-24 gap-3 text-zinc-450">
             <RefreshCw className="w-8 h-8 animate-spin text-cyan-500" />
             <span className="text-xs font-semibold">Loading fleet logs...</span>
           </div>
@@ -331,21 +353,21 @@ export default function TransportPage() {
                   statusBadge = "bg-emerald-50 text-emerald-700 dark:bg-emerald-950/20 dark:text-emerald-400 border-emerald-100 dark:border-emerald-900/30";
                   break;
                 case "IN_TRANSIT":
-                  statusBadge = "bg-amber-50 text-amber-700 dark:bg-amber-950/20 dark:text-amber-400 border-amber-100 dark:border-amber-900/30";
+                  statusBadge = "bg-amber-50 text-amber-700 dark:bg-amber-955/20 dark:text-amber-400 border-amber-100 dark:border-amber-900/30";
                   break;
                 case "MAINTENANCE":
-                  statusBadge = "bg-rose-50 text-rose-700 dark:bg-rose-950/20 dark:text-rose-400 border-rose-100 dark:border-rose-900/30";
+                  statusBadge = "bg-rose-50 text-rose-700 dark:bg-rose-955/20 dark:text-rose-400 border-rose-100 dark:border-rose-900/30";
                   break;
               }
 
               return (
-                <div key={v.id} className="p-6 rounded-2xl bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 shadow-sm flex flex-col justify-between hover:shadow-md hover:border-zinc-300 dark:hover:border-zinc-700 transition-all duration-200 group">
+                <div key={v.id} className="p-6 rounded-2xl bg-card text-card-foreground border border-border shadow-sm flex flex-col justify-between hover:shadow-md hover:border-border transition-all duration-200 group">
                   <div className="space-y-4">
                     {/* Header: Name and Status */}
                     <div className="flex items-start justify-between gap-3">
                       <div>
-                        <h3 className="font-bold text-zinc-900 dark:text-zinc-100 text-base">{v.name}</h3>
-                        <code className="text-[10px] font-mono font-bold text-zinc-400 bg-zinc-50 dark:bg-zinc-950 border border-zinc-150 dark:border-zinc-800 px-2 py-0.5 rounded mt-1 inline-block">
+                        <h3 className="font-bold text-foreground text-base">{v.name}</h3>
+                        <code className="text-[10px] font-mono font-bold text-muted-foreground bg-muted border border-border px-2 py-0.5 rounded mt-1 inline-block">
                           {v.licensePlate}
                         </code>
                       </div>
@@ -355,47 +377,52 @@ export default function TransportPage() {
                     </div>
 
                     {/* Driver and Project schedule info */}
-                    <div className="p-4 rounded-xl bg-zinc-50/50 dark:bg-zinc-950/30 border border-zinc-100 dark:border-zinc-850/80 space-y-3.5">
-                      <div className="flex items-center gap-2.5 text-xs">
+                    <div className="p-4 rounded-xl bg-muted/40 border border-border space-y-3.5">
+                      <div className="flex items-center gap-2.5 text-xs text-muted-foreground">
                         <User className="w-4 h-4 text-zinc-400 shrink-0" />
                         <div>
-                          <span className="text-[9px] text-zinc-400 uppercase tracking-wider font-bold block">Assigned Driver</span>
-                          <span className="font-bold text-zinc-700 dark:text-zinc-300 text-xs">
+                          <span className="text-[9px] uppercase tracking-wider block font-bold text-zinc-400 dark:text-zinc-500">Active Driver</span>
+                          <span className="font-bold text-foreground">
                             {v.driverName || "Unassigned"}
                           </span>
                         </div>
                       </div>
 
-                      <div className="flex items-center gap-2.5 text-xs border-t border-zinc-100 dark:border-zinc-850/80 pt-3">
-                        <Briefcase className="w-4 h-4 text-zinc-400 shrink-0" />
+                      <div className="flex items-center gap-2.5 text-xs text-muted-foreground">
+                        <Package className="w-4 h-4 text-zinc-400 shrink-0" />
                         <div>
-                          <span className="text-[9px] text-zinc-400 uppercase tracking-wider font-bold block">Project Schedule</span>
-                          {v.projectName ? (
-                            <Link href={`/projects/${v.projectId}`} className="font-bold text-cyan-500 hover:underline text-xs flex items-center gap-1">
-                              <span>{v.projectName}</span>
-                              <code className="text-[8px] font-mono px-1.5 py-0.5 rounded bg-cyan-500/10 border border-cyan-500/20">{v.projectCode}</code>
-                            </Link>
-                          ) : (
-                            <span className="text-zinc-450 italic text-xs">No active project assignment</span>
-                          )}
+                          <span className="text-[9px] uppercase tracking-wider block font-bold text-zinc-400 dark:text-zinc-500">Active Project</span>
+                          <span className="font-bold text-foreground">
+                            {v.projectName ? `${v.projectName} (${v.projectCode})` : "No active production"}
+                          </span>
                         </div>
                       </div>
 
-                      {(v.departureTime || v.returnTime) && (
-                        <div className="flex flex-col gap-1.5 border-t border-zinc-100 dark:border-zinc-850/80 pt-3 text-[10px] text-zinc-500">
+                      {v.status === "IN_TRANSIT" && (v.departureTime || v.returnTime) && (
+                        <div className="border-t border-border/80 pt-3 mt-1.5 space-y-2 text-xs">
                           {v.departureTime && (
-                            <div className="flex justify-between items-center">
-                              <span className="font-medium">Departure:</span>
-                              <span className="font-mono font-bold text-zinc-700 dark:text-zinc-300">
-                                {new Date(v.departureTime).toLocaleDateString()} {new Date(v.departureTime).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}
+                            <div className="flex justify-between items-center text-muted-foreground">
+                              <span>Departure:</span>
+                              <span className="font-mono font-semibold text-foreground">
+                                {new Date(v.departureTime).toLocaleString(undefined, {
+                                  month: "short",
+                                  day: "numeric",
+                                  hour: "2-digit",
+                                  minute: "2-digit"
+                                })}
                               </span>
                             </div>
                           )}
                           {v.returnTime && (
-                            <div className="flex justify-between items-center">
-                              <span className="font-medium">Return:</span>
-                              <span className="font-mono font-bold text-zinc-700 dark:text-zinc-300">
-                                {new Date(v.returnTime).toLocaleDateString()} {new Date(v.returnTime).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}
+                            <div className="flex justify-between items-center text-muted-foreground">
+                              <span>Est. Return:</span>
+                              <span className="font-mono font-semibold text-foreground">
+                                {new Date(v.returnTime).toLocaleString(undefined, {
+                                  month: "short",
+                                  day: "numeric",
+                                  hour: "2-digit",
+                                  minute: "2-digit"
+                                })}
                               </span>
                             </div>
                           )}
@@ -404,81 +431,87 @@ export default function TransportPage() {
                     </div>
                   </div>
 
-                  {/* Actions */}
-                  <div className="mt-6 flex items-center justify-between pt-4 border-t border-zinc-100 dark:border-zinc-850/50">
-                    <button
-                      onClick={() => handleDeleteVehicle(v.id)}
-                      className="p-2 border border-zinc-200 dark:border-zinc-800 rounded-xl text-zinc-400 hover:text-red-500 hover:border-red-500/20 transition-all hover:bg-red-500/5 cursor-pointer"
-                    >
-                      <Trash2 className="w-4 h-4" />
-                    </button>
-
+                  {/* Actions buttons */}
+                  <div className="mt-6 flex gap-2">
                     <button
                       onClick={() => handleOpenEdit(v)}
-                      className="inline-flex items-center gap-1.5 px-3.5 py-2 border border-zinc-200 dark:border-zinc-800 rounded-xl text-zinc-600 dark:text-zinc-300 hover:bg-zinc-50 dark:hover:bg-zinc-950 font-bold text-xs cursor-pointer transition-colors"
+                      className="flex-1 inline-flex items-center justify-center gap-1.5 px-3 py-2.5 border border-border rounded-xl text-muted-foreground hover:bg-muted font-bold text-xs cursor-pointer transition-colors"
                     >
-                      <Edit className="w-3.5 h-3.5" />
-                      <span>Edit & Dispatch</span>
+                      <UserCheck className="w-3.5 h-3.5 text-cyan-500" />
+                      <span>Assign Crew</span>
                     </button>
+                    {v.status === "MAINTENANCE" ? (
+                      <button
+                        onClick={() => handleUpdateVehicleStatus(v.id, "AVAILABLE")}
+                        className="flex-1 px-3 py-2.5 bg-emerald-500 hover:bg-emerald-600 text-white rounded-xl text-xs font-bold shadow-sm shadow-emerald-500/10 cursor-pointer transition-colors text-center"
+                      >
+                        Finish Service
+                      </button>
+                    ) : (
+                      <button
+                        onClick={() => handleUpdateVehicleStatus(v.id, "MAINTENANCE")}
+                        className="flex-1 px-3 py-2.5 border border-border hover:bg-muted text-muted-foreground rounded-xl text-xs font-bold cursor-pointer transition-colors text-center"
+                      >
+                        Send to Service
+                      </button>
+                    )}
                   </div>
                 </div>
               );
             })}
           </div>
         ) : (
-          <div className="py-24 text-center border border-dashed border-zinc-200 dark:border-zinc-800 rounded-3xl bg-white/50 dark:bg-zinc-900/10">
+          <div className="py-24 text-center border border-dashed border-border rounded-3xl bg-card text-card-foreground">
             <Truck className="w-12 h-12 text-zinc-300 dark:text-zinc-700 mx-auto mb-3" />
-            <h3 className="font-bold text-zinc-700 dark:text-zinc-300 text-lg">No vehicles registered</h3>
-            <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-1 max-w-sm mx-auto">
-              Get started by registering a transit vehicle inside your styling logistics database.
-            </p>
+            <h3 className="font-bold text-foreground">No fleet vehicles registered</h3>
+            <p className="text-xs text-muted-foreground mt-1">Start by adding a vehicle to your fleet log.</p>
             <button
               onClick={() => setIsCreateOpen(true)}
-              className="mt-5 inline-flex items-center gap-1.5 px-4 py-2.5 bg-cyan-500 hover:bg-cyan-600 text-white rounded-xl text-xs font-bold shadow-sm"
+              className="mt-5 inline-flex items-center gap-1.5 px-4 py-2.5 bg-cyan-500 hover:bg-cyan-600 text-white rounded-xl text-xs font-bold"
             >
               <Plus className="w-4 h-4" />
-              <span>Register First Vehicle</span>
+              <span>Add Vehicle</span>
             </button>
           </div>
         )}
       </div>
 
-      {/* Create Modal */}
+      {/* Create Vehicle Modal */}
       {isCreateOpen && (
         <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-          <div className="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 max-w-md w-full rounded-2xl shadow-xl overflow-hidden p-6 space-y-4 animate-scaleUp">
+          <div className="bg-card text-card-foreground border border-border max-w-md w-full rounded-2xl shadow-xl overflow-hidden p-6 space-y-4 animate-scaleUp">
             <div className="flex items-center justify-between">
-              <h3 className="font-bold text-lg text-zinc-900 dark:text-zinc-50 flex items-center gap-2">
+              <h3 className="font-bold text-lg text-foreground flex items-center gap-2">
                 <Truck className="w-5 h-5 text-cyan-500" />
                 <span>Register Fleet Vehicle</span>
               </h3>
-              <button onClick={() => setIsCreateOpen(false)} className="p-1 rounded-lg text-zinc-400 hover:bg-zinc-50 dark:hover:bg-zinc-950">
+              <button onClick={() => setIsCreateOpen(false)} className="p-1 rounded-lg text-zinc-400 hover:bg-muted">
                 <X className="w-5 h-5" />
               </button>
             </div>
 
             <form onSubmit={handleCreateVehicle} className="space-y-4 pt-2">
               <div className="space-y-1">
-                <label className="text-xs font-semibold text-zinc-500 block">Vehicle Name / Description</label>
+                <label className="text-xs font-semibold text-muted-foreground block">Vehicle Name / Model</label>
                 <input
                   type="text"
                   required
-                  placeholder="e.g. Ford Transit Cargo Van (White)"
+                  placeholder="e.g. Ford Transit Van XL"
                   value={name}
                   onChange={(e) => setName(e.target.value)}
-                  className="w-full px-3 py-2 bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-xl text-xs focus:outline-none focus:ring-1 focus:ring-cyan-500"
+                  className="w-full px-3 py-2 bg-background text-foreground border border-border rounded-xl text-xs focus:outline-none focus:ring-1 focus:ring-cyan-500"
                 />
               </div>
 
               <div className="space-y-1">
-                <label className="text-xs font-semibold text-zinc-500 block">License Plate Number</label>
+                <label className="text-xs font-semibold text-muted-foreground block">License Plate Number</label>
                 <input
                   type="text"
                   required
-                  placeholder="e.g. 7XYZ99 (Alpha-numeric, unique)"
+                  placeholder="e.g. CA-990-WZ"
                   value={licensePlate}
                   onChange={(e) => setLicensePlate(e.target.value)}
-                  className="w-full px-3 py-2 bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-xl text-xs focus:outline-none focus:ring-1 focus:ring-cyan-500 font-mono uppercase"
+                  className="w-full px-3 py-2 bg-background text-foreground border border-border rounded-xl text-xs focus:outline-none focus:ring-1 focus:ring-cyan-500 font-mono uppercase"
                 />
               </div>
 
@@ -486,7 +519,7 @@ export default function TransportPage() {
                 <button
                   type="button"
                   onClick={() => setIsCreateOpen(false)}
-                  className="flex-1 px-4 py-2.5 border border-zinc-200 dark:border-zinc-800 rounded-xl text-xs font-bold text-zinc-700 dark:text-zinc-300 hover:bg-zinc-50 dark:hover:bg-zinc-950"
+                  className="flex-1 px-4 py-2.5 border border-border rounded-xl text-xs font-bold text-muted-foreground hover:bg-muted"
                 >
                   Cancel
                 </button>
@@ -496,7 +529,7 @@ export default function TransportPage() {
                   className="flex-1 px-4 py-2.5 bg-cyan-500 hover:bg-cyan-600 text-white rounded-xl text-xs font-bold disabled:opacity-50 flex items-center justify-center gap-1.5"
                 >
                   {actionLoading ? <RefreshCw className="w-3.5 h-3.5 animate-spin" /> : <Plus className="w-3.5 h-3.5" />}
-                  <span>Add Vehicle</span>
+                  <span>Register Vehicle</span>
                 </button>
               </div>
             </form>
@@ -504,16 +537,16 @@ export default function TransportPage() {
         </div>
       )}
 
-      {/* Edit / Dispatch Modal */}
+      {/* Edit Vehicle Modal */}
       {isEditOpen && selectedVehicle && (
         <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-          <div className="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 max-w-lg w-full rounded-2xl shadow-xl overflow-hidden p-6 space-y-4 animate-scaleUp">
+          <div className="bg-card text-card-foreground border border-border max-w-lg w-full rounded-2xl shadow-xl overflow-hidden p-6 space-y-4 animate-scaleUp">
             <div className="flex items-center justify-between">
-              <h3 className="font-bold text-lg text-zinc-900 dark:text-zinc-50 flex items-center gap-2">
-                <Edit className="w-5 h-5 text-cyan-500" />
-                <span>Modify Fleet Assignment</span>
+              <h3 className="font-bold text-lg text-foreground flex items-center gap-2">
+                <UserCheck className="w-5 h-5 text-cyan-500" />
+                <span>Assign Logistics & Crew</span>
               </h3>
-              <button onClick={() => setIsEditOpen(false)} className="p-1 rounded-lg text-zinc-400 hover:bg-zinc-50 dark:hover:bg-zinc-950">
+              <button onClick={() => setIsEditOpen(false)} className="p-1 rounded-lg text-zinc-400 hover:bg-muted">
                 <X className="w-5 h-5" />
               </button>
             </div>
@@ -521,48 +554,33 @@ export default function TransportPage() {
             <form onSubmit={handleUpdateVehicle} className="space-y-4 pt-2">
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-1">
-                  <label className="text-xs font-semibold text-zinc-500 block">Vehicle Name</label>
+                  <label className="text-xs font-semibold text-muted-foreground block">Vehicle Info</label>
                   <input
                     type="text"
-                    required
-                    value={name}
-                    onChange={(e) => setName(e.target.value)}
-                    className="w-full px-3 py-2 bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-xl text-xs focus:outline-none focus:ring-1 focus:ring-cyan-500"
+                    disabled
+                    value={selectedVehicle.name}
+                    className="w-full px-3 py-2 bg-muted text-muted-foreground border border-border rounded-xl text-xs focus:outline-none"
                   />
                 </div>
 
                 <div className="space-y-1">
-                  <label className="text-xs font-semibold text-zinc-500 block">License Plate</label>
+                  <label className="text-xs font-semibold text-muted-foreground block">License Plate</label>
                   <input
                     type="text"
-                    required
-                    value={licensePlate}
-                    onChange={(e) => setLicensePlate(e.target.value)}
-                    className="w-full px-3 py-2 bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-xl text-xs focus:outline-none focus:ring-1 focus:ring-cyan-500 font-mono uppercase"
+                    disabled
+                    value={selectedVehicle.licensePlate}
+                    className="w-full px-3 py-2 bg-muted text-muted-foreground border border-border rounded-xl text-xs font-mono uppercase focus:outline-none"
                   />
                 </div>
               </div>
 
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-1">
-                  <label className="text-xs font-semibold text-zinc-500 block">Current Status</label>
-                  <select
-                    value={status}
-                    onChange={(e) => setStatus(e.target.value)}
-                    className="w-full px-3 py-2 bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-xl text-xs focus:outline-none focus:ring-1 focus:ring-cyan-500"
-                  >
-                    <option value="AVAILABLE">Available / Idle</option>
-                    <option value="IN_TRANSIT">In Transit / Dispatched</option>
-                    <option value="MAINTENANCE">Maintenance</option>
-                  </select>
-                </div>
-
-                <div className="space-y-1">
-                  <label className="text-xs font-semibold text-zinc-500 block">Assigned Driver</label>
+                  <label className="text-xs font-semibold text-muted-foreground block">Assign Driver</label>
                   <select
                     value={driverId}
                     onChange={(e) => setDriverId(e.target.value)}
-                    className="w-full px-3 py-2 bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-xl text-xs focus:outline-none focus:ring-1 focus:ring-cyan-500"
+                    className="w-full px-3 py-2 bg-background text-foreground border border-border rounded-xl text-xs focus:outline-none focus:ring-1 focus:ring-cyan-500"
                   >
                     <option value="">Unassigned</option>
                     {drivers.map((d) => (
@@ -570,40 +588,53 @@ export default function TransportPage() {
                     ))}
                   </select>
                 </div>
-              </div>
 
-              <div className="space-y-1 border-t border-zinc-100 dark:border-zinc-850 pt-3">
-                <label className="text-xs font-semibold text-zinc-500 block">Linked Production Project</label>
-                <select
-                  value={projectId}
-                  onChange={(e) => setProjectId(e.target.value)}
-                  className="w-full px-3 py-2 bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-xl text-xs focus:outline-none focus:ring-1 focus:ring-cyan-500"
-                >
-                  <option value="">No Project Assigned</option>
-                  {projects.map((p) => (
-                    <option key={p.id} value={p.id}>{p.name} [{p.projectCode}]</option>
-                  ))}
-                </select>
-              </div>
-
-              <div className="grid grid-cols-2 gap-4 border-t border-zinc-100 dark:border-zinc-850 pt-3">
                 <div className="space-y-1">
-                  <label className="text-xs font-semibold text-zinc-500 block">Departure Date & Time</label>
+                  <label className="text-xs font-semibold text-muted-foreground block">Assign Active Project</label>
+                  <select
+                    value={projectId}
+                    onChange={(e) => setProjectId(e.target.value)}
+                    className="w-full px-3 py-2 bg-background text-foreground border border-border rounded-xl text-xs focus:outline-none focus:ring-1 focus:ring-cyan-500"
+                  >
+                    <option value="">No Active Project</option>
+                    {projects.map((p) => (
+                      <option key={p.id} value={p.id}>{p.name} ({p.projectCode})</option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-4 border-t border-border pt-4">
+                <div className="space-y-1">
+                  <label className="text-xs font-semibold text-muted-foreground block">Logistics Dispatch Status</label>
+                  <select
+                    value={status}
+                    onChange={(e) => setStatus(e.target.value)}
+                    className="w-full px-3 py-2 bg-background text-foreground border border-border rounded-xl text-xs focus:outline-none focus:ring-1 focus:ring-cyan-500"
+                  >
+                    <option value="AVAILABLE">AVAILABLE (Idle)</option>
+                    <option value="IN_TRANSIT">IN TRANSIT (Dispatched)</option>
+                    <option value="MAINTENANCE">MAINTENANCE (Servicing)</option>
+                  </select>
+                </div>
+
+                <div className="space-y-1">
+                  <label className="text-xs font-semibold text-muted-foreground block">Departure Date & Time</label>
                   <input
                     type="datetime-local"
                     value={departureTime}
                     onChange={(e) => setDepartureTime(e.target.value)}
-                    className="w-full px-3 py-2 bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-xl text-xs focus:outline-none focus:ring-1 focus:ring-cyan-500 font-mono"
+                    className="w-full px-3 py-2 bg-background text-foreground border border-border rounded-xl text-xs focus:outline-none focus:ring-1 focus:ring-cyan-500 font-mono"
                   />
                 </div>
 
                 <div className="space-y-1">
-                  <label className="text-xs font-semibold text-zinc-500 block">Estimated Return Date & Time</label>
+                  <label className="text-xs font-semibold text-muted-foreground block">Estimated Return Date & Time</label>
                   <input
                     type="datetime-local"
                     value={returnTime}
                     onChange={(e) => setReturnTime(e.target.value)}
-                    className="w-full px-3 py-2 bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-xl text-xs focus:outline-none focus:ring-1 focus:ring-cyan-500 font-mono"
+                    className="w-full px-3 py-2 bg-background text-foreground border border-border rounded-xl text-xs focus:outline-none focus:ring-1 focus:ring-cyan-500 font-mono"
                   />
                 </div>
               </div>
@@ -612,7 +643,7 @@ export default function TransportPage() {
                 <button
                   type="button"
                   onClick={() => setIsEditOpen(false)}
-                  className="flex-1 px-4 py-2.5 border border-zinc-200 dark:border-zinc-800 rounded-xl text-xs font-bold text-zinc-700 dark:text-zinc-300 hover:bg-zinc-50 dark:hover:bg-zinc-950"
+                  className="flex-1 px-4 py-2.5 border border-border rounded-xl text-xs font-bold text-muted-foreground hover:bg-muted"
                 >
                   Cancel
                 </button>
