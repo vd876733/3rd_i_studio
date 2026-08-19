@@ -59,6 +59,15 @@ export default async function ProjectDetailPage({ params }: PageProps) {
     },
   });
 
+  // Load clients and staff for edit modal
+  const clients = await prisma.client.findMany({
+    orderBy: { name: "asc" },
+  });
+
+  const staff = await prisma.user.findMany({
+    orderBy: { name: "asc" },
+  });
+
   // Load and filter audit logs for this project
   const auditLogs = await prisma.auditLog.findMany({
     include: {
@@ -180,13 +189,25 @@ export default async function ProjectDetailPage({ params }: PageProps) {
     photos: item.photos,
   }));
 
+  const formattedClients = clients.map((c) => ({
+    id: c.id,
+    name: c.name,
+  }));
+
+  const formattedStaff = staff.map((s) => ({
+    id: s.id,
+    name: s.name,
+    role: s.role,
+  }));
+
   return (
     <ProjectDetailClient
       project={formattedProject}
       availableItemsForPacking={formattedAvailableItemsForPacking}
       availableItemsForMoodboard={formattedAvailableItemsForMoodboard}
       auditLogs={filteredAuditLogs}
+      clients={formattedClients}
+      staff={formattedStaff}
     />
   );
 }
-

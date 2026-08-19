@@ -24,7 +24,11 @@ import {
   UserCheck,
   Navigation,
   CheckCircle2,
-  AlertCircle
+  AlertCircle,
+  Edit,
+  X,
+  RefreshCw,
+  Save
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import PackingClient from "./packing/PackingClient";
@@ -93,16 +97,22 @@ const SITE_CHECKLIST_ITEMS = [
 ];
 
 export default function ProjectDetailClient({
-  project,
+  project: initialProject,
   availableItemsForPacking,
   availableItemsForMoodboard,
-  auditLogs,
+  auditLogs: initialAuditLogs,
+  clients = [],
+  staff = [],
 }: {
   project: ProjectDetailData;
   availableItemsForPacking: any[];
   availableItemsForMoodboard: any[];
   auditLogs: any[];
+  clients?: any[];
+  staff?: any[];
 }) {
+  const [project, setProject] = useState<ProjectDetailData>(initialProject);
+  const [auditLogs, setAuditLogs] = useState<any[]>(initialAuditLogs);
   const [activeTab, setActiveTab] = useState<
     "site-info" | "packing" | "moodboard" | "checklists" | "audit-history"
   >("site-info");
@@ -111,6 +121,21 @@ export default function ProjectDetailClient({
   const [whChecked, setWhChecked] = useState<Record<string, boolean>>({});
   const [siteChecked, setSiteChecked] = useState<Record<string, boolean>>({});
   const [isMounted, setIsMounted] = useState(false);
+
+  // Edit project state
+  const [isEditOpen, setIsEditOpen] = useState(false);
+  const [actionLoading, setActionLoading] = useState(false);
+
+  // Form states
+  const [name, setName] = useState("");
+  const [projectCode, setProjectCode] = useState("");
+  const [clientId, setClientId] = useState("");
+  const [shootDate, setShootDate] = useState("");
+  const [reportingTime, setReportingTime] = useState("");
+  const [status, setStatus] = useState("INQUIRY");
+  const [leadStylistId, setLeadStylistId] = useState("");
+  const [leadPackerId, setLeadPackerId] = useState("");
+  const [leadDriverId, setLeadDriverId] = useState("");
 
   // Restore checklist state from localStorage on client-side mount
   useEffect(() => {
@@ -192,6 +217,8 @@ export default function ProjectDetailClient({
         return "bg-slate-500 text-white dark:bg-slate-800 dark:text-slate-300 border-slate-500/20";
       case "PROJECT_CREATED":
         return "bg-green-500 text-white dark:bg-green-950/40 dark:text-green-400 border-green-500/20";
+      case "PROJECT_UPDATED":
+        return "bg-cyan-500 text-white dark:bg-cyan-950/40 dark:text-cyan-400 border-cyan-500/20";
       case "RESERVED":
         return "bg-cyan-500 text-white dark:bg-cyan-950/40 dark:text-cyan-400 border-cyan-500/20";
       case "PACKED":
@@ -200,6 +227,88 @@ export default function ProjectDetailClient({
         return "bg-rose-500 text-white dark:bg-rose-950/40 dark:text-rose-400 border-rose-500/20";
       default:
         return "bg-zinc-500 text-white dark:bg-zinc-800";
+    }
+  };
+
+  const stylistsList = staff.filter((s) => s.role === "STYLIST");
+  const packersList = staff.filter((s) => s.role === "PACKER");
+  const driversList = staff.filter((s) => s.role === "DRIVER");
+
+  const handleOpenEdit = () => {
+    setName(project.name);
+    setProjectCode(project.projectCode);
+    setClientId(project.client.id);
+    
+    const dateObj = new Date(project.shootDate);
+    const yyyy = dateObj.getFullYear();
+    const mm = String(dateObj.getMonth() + 1).padStart(2, "0");
+    const dd = String(dateObj.getDate()).padStart(2, "0");
+    setShootDate(`${yyyy}-${mm}-${dd}`);
+
+    setReportingTime(project.reportingTime || "");
+    setStatus(project.status);
+    setLeadStylistId(project.leadStylist?.id || "");
+    setLeadPackerId(project.leadPacker?.id || "");
+    setLeadDriverId(project.leadDriver?.id || "");
+    setIsEditOpen(true);
+  };
+
+  const handleUpdateProject = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setActionLoading(true);
+    try {
+      const res = await fetch(`/api/projects/${project.id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name,
+          projectCode: projectCode.toUpperCase().replace(/\s/g, ""),
+          clientId,
+          shootDate,
+          reportingTime: reportingTime || null,
+          status,
+          leadStylistId: leadStylistId || null,
+          leadPackerId: leadPackerId || null,
+          leadDriverId: leadDriverId || null,
+        }),
+      });
+
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "Failed to update project");
+
+      const clientObj = clients.find(c => c.id === clientId);
+      const stylistObj = staff.find(s => s.id === leadStylistId);
+      const packerObj = staff.find(s => s.id === leadPackerId);
+      const driverObj = staff.find(s => s.id === leadDriverId);
+
+      const updatedProject: ProjectDetailData = {
+        ...project,
+        ...data.project,
+        client: clientObj ? { id: clientObj.id, name: clientObj.name, email: project.client.email, contactNumbers: project.client.contactNumbers } : project.client,
+        leadStylist: stylistObj ? { id: stylistObj.id, name: stylistObj.name, role: stylistObj.role, email: stylistObj.email || "" } : null,
+        leadPacker: packerObj ? { id: packerObj.id, name: packerObj.name, role: packerObj.role, email: packerObj.email || "" } : null,
+        leadDriver: driverObj ? { id: driverObj.id, name: driverObj.name, role: driverObj.role, email: driverObj.email || "" } : null,
+      };
+
+      setProject(updatedProject);
+
+      // Prepend local audit log
+      const newLog = {
+        id: `log-${Date.now()}`,
+        action: "PROJECT_UPDATED",
+        entityType: "Project",
+        newValue: `Updated details for project '${name}' (${projectCode}) via details dashboard`,
+        oldValue: null,
+        createdAt: new Date().toISOString(),
+        user: { id: "current-user", name: "Admin User", role: "ADMIN", email: "admin@stylingos.com" }
+      };
+      setAuditLogs((prev) => [newLog, ...prev]);
+
+      setIsEditOpen(false);
+    } catch (err: any) {
+      alert(err.message || "Failed to update project");
+    } finally {
+      setActionLoading(false);
     }
   };
 
@@ -218,7 +327,7 @@ export default function ProjectDetailClient({
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div className="space-y-1">
             <div className="flex items-center gap-2">
-              <code className="text-xs font-mono font-bold text-zinc-400 bg-zinc-100 dark:bg-zinc-950 px-2 py-0.5 rounded border border-zinc-200/50 dark:border-zinc-800/50">
+              <code className="text-xs font-mono font-bold text-zinc-400 bg-zinc-100 dark:bg-zinc-955 px-2 py-0.5 rounded border border-zinc-200/50 dark:border-zinc-800/50">
                 {project.projectCode}
               </code>
               {getStatusBadge(project.status)}
@@ -227,6 +336,14 @@ export default function ProjectDetailClient({
               {project.name}
             </h1>
           </div>
+
+          <button
+            onClick={handleOpenEdit}
+            className="inline-flex items-center gap-1.5 px-4.5 py-2.5 border border-zinc-200 dark:border-zinc-800 rounded-xl text-zinc-700 dark:text-zinc-300 hover:bg-zinc-50 dark:hover:bg-zinc-950 font-bold text-xs cursor-pointer transition-all"
+          >
+            <Edit className="w-3.5 h-3.5 text-cyan-500" />
+            <span>Edit Project Details</span>
+          </button>
         </div>
       </div>
 
@@ -295,7 +412,7 @@ export default function ProjectDetailClient({
                         </div>
                       )}
                       
-                      <div className="p-4 rounded-xl bg-zinc-50 dark:bg-zinc-950 border border-zinc-150 dark:border-zinc-800/85">
+                      <div className="p-4 rounded-xl bg-zinc-50 dark:bg-zinc-955 border border-zinc-150 dark:border-zinc-800/85">
                         <span className="text-[10px] text-zinc-400 uppercase tracking-wider block font-bold">Call Time (Reporting)</span>
                         <p className="text-xs font-mono font-bold text-zinc-805 dark:text-zinc-200 mt-1 flex items-center gap-1.5">
                           <Clock className="w-3.5 h-3.5 text-cyan-500 shrink-0" />
@@ -358,36 +475,27 @@ export default function ProjectDetailClient({
 
                   {/* 2. Stylist Card */}
                   <div className="p-5 rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900/40 shadow-sm hover:shadow-md transition-shadow relative overflow-hidden group">
-                    <div className="absolute top-0 right-0 w-24 h-24 bg-gradient-to-br from-pink-500/5 to-transparent rounded-full -mr-8 -mt-8 transition-transform group-hover:scale-110" />
-                    <span className="text-[9px] font-bold bg-pink-100 dark:bg-pink-950/40 text-pink-700 dark:text-pink-400 px-2.5 py-0.5 rounded uppercase tracking-wider block w-max font-bold">
-                      Stylist
+                    <div className="absolute top-0 right-0 w-24 h-24 bg-gradient-to-br from-cyan-500/5 to-transparent rounded-full -mr-8 -mt-8 transition-transform group-hover:scale-110" />
+                    <span className="text-[9px] font-bold bg-cyan-100 dark:bg-cyan-950/40 text-cyan-700 dark:text-cyan-400 px-2.5 py-0.5 rounded uppercase tracking-wider block w-max font-bold">
+                      Lead Stylist
                     </span>
                     <h4 className="text-sm font-bold text-zinc-850 dark:text-zinc-200 mt-3">
-                      {project.leadStylist ? project.leadStylist.name : "Unassigned"}
+                      {project.leadStylist?.name || "Unassigned"}
                     </h4>
                     <div className="mt-4 space-y-2.5 text-xs text-zinc-550 dark:text-zinc-400">
-                      {project.leadStylist?.email ? (
-                        <a href={`mailto:${project.leadStylist.email}`} className="flex items-center gap-2 hover:text-pink-500 transition-colors">
+                      {project.leadStylist?.email && (
+                        <a href={`mailto:${project.leadStylist.email}`} className="flex items-center gap-2 hover:text-cyan-500 transition-colors">
                           <Mail className="w-3.5 h-3.5 shrink-0 text-zinc-400" />
                           <span className="truncate">{project.leadStylist.email}</span>
                         </a>
-                      ) : (
-                        <div className="flex items-center gap-2 text-zinc-450 italic">
-                          <Mail className="w-3.5 h-3.5 shrink-0 text-zinc-455" />
-                          <span>No email provided</span>
-                        </div>
                       )}
-                      <div className="flex items-center gap-2 font-mono text-zinc-500">
-                        <Phone className="w-3.5 h-3.5 shrink-0 text-zinc-400" />
-                        <span>Direct Team Line</span>
-                      </div>
                     </div>
                   </div>
 
                   {/* 3. Site Supervisor Card */}
                   <div className="p-5 rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900/40 shadow-sm hover:shadow-md transition-shadow relative overflow-hidden group">
                     <div className="absolute top-0 right-0 w-24 h-24 bg-gradient-to-br from-amber-500/5 to-transparent rounded-full -mr-8 -mt-8 transition-transform group-hover:scale-110" />
-                    <span className="text-[9px] font-bold bg-amber-100 dark:bg-amber-950/40 text-amber-700 dark:text-amber-400 px-2.5 py-0.5 rounded uppercase tracking-wider block w-max font-bold font-mono">
+                    <span className="text-[9px] font-bold bg-amber-100 dark:bg-amber-955/40 text-amber-700 dark:text-amber-400 px-2.5 py-0.5 rounded uppercase tracking-wider block w-max font-bold">
                       Site Supervisor
                     </span>
                     <h4 className="text-sm font-bold text-zinc-850 dark:text-zinc-200 mt-3">
@@ -474,7 +582,7 @@ export default function ProjectDetailClient({
                   </div>
                 ) : (
                   <div className="p-4 rounded-xl bg-zinc-50 dark:bg-zinc-950 border border-zinc-150 text-center">
-                    <p className="text-xs text-zinc-500 italic">No customized site access rules configured.</p>
+                    <p className="text-xs text-zinc-505 italic">No customized site access rules configured.</p>
                   </div>
                 )}
               </div>
@@ -548,59 +656,44 @@ export default function ProjectDetailClient({
                 </div>
 
                 {/* Progress Bar */}
-                <div className="w-full bg-zinc-100 dark:bg-zinc-805 h-2 rounded-full overflow-hidden">
+                <div className="h-2 w-full bg-zinc-100 dark:bg-zinc-800 rounded-full overflow-hidden">
                   <div 
-                    className="bg-amber-500 h-full transition-all duration-300"
+                    className="h-full bg-amber-500 rounded-full transition-all duration-300"
                     style={{ width: `${whPercent}%` }}
                   />
                 </div>
 
-                {/* Checklist items */}
-                <div className="space-y-2.5 mt-4">
-                  {WAREHOUSE_CHECKLIST_ITEMS.map((item) => {
-                    const isChecked = !!whChecked[item.id];
-                    return (
-                      <button
-                        key={item.id}
-                        onClick={() => toggleWhItem(item.id)}
-                        className={cn(
-                          "w-full text-left p-3.5 rounded-xl border flex items-start gap-3 transition-all duration-150 cursor-pointer",
-                          isChecked
-                            ? "border-amber-500/20 bg-amber-500/[0.02] text-zinc-800 dark:text-zinc-200"
-                            : "border-zinc-200 dark:border-zinc-800 bg-zinc-50/20 dark:bg-zinc-950/20 text-zinc-550"
+                {/* List Items */}
+                <div className="space-y-3 pt-2">
+                  {WAREHOUSE_CHECKLIST_ITEMS.map((item) => (
+                    <div 
+                      key={item.id}
+                      onClick={() => toggleWhItem(item.id)}
+                      className="flex items-start gap-3 text-xs text-zinc-700 dark:text-zinc-350 cursor-pointer select-none hover:text-zinc-950 dark:hover:text-zinc-50 transition-colors"
+                    >
+                      <button className="shrink-0 mt-0.5 text-zinc-400 hover:text-zinc-750 dark:text-zinc-600 dark:hover:text-zinc-400">
+                        {whChecked[item.id] ? (
+                          <CheckCircle2 className="w-4 h-4 text-emerald-500" />
+                        ) : (
+                          <div className="w-4 h-4 rounded border border-zinc-300 dark:border-zinc-700" />
                         )}
-                      >
-                        <div className="shrink-0 mt-0.5 text-amber-500">
-                          {isChecked ? (
-                            <CheckCircle2 className="w-5 h-5" />
-                          ) : (
-                            <Square className="w-5 h-5" />
-                          )}
-                        </div>
-                        <span className={cn("text-xs font-medium leading-relaxed", isChecked ? "line-through opacity-50" : "")}>
-                          {item.label}
-                        </span>
                       </button>
-                    );
-                  })}
+                      <span className={cn(whChecked[item.id] && "line-through text-zinc-400 dark:text-zinc-650")}>
+                        {item.label}
+                      </span>
+                    </div>
+                  ))}
                 </div>
               </div>
-              
-              {isMounted && whPercent === 100 && (
-                <div className="mt-5 p-3 rounded-xl bg-emerald-500/5 text-emerald-600 dark:text-emerald-400 border border-emerald-500/15 text-center text-xs font-bold flex items-center justify-center gap-1.5 animate-pulse">
-                  <CheckCircle2 className="w-4 h-4 text-emerald-500" />
-                  <span>Warehouse check fully cleared!</span>
-                </div>
-              )}
             </div>
 
-            {/* On-Site Checklist Card */}
+            {/* Site Wrap Checklist Card */}
             <div className="p-6 rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900/40 shadow-sm space-y-4 flex flex-col justify-between">
               <div className="space-y-4">
                 <div className="flex items-center justify-between">
                   <h3 className="font-bold text-sm text-zinc-900 dark:text-zinc-50 flex items-center gap-2">
                     <ClipboardCheck className="w-5 h-5 text-indigo-500" />
-                    <span>Before Leaving Site</span>
+                    <span>Site Wrapping & Returns</span>
                   </h3>
                   <span className="text-xs font-bold bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 px-2.5 py-0.5 rounded font-mono">
                     {sitePercent}% Done
@@ -608,66 +701,48 @@ export default function ProjectDetailClient({
                 </div>
 
                 {/* Progress Bar */}
-                <div className="w-full bg-zinc-100 dark:bg-zinc-805 h-2 rounded-full overflow-hidden">
+                <div className="h-2 w-full bg-zinc-100 dark:bg-zinc-800 rounded-full overflow-hidden">
                   <div 
-                    className="bg-indigo-500 h-full transition-all duration-300"
+                    className="h-full bg-indigo-500 rounded-full transition-all duration-300"
                     style={{ width: `${sitePercent}%` }}
                   />
                 </div>
 
-                {/* Checklist items */}
-                <div className="space-y-2.5 mt-4">
-                  {SITE_CHECKLIST_ITEMS.map((item) => {
-                    const isChecked = !!siteChecked[item.id];
-                    return (
-                      <button
-                        key={item.id}
-                        onClick={() => toggleSiteItem(item.id)}
-                        className={cn(
-                          "w-full text-left p-3.5 rounded-xl border flex items-start gap-3 transition-all duration-150 cursor-pointer",
-                          isChecked
-                            ? "border-indigo-500/20 bg-indigo-500/[0.02] text-zinc-800 dark:text-zinc-200"
-                            : "border-zinc-200 dark:border-zinc-800 bg-zinc-50/20 dark:bg-zinc-950/20 text-zinc-550"
+                {/* List Items */}
+                <div className="space-y-3 pt-2">
+                  {SITE_CHECKLIST_ITEMS.map((item) => (
+                    <div 
+                      key={item.id}
+                      onClick={() => toggleSiteItem(item.id)}
+                      className="flex items-start gap-3 text-xs text-zinc-700 dark:text-zinc-350 cursor-pointer select-none hover:text-zinc-950 dark:hover:text-zinc-50 transition-colors"
+                    >
+                      <button className="shrink-0 mt-0.5 text-zinc-400 hover:text-zinc-750 dark:text-zinc-600 dark:hover:text-zinc-400">
+                        {siteChecked[item.id] ? (
+                          <CheckCircle2 className="w-4 h-4 text-emerald-500" />
+                        ) : (
+                          <div className="w-4 h-4 rounded border border-zinc-300 dark:border-zinc-700" />
                         )}
-                      >
-                        <div className="shrink-0 mt-0.5 text-indigo-500">
-                          {isChecked ? (
-                            <CheckCircle2 className="w-5 h-5" />
-                          ) : (
-                            <Square className="w-5 h-5" />
-                          )}
-                        </div>
-                        <span className={cn("text-xs font-medium leading-relaxed", isChecked ? "line-through opacity-50" : "")}>
-                          {item.label}
-                        </span>
                       </button>
-                    );
-                  })}
+                      <span className={cn(siteChecked[item.id] && "line-through text-zinc-400 dark:text-zinc-650")}>
+                        {item.label}
+                      </span>
+                    </div>
+                  ))}
                 </div>
               </div>
-
-              {isMounted && sitePercent === 100 && (
-                <div className="mt-5 p-3 rounded-xl bg-emerald-500/5 text-emerald-600 dark:text-emerald-400 border border-emerald-500/15 text-center text-xs font-bold flex items-center justify-center gap-1.5 animate-pulse">
-                  <CheckCircle2 className="w-4 h-4 text-emerald-500" />
-                  <span>Site return clearance fully secured!</span>
-                </div>
-              )}
             </div>
           </div>
         )}
 
-        {/* AUDIT HISTORY TAB */}
+        {/* AUDIT LOG HISTORY TAB */}
         {activeTab === "audit-history" && (
           <div className="p-6 rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900/40 shadow-sm space-y-6 animate-fadeIn">
-            <div className="flex justify-between items-center pb-2 border-b border-zinc-100 dark:border-zinc-850">
-              <div>
-                <h3 className="font-bold text-sm text-zinc-900 dark:text-zinc-50 flex items-center gap-2">
-                  <History className="w-4.5 h-4.5 text-cyan-500" />
-                  <span>Project Audit Logs</span>
-                </h3>
-                <p className="text-[11px] text-zinc-500 mt-0.5">Chronological database modifications and team actions.</p>
-              </div>
-              <span className="text-[10px] font-bold bg-zinc-100 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 px-2.5 py-0.5 rounded font-mono">
+            <div className="flex items-center justify-between pb-3 border-b border-zinc-150 dark:border-zinc-800">
+              <h3 className="font-bold text-sm text-zinc-900 dark:text-zinc-50 flex items-center gap-2">
+                <History className="w-5 h-5 text-cyan-500" />
+                <span>Project Change Log Audit</span>
+              </h3>
+              <span className="text-[10px] font-bold bg-zinc-105 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-850 px-2.5 py-0.5 rounded font-mono">
                 {auditLogs.length} entries
               </span>
             </div>
@@ -718,6 +793,172 @@ export default function ProjectDetailClient({
           </div>
         )}
       </div>
+
+      {/* Edit Modal (Crew Assignments) */}
+      {isEditOpen && (
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+          <div className="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 max-w-lg w-full rounded-2xl shadow-xl overflow-hidden p-6 space-y-4 animate-scaleUp">
+            <div className="flex items-center justify-between">
+              <h3 className="font-bold text-lg text-zinc-900 dark:text-zinc-50 flex items-center gap-2">
+                <Edit className="w-5 h-5 text-cyan-500" />
+                <span>Edit Project details</span>
+              </h3>
+              <button onClick={() => setIsEditOpen(false)} className="p-1 rounded-lg text-zinc-400 hover:bg-zinc-50 dark:hover:bg-zinc-950">
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            <form onSubmit={handleUpdateProject} className="space-y-4 pt-2">
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-1">
+                  <label className="text-xs font-semibold text-zinc-500 block">Project Name</label>
+                  <input
+                    type="text"
+                    required
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
+                    className="w-full px-3 py-2 bg-white dark:bg-zinc-955 border border-zinc-200 dark:border-zinc-800 rounded-xl text-xs focus:outline-none focus:ring-1 focus:ring-cyan-500"
+                  />
+                </div>
+
+                <div className="space-y-1">
+                  <label className="text-xs font-semibold text-zinc-500 block">Project Code</label>
+                  <input
+                    type="text"
+                    required
+                    value={projectCode}
+                    onChange={(e) => setProjectCode(e.target.value)}
+                    className="w-full px-3 py-2 bg-white dark:bg-zinc-955 border border-zinc-200 dark:border-zinc-800 rounded-xl text-xs focus:outline-none focus:ring-1 focus:ring-cyan-500 font-mono uppercase"
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-1">
+                  <label className="text-xs font-semibold text-zinc-500 block">Client Partner</label>
+                  <select
+                    value={clientId}
+                    onChange={(e) => setClientId(e.target.value)}
+                    className="w-full px-3 py-2 bg-white dark:bg-zinc-955 border border-zinc-200 dark:border-zinc-800 rounded-xl text-xs focus:outline-none focus:ring-1 focus:ring-cyan-500"
+                  >
+                    {clients.map((c) => (
+                      <option key={c.id} value={c.id}>{c.name}</option>
+                    ))}
+                  </select>
+                </div>
+
+                <div className="space-y-1">
+                  <label className="text-xs font-semibold text-zinc-500 block">Production Stage</label>
+                  <select
+                    value={status}
+                    onChange={(e) => setStatus(e.target.value)}
+                    className="w-full px-3 py-2 bg-white dark:bg-zinc-955 border border-zinc-200 dark:border-zinc-800 rounded-xl text-xs focus:outline-none focus:ring-1 focus:ring-cyan-500"
+                  >
+                    <option value="INQUIRY">INQUIRY</option>
+                    <option value="BOOKED">BOOKED</option>
+                    <option value="PACKING">PACKING</option>
+                    <option value="DISPATCHED">DISPATCHED</option>
+                    <option value="ON_SITE">ON SITE</option>
+                    <option value="RETURNING">RETURNING</option>
+                    <option value="COMPLETED">COMPLETED</option>
+                  </select>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-1">
+                  <label className="text-xs font-semibold text-zinc-500 block">Shoot Date</label>
+                  <input
+                    type="date"
+                    required
+                    value={shootDate}
+                    onChange={(e) => setShootDate(e.target.value)}
+                    className="w-full px-3 py-2 bg-white dark:bg-zinc-955 border border-zinc-200 dark:border-zinc-800 rounded-xl text-xs focus:outline-none focus:ring-1 focus:ring-cyan-500 font-mono"
+                  />
+                </div>
+
+                <div className="space-y-1">
+                  <label className="text-xs font-semibold text-zinc-500 block">Reporting Time (Call Time)</label>
+                  <input
+                    type="text"
+                    value={reportingTime}
+                    onChange={(e) => setReportingTime(e.target.value)}
+                    className="w-full px-3 py-2 bg-white dark:bg-zinc-955 border border-zinc-200 dark:border-zinc-800 rounded-xl text-xs focus:outline-none focus:ring-1 focus:ring-cyan-500 font-mono"
+                  />
+                </div>
+              </div>
+
+              {/* Crew assignments */}
+              <div className="border-t border-zinc-150 dark:border-zinc-850 pt-4 space-y-4">
+                <h4 className="text-xs font-bold text-zinc-800 dark:text-zinc-200 uppercase tracking-wide">Assign Production Crew</h4>
+                
+                <div className="grid grid-cols-3 gap-4">
+                  <div className="space-y-1">
+                    <label className="text-[10px] font-semibold text-zinc-400 block uppercase">Lead Stylist</label>
+                    <select
+                      value={leadStylistId}
+                      onChange={(e) => setLeadStylistId(e.target.value)}
+                      className="w-full px-2 py-1.5 bg-white dark:bg-zinc-955 border border-zinc-200 dark:border-zinc-800 rounded-xl text-[11px] focus:outline-none focus:ring-1 focus:ring-cyan-500"
+                    >
+                      <option value="">Unassigned</option>
+                      {stylistsList.map((s) => (
+                        <option key={s.id} value={s.id}>{s.name}</option>
+                      ))}
+                    </select>
+                  </div>
+
+                  <div className="space-y-1">
+                    <label className="text-[10px] font-semibold text-zinc-400 block uppercase">Lead Packer</label>
+                    <select
+                      value={leadPackerId}
+                      onChange={(e) => setLeadPackerId(e.target.value)}
+                      className="w-full px-2 py-1.5 bg-white dark:bg-zinc-955 border border-zinc-200 dark:border-zinc-800 rounded-xl text-[11px] focus:outline-none focus:ring-1 focus:ring-cyan-500"
+                    >
+                      <option value="">Unassigned</option>
+                      {packersList.map((s) => (
+                        <option key={s.id} value={s.id}>{s.name}</option>
+                      ))}
+                    </select>
+                  </div>
+
+                  <div className="space-y-1">
+                    <label className="text-[10px] font-semibold text-zinc-400 block uppercase">Lead Driver</label>
+                    <select
+                      value={leadDriverId}
+                      onChange={(e) => setLeadDriverId(e.target.value)}
+                      className="w-full px-2 py-1.5 bg-white dark:bg-zinc-955 border border-zinc-200 dark:border-zinc-800 rounded-xl text-[11px] focus:outline-none focus:ring-1 focus:ring-cyan-500"
+                    >
+                      <option value="">Unassigned</option>
+                      {driversList.map((s) => (
+                        <option key={s.id} value={s.id}>{s.name}</option>
+                      ))}
+                    </select>
+                  </div>
+                </div>
+              </div>
+
+              <div className="pt-4 flex gap-3">
+                <button
+                  type="button"
+                  onClick={() => setIsEditOpen(false)}
+                  className="flex-1 px-4 py-2.5 border border-zinc-200 dark:border-zinc-800 rounded-xl text-xs font-bold text-zinc-700 dark:text-zinc-300 hover:bg-zinc-50 dark:hover:bg-zinc-950"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  disabled={actionLoading}
+                  className="flex-1 px-4 py-2.5 bg-cyan-500 hover:bg-cyan-600 text-white rounded-xl text-xs font-bold disabled:opacity-50 flex items-center justify-center gap-1.5"
+                >
+                  {actionLoading ? <RefreshCw className="w-3.5 h-3.5 animate-spin" /> : <Save className="w-3.5 h-3.5" />}
+                  <span>Save Changes</span>
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
+

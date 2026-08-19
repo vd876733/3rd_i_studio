@@ -9,9 +9,15 @@ import {
   Clock, 
   MapPin, 
   User, 
-  ArrowRight,
-  Filter,
-  CheckCircle2
+  ArrowRight, 
+  Filter, 
+  CheckCircle2,
+  Edit,
+  Plus,
+  X,
+  RefreshCw,
+  AlertTriangle,
+  Save
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -44,12 +50,49 @@ interface ProjectData {
   } | null;
 }
 
-export default function ProjectsListClient({ initialProjects }: { initialProjects: ProjectData[] }) {
+interface ClientSelect {
+  id: string;
+  name: string;
+}
+
+interface StaffSelect {
+  id: string;
+  name: string;
+  role: string;
+}
+
+export default function ProjectsListClient({ 
+  initialProjects,
+  clients = [],
+  staff = []
+}: { 
+  initialProjects: ProjectData[];
+  clients?: ClientSelect[];
+  staff?: StaffSelect[];
+}) {
+  const [projects, setProjects] = useState<ProjectData[]>(initialProjects);
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState<string>("ALL");
+  const [actionLoading, setActionLoading] = useState(false);
+
+  // Modals state
+  const [isCreateOpen, setIsCreateOpen] = useState(false);
+  const [isEditOpen, setIsEditOpen] = useState(false);
+  const [selectedProject, setSelectedProject] = useState<ProjectData | null>(null);
+
+  // Form states
+  const [name, setName] = useState("");
+  const [projectCode, setProjectCode] = useState("");
+  const [clientId, setClientId] = useState("");
+  const [shootDate, setShootDate] = useState("");
+  const [reportingTime, setReportingTime] = useState("");
+  const [status, setStatus] = useState("INQUIRY");
+  const [leadStylistId, setLeadStylistId] = useState("");
+  const [leadPackerId, setLeadPackerId] = useState("");
+  const [leadDriverId, setLeadDriverId] = useState("");
 
   // Filtering logic
-  const filteredProjects = initialProjects.filter((project) => {
+  const filteredProjects = projects.filter((project) => {
     const matchesSearch = 
       project.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
       project.projectCode.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -86,18 +129,160 @@ export default function ProjectsListClient({ initialProjects }: { initialProject
         break;
     }
     return (
-      <span className={cn("px-2.5 py-1 rounded-full text-xs font-semibold border", colorClass)}>
+      <span className={cn("px-2.5 py-1 rounded-full text-xs font-semibold border uppercase tracking-wider", colorClass)}>
         {status}
       </span>
     );
   };
 
+  const stylistsList = staff.filter((s) => s.role === "STYLIST");
+  const packersList = staff.filter((s) => s.role === "PACKER");
+  const driversList = staff.filter((s) => s.role === "DRIVER");
+
+  // Handlers for modals
+  const handleOpenCreate = () => {
+    setName("");
+    // Generate a default project code: PROJ-RANDOM
+    setProjectCode(`PRJ-${Math.floor(1000 + Math.random() * 9000)}`);
+    setClientId(clients.length > 0 ? clients[0].id : "");
+    setShootDate("");
+    setReportingTime("");
+    setStatus("INQUIRY");
+    setLeadStylistId("");
+    setLeadPackerId("");
+    setLeadDriverId("");
+    setIsCreateOpen(true);
+  };
+
+  const handleOpenEdit = (project: ProjectData) => {
+    setSelectedProject(project);
+    setName(project.name);
+    setProjectCode(project.projectCode);
+    setClientId(project.client.id);
+    
+    // Format shootDate: YYYY-MM-DD
+    const dateObj = new Date(project.shootDate);
+    const yyyy = dateObj.getFullYear();
+    const mm = String(dateObj.getMonth() + 1).padStart(2, "0");
+    const dd = String(dateObj.getDate()).padStart(2, "0");
+    setShootDate(`${yyyy}-${mm}-${dd}`);
+
+    setReportingTime(project.reportingTime || "");
+    setStatus(project.status);
+    setLeadStylistId(project.leadStylist?.id || "");
+    setLeadPackerId(project.leadPacker?.id || "");
+    setLeadDriverId(project.leadDriver?.id || "");
+    setIsEditOpen(true);
+  };
+
+  const handleCreateProject = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!name || !projectCode || !clientId || !shootDate) return;
+
+    setActionLoading(true);
+    try {
+      const res = await fetch("/api/projects", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name,
+          projectCode: projectCode.toUpperCase().replace(/\s/g, ""),
+          clientId,
+          shootDate,
+          reportingTime: reportingTime || null,
+          status,
+          leadStylistId: leadStylistId || null,
+          leadPackerId: leadPackerId || null,
+          leadDriverId: leadDriverId || null,
+        }),
+      });
+
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "Failed to create project");
+
+      // Reload lists or manually append
+      // Fetch full list again from backend or assemble mock return
+      const clientObj = clients.find(c => c.id === clientId);
+      const stylistObj = staff.find(s => s.id === leadStylistId);
+      const packerObj = staff.find(s => s.id === leadPackerId);
+      const driverObj = staff.find(s => s.id === leadDriverId);
+
+      const newProject: ProjectData = {
+        ...data.project,
+        client: clientObj ? { id: clientObj.id, name: clientObj.name, contactNumbers: "" } : { id: "", name: "", contactNumbers: "" },
+        leadStylist: stylistObj ? { id: stylistObj.id, name: stylistObj.name, role: stylistObj.role } : null,
+        leadPacker: packerObj ? { id: packerObj.id, name: packerObj.name, role: packerObj.role } : null,
+        leadDriver: driverObj ? { id: driverObj.id, name: driverObj.name, role: driverObj.role } : null,
+        siteDetails: null
+      };
+
+      setProjects((prev) => [...prev, newProject].sort((a,b) => new Date(a.shootDate).getTime() - new Date(b.shootDate).getTime()));
+      setIsCreateOpen(false);
+    } catch (err: any) {
+      alert(err.message || "Failed to create project");
+    } finally {
+      setActionLoading(false);
+    }
+  };
+
+  const handleUpdateProject = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!selectedProject) return;
+
+    setActionLoading(true);
+    try {
+      const res = await fetch(`/api/projects/${selectedProject.id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name,
+          projectCode: projectCode.toUpperCase().replace(/\s/g, ""),
+          clientId,
+          shootDate,
+          reportingTime: reportingTime || null,
+          status,
+          leadStylistId: leadStylistId || null,
+          leadPackerId: leadPackerId || null,
+          leadDriverId: leadDriverId || null,
+        }),
+      });
+
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "Failed to update project");
+
+      const clientObj = clients.find(c => c.id === clientId);
+      const stylistObj = staff.find(s => s.id === leadStylistId);
+      const packerObj = staff.find(s => s.id === leadPackerId);
+      const driverObj = staff.find(s => s.id === leadDriverId);
+
+      setProjects((prev) => 
+        prev.map((p) => 
+          p.id === selectedProject.id 
+            ? {
+                ...p,
+                ...data.project,
+                client: clientObj ? { id: clientObj.id, name: clientObj.name, contactNumbers: p.client.contactNumbers } : p.client,
+                leadStylist: stylistObj ? { id: stylistObj.id, name: stylistObj.name, role: stylistObj.role } : null,
+                leadPacker: packerObj ? { id: packerObj.id, name: packerObj.name, role: packerObj.role } : null,
+                leadDriver: driverObj ? { id: driverObj.id, name: driverObj.name, role: driverObj.role } : null,
+              }
+            : p
+        )
+      );
+      setIsEditOpen(false);
+    } catch (err: any) {
+      alert(err.message || "Failed to update project");
+    } finally {
+      setActionLoading(false);
+    }
+  };
+
   return (
     <div className="space-y-6">
       {/* Search and Filters Bar */}
-      <div className="flex flex-col sm:flex-row gap-4">
+      <div className="flex flex-col sm:flex-row gap-4 items-center justify-between">
         {/* Search Input */}
-        <div className="relative flex-1">
+        <div className="relative flex-1 w-full">
           <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-400" />
           <input
             type="text"
@@ -109,22 +294,32 @@ export default function ProjectsListClient({ initialProjects }: { initialProject
         </div>
 
         {/* Status Select Filter */}
-        <div className="flex items-center gap-2">
-          <Filter className="w-4 h-4 text-zinc-400" />
-          <select
-            value={statusFilter}
-            onChange={(e) => setStatusFilter(e.target.value)}
-            className="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-1 focus:ring-cyan-500 text-zinc-700 dark:text-zinc-300"
+        <div className="flex flex-wrap sm:flex-nowrap items-center gap-3 w-full sm:w-auto shrink-0 justify-end">
+          <div className="flex items-center gap-2">
+            <Filter className="w-4 h-4 text-zinc-400" />
+            <select
+              value={statusFilter}
+              onChange={(e) => setStatusFilter(e.target.value)}
+              className="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-1 focus:ring-cyan-500 text-zinc-700 dark:text-zinc-300"
+            >
+              <option value="ALL">All Stages</option>
+              <option value="INQUIRY">Inquiry</option>
+              <option value="BOOKED">Booked</option>
+              <option value="PACKING">Packing</option>
+              <option value="DISPATCHED">Dispatched</option>
+              <option value="ON_SITE">On Site</option>
+              <option value="RETURNING">Returning</option>
+              <option value="COMPLETED">Completed</option>
+            </select>
+          </div>
+
+          <button
+            onClick={handleOpenCreate}
+            className="inline-flex items-center gap-1.5 px-4 py-2.5 bg-cyan-500 hover:bg-cyan-600 text-white rounded-xl text-xs font-bold shadow-sm cursor-pointer shrink-0"
           >
-            <option value="ALL">All Stages</option>
-            <option value="INQUIRY">Inquiry</option>
-            <option value="BOOKED">Booked</option>
-            <option value="PACKING">Packing</option>
-            <option value="DISPATCHED">Dispatched</option>
-            <option value="ON_SITE">On Site</option>
-            <option value="RETURNING">Returning</option>
-            <option value="COMPLETED">Completed</option>
-          </select>
+            <Plus className="w-4 h-4" />
+            <span>Create Project</span>
+          </button>
         </div>
       </div>
 
@@ -211,11 +406,19 @@ export default function ProjectsListClient({ initialProjects }: { initialProject
                 </div>
               </div>
 
-              {/* Action Button */}
-              <div className="mt-6 flex items-center justify-end">
+              {/* Action Buttons */}
+              <div className="mt-6 flex items-center justify-between pt-4 border-t border-zinc-100 dark:border-zinc-800">
+                <button
+                  onClick={() => handleOpenEdit(project)}
+                  className="inline-flex items-center gap-1.5 px-3 py-2 border border-zinc-200 dark:border-zinc-850 rounded-xl text-zinc-650 dark:text-zinc-350 hover:bg-zinc-50 dark:hover:bg-zinc-950 font-bold text-xs cursor-pointer transition-colors"
+                >
+                  <Edit className="w-3.5 h-3.5" />
+                  <span>Edit Details</span>
+                </button>
+
                 <Link
                   href={`/projects/${project.id}`}
-                  className="inline-flex items-center gap-1.5 px-4.5 py-2.5 rounded-xl bg-cyan-500 hover:bg-cyan-600 text-white font-semibold text-xs transition-all duration-200 hover:gap-2 shadow-sm shadow-cyan-500/10"
+                  className="inline-flex items-center gap-1.5 px-4.5 py-2.5 rounded-xl bg-cyan-500 hover:bg-cyan-600 text-white font-semibold text-xs transition-all duration-200 hover:gap-2 shadow-sm shadow-cyan-500/10 cursor-pointer"
                 >
                   <span>Manage Production</span>
                   <ArrowRight className="w-3.5 h-3.5" />
@@ -231,6 +434,339 @@ export default function ProjectsListClient({ initialProjects }: { initialProject
           </div>
         )}
       </div>
+
+      {/* Create Project Modal */}
+      {isCreateOpen && (
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+          <div className="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 max-w-lg w-full rounded-2xl shadow-xl overflow-hidden p-6 space-y-4 animate-scaleUp">
+            <div className="flex items-center justify-between">
+              <h3 className="font-bold text-lg text-zinc-900 dark:text-zinc-50 flex items-center gap-2">
+                <Briefcase className="w-5 h-5 text-cyan-500" />
+                <span>Create Production Project</span>
+              </h3>
+              <button onClick={() => setIsCreateOpen(false)} className="p-1 rounded-lg text-zinc-400 hover:bg-zinc-50 dark:hover:bg-zinc-950">
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            <form onSubmit={handleCreateProject} className="space-y-4 pt-2">
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-1">
+                  <label className="text-xs font-semibold text-zinc-500 block">Project Name</label>
+                  <input
+                    type="text"
+                    required
+                    placeholder="e.g. Vogue Summer Cover"
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
+                    className="w-full px-3 py-2 bg-white dark:bg-zinc-955 border border-zinc-200 dark:border-zinc-800 rounded-xl text-xs focus:outline-none focus:ring-1 focus:ring-cyan-500"
+                  />
+                </div>
+
+                <div className="space-y-1">
+                  <label className="text-xs font-semibold text-zinc-500 block">Project Code</label>
+                  <input
+                    type="text"
+                    required
+                    placeholder="e.g. PRJ-9901"
+                    value={projectCode}
+                    onChange={(e) => setProjectCode(e.target.value)}
+                    className="w-full px-3 py-2 bg-white dark:bg-zinc-955 border border-zinc-200 dark:border-zinc-800 rounded-xl text-xs focus:outline-none focus:ring-1 focus:ring-cyan-500 font-mono uppercase"
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-1">
+                  <label className="text-xs font-semibold text-zinc-500 block">Client Partner</label>
+                  <select
+                    value={clientId}
+                    onChange={(e) => setClientId(e.target.value)}
+                    className="w-full px-3 py-2 bg-white dark:bg-zinc-955 border border-zinc-200 dark:border-zinc-800 rounded-xl text-xs focus:outline-none focus:ring-1 focus:ring-cyan-500"
+                  >
+                    {clients.map((c) => (
+                      <option key={c.id} value={c.id}>{c.name}</option>
+                    ))}
+                  </select>
+                </div>
+
+                <div className="space-y-1">
+                  <label className="text-xs font-semibold text-zinc-500 block">Production Stage</label>
+                  <select
+                    value={status}
+                    onChange={(e) => setStatus(e.target.value)}
+                    className="w-full px-3 py-2 bg-white dark:bg-zinc-955 border border-zinc-200 dark:border-zinc-800 rounded-xl text-xs focus:outline-none focus:ring-1 focus:ring-cyan-500"
+                  >
+                    <option value="INQUIRY">INQUIRY</option>
+                    <option value="BOOKED">BOOKED</option>
+                    <option value="PACKING">PACKING</option>
+                    <option value="DISPATCHED">DISPATCHED</option>
+                    <option value="ON_SITE">ON SITE</option>
+                    <option value="RETURNING">RETURNING</option>
+                    <option value="COMPLETED">COMPLETED</option>
+                  </select>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-1">
+                  <label className="text-xs font-semibold text-zinc-500 block">Shoot Date</label>
+                  <input
+                    type="date"
+                    required
+                    value={shootDate}
+                    onChange={(e) => setShootDate(e.target.value)}
+                    className="w-full px-3 py-2 bg-white dark:bg-zinc-955 border border-zinc-200 dark:border-zinc-800 rounded-xl text-xs focus:outline-none focus:ring-1 focus:ring-cyan-500 font-mono"
+                  />
+                </div>
+
+                <div className="space-y-1">
+                  <label className="text-xs font-semibold text-zinc-500 block">Reporting Time (Call Time)</label>
+                  <input
+                    type="text"
+                    placeholder="e.g. 08:30 AM"
+                    value={reportingTime}
+                    onChange={(e) => setReportingTime(e.target.value)}
+                    className="w-full px-3 py-2 bg-white dark:bg-zinc-955 border border-zinc-200 dark:border-zinc-800 rounded-xl text-xs focus:outline-none focus:ring-1 focus:ring-cyan-500 font-mono"
+                  />
+                </div>
+              </div>
+
+              {/* Crew dropdowns */}
+              <div className="border-t border-zinc-150 dark:border-zinc-850 pt-4 space-y-4">
+                <h4 className="text-xs font-bold text-zinc-800 dark:text-zinc-200 uppercase tracking-wide">Assign Production Crew</h4>
+                
+                <div className="grid grid-cols-3 gap-4">
+                  <div className="space-y-1">
+                    <label className="text-[10px] font-semibold text-zinc-400 block uppercase">Lead Stylist</label>
+                    <select
+                      value={leadStylistId}
+                      onChange={(e) => setLeadStylistId(e.target.value)}
+                      className="w-full px-2 py-1.5 bg-white dark:bg-zinc-955 border border-zinc-200 dark:border-zinc-800 rounded-xl text-[11px] focus:outline-none focus:ring-1 focus:ring-cyan-500"
+                    >
+                      <option value="">Unassigned</option>
+                      {stylistsList.map((s) => (
+                        <option key={s.id} value={s.id}>{s.name}</option>
+                      ))}
+                    </select>
+                  </div>
+
+                  <div className="space-y-1">
+                    <label className="text-[10px] font-semibold text-zinc-400 block uppercase">Lead Packer</label>
+                    <select
+                      value={leadPackerId}
+                      onChange={(e) => setLeadPackerId(e.target.value)}
+                      className="w-full px-2 py-1.5 bg-white dark:bg-zinc-955 border border-zinc-200 dark:border-zinc-800 rounded-xl text-[11px] focus:outline-none focus:ring-1 focus:ring-cyan-500"
+                    >
+                      <option value="">Unassigned</option>
+                      {packersList.map((s) => (
+                        <option key={s.id} value={s.id}>{s.name}</option>
+                      ))}
+                    </select>
+                  </div>
+
+                  <div className="space-y-1">
+                    <label className="text-[10px] font-semibold text-zinc-400 block uppercase">Lead Driver</label>
+                    <select
+                      value={leadDriverId}
+                      onChange={(e) => setLeadDriverId(e.target.value)}
+                      className="w-full px-2 py-1.5 bg-white dark:bg-zinc-955 border border-zinc-200 dark:border-zinc-800 rounded-xl text-[11px] focus:outline-none focus:ring-1 focus:ring-cyan-500"
+                    >
+                      <option value="">Unassigned</option>
+                      {driversList.map((s) => (
+                        <option key={s.id} value={s.id}>{s.name}</option>
+                      ))}
+                    </select>
+                  </div>
+                </div>
+              </div>
+
+              <div className="pt-4 flex gap-3">
+                <button
+                  type="button"
+                  onClick={() => setIsCreateOpen(false)}
+                  className="flex-1 px-4 py-2.5 border border-zinc-200 dark:border-zinc-800 rounded-xl text-xs font-bold text-zinc-700 dark:text-zinc-300 hover:bg-zinc-50 dark:hover:bg-zinc-950"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  disabled={actionLoading}
+                  className="flex-1 px-4 py-2.5 bg-cyan-500 hover:bg-cyan-600 text-white rounded-xl text-xs font-bold disabled:opacity-50 flex items-center justify-center gap-1.5"
+                >
+                  {actionLoading ? <RefreshCw className="w-3.5 h-3.5 animate-spin" /> : <Plus className="w-3.5 h-3.5" />}
+                  <span>Create Project</span>
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* Edit Project Modal */}
+      {isEditOpen && selectedProject && (
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+          <div className="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 max-w-lg w-full rounded-2xl shadow-xl overflow-hidden p-6 space-y-4 animate-scaleUp">
+            <div className="flex items-center justify-between">
+              <h3 className="font-bold text-lg text-zinc-900 dark:text-zinc-50 flex items-center gap-2">
+                <Edit className="w-5 h-5 text-cyan-500" />
+                <span>Modify Project Details</span>
+              </h3>
+              <button onClick={() => setIsEditOpen(false)} className="p-1 rounded-lg text-zinc-400 hover:bg-zinc-50 dark:hover:bg-zinc-950">
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            <form onSubmit={handleUpdateProject} className="space-y-4 pt-2">
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-1">
+                  <label className="text-xs font-semibold text-zinc-500 block">Project Name</label>
+                  <input
+                    type="text"
+                    required
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
+                    className="w-full px-3 py-2 bg-white dark:bg-zinc-955 border border-zinc-200 dark:border-zinc-800 rounded-xl text-xs focus:outline-none focus:ring-1 focus:ring-cyan-500"
+                  />
+                </div>
+
+                <div className="space-y-1">
+                  <label className="text-xs font-semibold text-zinc-500 block">Project Code</label>
+                  <input
+                    type="text"
+                    required
+                    value={projectCode}
+                    onChange={(e) => setProjectCode(e.target.value)}
+                    className="w-full px-3 py-2 bg-white dark:bg-zinc-955 border border-zinc-200 dark:border-zinc-800 rounded-xl text-xs focus:outline-none focus:ring-1 focus:ring-cyan-500 font-mono uppercase"
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-1">
+                  <label className="text-xs font-semibold text-zinc-500 block">Client Partner</label>
+                  <select
+                    value={clientId}
+                    onChange={(e) => setClientId(e.target.value)}
+                    className="w-full px-3 py-2 bg-white dark:bg-zinc-955 border border-zinc-200 dark:border-zinc-800 rounded-xl text-xs focus:outline-none focus:ring-1 focus:ring-cyan-500"
+                  >
+                    {clients.map((c) => (
+                      <option key={c.id} value={c.id}>{c.name}</option>
+                    ))}
+                  </select>
+                </div>
+
+                <div className="space-y-1">
+                  <label className="text-xs font-semibold text-zinc-500 block">Production Stage</label>
+                  <select
+                    value={status}
+                    onChange={(e) => setStatus(e.target.value)}
+                    className="w-full px-3 py-2 bg-white dark:bg-zinc-955 border border-zinc-200 dark:border-zinc-800 rounded-xl text-xs focus:outline-none focus:ring-1 focus:ring-cyan-500"
+                  >
+                    <option value="INQUIRY">INQUIRY</option>
+                    <option value="BOOKED">BOOKED</option>
+                    <option value="PACKING">PACKING</option>
+                    <option value="DISPATCHED">DISPATCHED</option>
+                    <option value="ON_SITE">ON SITE</option>
+                    <option value="RETURNING">RETURNING</option>
+                    <option value="COMPLETED">COMPLETED</option>
+                  </select>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-1">
+                  <label className="text-xs font-semibold text-zinc-500 block">Shoot Date</label>
+                  <input
+                    type="date"
+                    required
+                    value={shootDate}
+                    onChange={(e) => setShootDate(e.target.value)}
+                    className="w-full px-3 py-2 bg-white dark:bg-zinc-955 border border-zinc-200 dark:border-zinc-800 rounded-xl text-xs focus:outline-none focus:ring-1 focus:ring-cyan-500 font-mono"
+                  />
+                </div>
+
+                <div className="space-y-1">
+                  <label className="text-xs font-semibold text-zinc-500 block">Reporting Time (Call Time)</label>
+                  <input
+                    type="text"
+                    value={reportingTime}
+                    onChange={(e) => setReportingTime(e.target.value)}
+                    className="w-full px-3 py-2 bg-white dark:bg-zinc-955 border border-zinc-200 dark:border-zinc-800 rounded-xl text-xs focus:outline-none focus:ring-1 focus:ring-cyan-500 font-mono"
+                  />
+                </div>
+              </div>
+
+              {/* Crew dropdowns */}
+              <div className="border-t border-zinc-150 dark:border-zinc-850 pt-4 space-y-4">
+                <h4 className="text-xs font-bold text-zinc-800 dark:text-zinc-200 uppercase tracking-wide">Assign Production Crew</h4>
+                
+                <div className="grid grid-cols-3 gap-4">
+                  <div className="space-y-1">
+                    <label className="text-[10px] font-semibold text-zinc-400 block uppercase">Lead Stylist</label>
+                    <select
+                      value={leadStylistId}
+                      onChange={(e) => setLeadStylistId(e.target.value)}
+                      className="w-full px-2 py-1.5 bg-white dark:bg-zinc-955 border border-zinc-200 dark:border-zinc-800 rounded-xl text-[11px] focus:outline-none focus:ring-1 focus:ring-cyan-500"
+                    >
+                      <option value="">Unassigned</option>
+                      {stylistsList.map((s) => (
+                        <option key={s.id} value={s.id}>{s.name}</option>
+                      ))}
+                    </select>
+                  </div>
+
+                  <div className="space-y-1">
+                    <label className="text-[10px] font-semibold text-zinc-400 block uppercase">Lead Packer</label>
+                    <select
+                      value={leadPackerId}
+                      onChange={(e) => setLeadPackerId(e.target.value)}
+                      className="w-full px-2 py-1.5 bg-white dark:bg-zinc-955 border border-zinc-200 dark:border-zinc-800 rounded-xl text-[11px] focus:outline-none focus:ring-1 focus:ring-cyan-500"
+                    >
+                      <option value="">Unassigned</option>
+                      {packersList.map((s) => (
+                        <option key={s.id} value={s.id}>{s.name}</option>
+                      ))}
+                    </select>
+                  </div>
+
+                  <div className="space-y-1">
+                    <label className="text-[10px] font-semibold text-zinc-400 block uppercase">Lead Driver</label>
+                    <select
+                      value={leadDriverId}
+                      onChange={(e) => setLeadDriverId(e.target.value)}
+                      className="w-full px-2 py-1.5 bg-white dark:bg-zinc-955 border border-zinc-200 dark:border-zinc-800 rounded-xl text-[11px] focus:outline-none focus:ring-1 focus:ring-cyan-500"
+                    >
+                      <option value="">Unassigned</option>
+                      {driversList.map((s) => (
+                        <option key={s.id} value={s.id}>{s.name}</option>
+                      ))}
+                    </select>
+                  </div>
+                </div>
+              </div>
+
+              <div className="pt-4 flex gap-3">
+                <button
+                  type="button"
+                  onClick={() => setIsEditOpen(false)}
+                  className="flex-1 px-4 py-2.5 border border-zinc-200 dark:border-zinc-800 rounded-xl text-xs font-bold text-zinc-700 dark:text-zinc-300 hover:bg-zinc-50 dark:hover:bg-zinc-950"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  disabled={actionLoading}
+                  className="flex-1 px-4 py-2.5 bg-cyan-500 hover:bg-cyan-600 text-white rounded-xl text-xs font-bold disabled:opacity-50 flex items-center justify-center gap-1.5"
+                >
+                  {actionLoading ? <RefreshCw className="w-3.5 h-3.5 animate-spin" /> : <Save className="w-3.5 h-3.5" />}
+                  <span>Save Details</span>
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

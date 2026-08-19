@@ -5,10 +5,8 @@ import Link from "next/link";
 import { 
   Sparkles, 
   Search, 
-  MapPin, 
   Trash2, 
   Copy, 
-  Maximize2, 
   RotateCw, 
   ChevronUp, 
   ChevronDown, 
@@ -17,10 +15,10 @@ import {
   ArrowLeft,
   CheckCircle2,
   AlertTriangle,
-  RefreshCw,
-  Plus
+  RefreshCw
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { jsPDF } from "jspdf";
 
 // TS Interfaces
 interface InventoryItem {
@@ -42,6 +40,9 @@ interface CanvasElement {
   scale: number;
   rotation: number;
   zIndex: number;
+  sku?: string;
+  barcode?: string;
+  category?: string;
 }
 
 interface ProjectData {
@@ -62,8 +63,8 @@ export default function MoodBoardClient({
   embedded?: boolean;
 }) {
   const [availableItems, setAvailableItems] = useState<InventoryItem[]>(initialAvailableItems);
-  const [canvasElements, setCanvasElements] = useState<CanvasElement[]>([]);
   const [selectedElementId, setSelectedElementId] = useState<string | null>(null);
+  const [selectedObjectName, setSelectedObjectName] = useState<string | null>(null);
   
   const [searchQuery, setSearchQuery] = useState("");
   const [isSaving, setIsSaving] = useState(false);
@@ -71,29 +72,16 @@ export default function MoodBoardClient({
   const [isExporting, setIsExporting] = useState(false);
 
   const workspaceRef = useRef<HTMLDivElement>(null);
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const fabricCanvasRef = useRef<any>(null);
 
-  // Initialize Canvas layout from Project's moodBoardState JSON
+  // Dynamic import of Fabric
+  const [fabric, setFabric] = useState<any>(null);
   useEffect(() => {
-    if (project.moodBoardState) {
-      try {
-        const parsed = typeof project.moodBoardState === "string" 
-          ? JSON.parse(project.moodBoardState) 
-          : project.moodBoardState;
-        if (Array.isArray(parsed)) {
-          setCanvasElements(parsed);
-        }
-      } catch (err) {
-        console.error("Failed to parse moodBoardState:", err);
-      }
-    }
-  }, [project.moodBoardState]);
-
-  // Search items list
-  const filteredAvailable = availableItems.filter((item) =>
-    item.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    item.sku.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    item.category.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+    import("fabric").then((module) => {
+      setFabric((module as any).fabric);
+    });
+  }, []);
 
   const getPhotoUrl = (photos: any): string => {
     if (Array.isArray(photos) && photos.length > 0) {
@@ -106,33 +94,251 @@ export default function MoodBoardClient({
     return "https://picsum.photos/seed/placeholder/200";
   };
 
-  // Add item to moodboard and trigger reserve API
-  const handleAddItemToCanvas = async (item: InventoryItem) => {
-    // Check if item is already on canvas to avoid duplicate network reservation
-    const isAlreadyOnCanvas = canvasElements.some((el) => el.itemId === item.id);
-    
-    // Create new element coordinate parameters
-    const nextZIndex = canvasElements.length > 0 
-      ? Math.max(...canvasElements.map((el) => el.zIndex)) + 1 
-      : 1;
+  // Search items list
+  const filteredAvailable = availableItems.filter((item) =>
+    item.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    item.sku.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    item.category.toLowerCase().includes(searchQuery.toLowerCase())
+  );
 
-    const newElement: CanvasElement = {
-      id: `el-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
-      itemId: item.id,
-      name: item.name,
-      photos: item.photos,
-      x: 150 + (canvasElements.length % 5) * 20,
-      y: 120 + (canvasElements.length % 5) * 20,
-      scale: 0.8,
-      rotation: 0,
-      zIndex: nextZIndex
+  // Initialize Fabric Canvas and Load Saved State
+  useEffect(() => {
+    if (!fabric || !canvasRef.current) return;
+
+    // Initialize Fabric Canvas
+    const canvas = new fabric.Canvas(canvasRef.current, {
+      width: 800,
+      height: 600,
+      backgroundColor: "#18181b", // zinc-900
+      preserveObjectStacking: true,
+    });
+    fabricCanvasRef.current = canvas;
+
+    // Add unselectable, floating brand watermark / title text to the canvas
+    const titleText = new fabric.Text(`STYLING OS - MOODBOARD [${project.projectCode}]`, {
+      left: 20,
+      top: 20,
+      fontSize: 12,
+      fontFamily: "Courier New, monospace",
+      fill: "#3f3f46", // zinc-700
+      fontWeight: "bold",
+      selectable: false,
+      hoverCursor: "default",
+    });
+    canvas.add(titleText);
+
+    // Parse initial layout elements
+    let initialElements: CanvasElement[] = [];
+    if (project.moodBoardState) {
+      try {
+        const parsed = typeof project.moodBoardState === "string"
+          ? JSON.parse(project.moodBoardState)
+          : project.moodBoardState;
+        if (Array.isArray(parsed)) {
+          initialElements = parsed;
+        }
+      } catch (err) {
+        console.error("Failed to parse moodBoardState:", err);
+      }
+    }
+
+    // Load initial objects sequentially to preserve ordering and layout
+    const loadSavedElements = async () => {
+      for (const el of initialElements) {
+        const url = getPhotoUrl(el.photos);
+        await new Promise<void>((resolve) => {
+          fabric.Image.fromURL(
+            url,
+            (img: any) => {
+              if (img) {
+                // Determine scale relative to natural size
+                const maxDim = 140;
+                const baseScale = maxDim / Math.max(img.width || 1, img.height || 1);
+
+                img.set({
+                  left: el.x,
+                  top: el.y,
+                  scaleX: baseScale * (el.scale || 1),
+                  scaleY: baseScale * (el.scale || 1),
+                  angle: el.rotation || 0,
+                  
+                  // Premium control point aesthetics
+                  cornerColor: "#06b6d4",
+                  cornerStrokeColor: "#ffffff",
+                  borderColor: "#06b6d4",
+                  cornerSize: 8,
+                  transparentCorners: false,
+                  borderScaleFactor: 2,
+
+                  // Border and shadow styling
+                  stroke: "#ffffff",
+                  strokeWidth: 4,
+                  shadow: new fabric.Shadow({
+                    color: "rgba(0, 0, 0, 0.4)",
+                    blur: 15,
+                    offsetX: 5,
+                    offsetY: 5,
+                  }),
+                });
+
+                // Attach metadata parameters
+                (img as any).id = el.id;
+                (img as any).itemId = el.itemId;
+                (img as any).name = el.name;
+                (img as any).photos = el.photos;
+                (img as any).sku = el.sku || "SKU-TEMP";
+                (img as any).barcode = el.barcode || "BARCODE-TEMP";
+                (img as any).category = el.category || "Visuals";
+
+                canvas.add(img);
+              }
+              resolve();
+            },
+            { crossOrigin: "anonymous" }
+          );
+        });
+      }
+      canvas.renderAll();
     };
 
-    setCanvasElements((prev) => [...prev, newElement]);
-    setSelectedElementId(newElement.id);
+    loadSavedElements();
+
+    // Active Selection Event Listeners
+    const updateSelection = () => {
+      const activeObj = canvas.getActiveObject();
+      if (activeObj && (activeObj as any).itemId) {
+        setSelectedElementId((activeObj as any).id);
+        setSelectedObjectName((activeObj as any).name);
+      } else {
+        setSelectedElementId(null);
+        setSelectedObjectName(null);
+      }
+    };
+
+    canvas.on("selection:created", updateSelection);
+    canvas.on("selection:updated", updateSelection);
+    canvas.on("selection:cleared", updateSelection);
+
+    // Keyboard delete listener
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Delete" || e.key === "Backspace") {
+        if (document.activeElement?.tagName !== "INPUT" && document.activeElement?.tagName !== "TEXTAREA") {
+          handleDeleteElement();
+        }
+      }
+    };
+    window.addEventListener("keydown", handleKeyDown);
+
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown);
+      canvas.dispose();
+      fabricCanvasRef.current = null;
+    };
+  }, [fabric]);
+
+  // Sidebar drag handler
+  const handleDragStartSidebar = (e: React.DragEvent, item: InventoryItem) => {
+    e.dataTransfer.setData("application/json", JSON.stringify(item));
+  };
+
+  // Drop handler on canvas container
+  const handleDrop = async (e: React.DragEvent) => {
+    e.preventDefault();
+    const canvas = fabricCanvasRef.current;
+    if (!canvas || !fabric) return;
+
+    try {
+      const dataStr = e.dataTransfer.getData("application/json");
+      if (!dataStr) return;
+      const item = JSON.parse(dataStr) as InventoryItem;
+
+      // Get drop position relative to canvas element
+      const rect = canvas.getElement().getBoundingClientRect();
+      const x = e.clientX - rect.left;
+      const y = e.clientY - rect.top;
+
+      // Restrict items strictly within canvas bounds
+      if (x < 0 || x > 800 || y < 0 || y > 600) return;
+
+      // Center the drop coordinates relative to the 140px card boundaries
+      const size = 140;
+      const dropX = x - size / 2;
+      const dropY = y - size / 2;
+
+      await handleAddItemToCanvas(item, dropX, dropY);
+    } catch (err) {
+      console.error("Drop handler failed:", err);
+    }
+  };
+
+  // Add Item to Canvas & trigger Reserve API
+  const handleAddItemToCanvas = async (item: InventoryItem, dropX?: number, dropY?: number) => {
+    const canvas = fabricCanvasRef.current;
+    if (!canvas || !fabric) return;
+
+    // Check if the item is already on the canvas to avoid duplicate network reservation requests
+    const objects = canvas.getObjects() as any[];
+    const isAlreadyOnCanvas = objects.some((obj) => obj.itemId === item.id);
+
+    const x = dropX !== undefined ? dropX : 150 + (objects.length % 5) * 20;
+    const y = dropY !== undefined ? dropY : 120 + (objects.length % 5) * 20;
+    const id = `el-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+
+    const url = getPhotoUrl(item.photos);
+    fabric.Image.fromURL(
+      url,
+      (img: any) => {
+        if (!img) return;
+
+        const maxDim = 140;
+        const baseScale = maxDim / Math.max(img.width || 1, img.height || 1);
+
+        img.set({
+          left: x,
+          top: y,
+          scaleX: baseScale * 0.8,
+          scaleY: baseScale * 0.8,
+          angle: 0,
+          
+          // Selection handles style
+          cornerColor: "#06b6d4",
+          cornerStrokeColor: "#ffffff",
+          borderColor: "#06b6d4",
+          cornerSize: 8,
+          transparentCorners: false,
+          borderScaleFactor: 2,
+
+          // Shadow and border aesthetics
+          stroke: "#ffffff",
+          strokeWidth: 4,
+          shadow: new fabric.Shadow({
+            color: "rgba(0, 0, 0, 0.4)",
+            blur: 15,
+            offsetX: 5,
+            offsetY: 5,
+          }),
+        });
+
+        // Set properties
+        (img as any).id = id;
+        (img as any).itemId = item.id;
+        (img as any).name = item.name;
+        (img as any).photos = item.photos;
+        (img as any).sku = item.sku;
+        (img as any).barcode = item.barcode;
+        (img as any).category = item.category;
+
+        canvas.add(img);
+        canvas.setActiveObject(img);
+        canvas.renderAll();
+        
+        setSelectedElementId(id);
+        setSelectedObjectName(item.name);
+      },
+      { crossOrigin: "anonymous" }
+    );
 
     if (!isAlreadyOnCanvas) {
-      // 1. Call reservation API
       try {
         const res = await fetch(`/api/projects/${project.id}/moodboard/reserve`, {
           method: "POST",
@@ -151,102 +357,193 @@ export default function MoodBoardClient({
 
   // Canvas Actions
   const handleScaleChange = (factor: number) => {
-    if (!selectedElementId) return;
-    setCanvasElements((prev) =>
-      prev.map((el) =>
-        el.id === selectedElementId
-          ? { ...el, scale: Math.max(0.2, Math.min(3.0, el.scale + factor)) }
-          : el
-      )
-    );
+    const canvas = fabricCanvasRef.current;
+    if (!canvas) return;
+    const active = canvas.getActiveObject();
+    if (active) {
+      const currentScaleX = active.scaleX || 1.0;
+      const newScale = Math.max(0.1, Math.min(5.0, currentScaleX + factor));
+      active.set({
+        scaleX: newScale,
+        scaleY: newScale
+      });
+      canvas.requestRenderAll();
+    }
   };
 
   const handleRotateChange = (deg: number) => {
-    if (!selectedElementId) return;
-    setCanvasElements((prev) =>
-      prev.map((el) =>
-        el.id === selectedElementId
-          ? { ...el, rotation: (el.rotation + deg + 360) % 360 }
-          : el
-      )
-    );
+    const canvas = fabricCanvasRef.current;
+    if (!canvas) return;
+    const active = canvas.getActiveObject();
+    if (active) {
+      const currentAngle = active.angle || 0;
+      const newAngle = (currentAngle + deg + 360) % 360;
+      active.set({ angle: newAngle });
+      canvas.requestRenderAll();
+    }
   };
 
   const handleLayerChange = (direction: "up" | "down") => {
-    if (!selectedElementId) return;
-    setCanvasElements((prev) =>
-      prev.map((el) =>
-        el.id === selectedElementId
-          ? { ...el, zIndex: Math.max(1, el.zIndex + (direction === "up" ? 1 : -1)) }
-          : el
-      )
-    );
+    const canvas = fabricCanvasRef.current;
+    if (!canvas) return;
+    const active = canvas.getActiveObject();
+    if (active) {
+      if (direction === "up") {
+        canvas.bringForward(active);
+      } else {
+        // Prevent sending behind the static watermark background title (which is index 0)
+        const objects = canvas.getObjects();
+        const activeIndex = objects.indexOf(active);
+        if (activeIndex > 1) {
+          canvas.sendBackwards(active);
+        }
+      }
+      canvas.requestRenderAll();
+    }
   };
 
   const handleDuplicateElement = () => {
-    if (!selectedElementId) return;
-    const target = canvasElements.find((el) => el.id === selectedElementId);
-    if (!target) return;
+    const canvas = fabricCanvasRef.current;
+    if (!canvas) return;
+    const active = canvas.getActiveObject();
+    if (active && (active as any).itemId) {
+      const id = `el-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+      
+      active.clone((cloned: any) => {
+        if (!cloned) return;
+        canvas.discardActiveObject();
+        
+        cloned.set({
+          left: (active.left || 0) + 20,
+          top: (active.top || 0) + 20,
+          evented: true,
+        });
 
-    const nextZIndex = Math.max(...canvasElements.map((el) => el.zIndex)) + 1;
-    const duplicate: CanvasElement = {
-      ...target,
-      id: `el-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
-      x: target.x + 25,
-      y: target.y + 25,
-      zIndex: nextZIndex
-    };
+        cloned.id = id;
+        cloned.itemId = (active as any).itemId;
+        cloned.name = (active as any).name;
+        cloned.photos = (active as any).photos;
+        cloned.sku = (active as any).sku;
+        cloned.barcode = (active as any).barcode;
+        cloned.category = (active as any).category;
 
-    setCanvasElements((prev) => [...prev, duplicate]);
-    setSelectedElementId(duplicate.id);
+        // Visual controls properties
+        cloned.set({
+          cornerColor: "#06b6d4",
+          cornerStrokeColor: "#ffffff",
+          borderColor: "#06b6d4",
+          cornerSize: 8,
+          transparentCorners: false,
+          borderScaleFactor: 2,
+        });
+
+        canvas.add(cloned);
+        canvas.setActiveObject(cloned);
+        canvas.renderAll();
+        
+        setSelectedElementId(id);
+        setSelectedObjectName((active as any).name);
+      });
+    }
   };
 
   const handleDeleteElement = async () => {
-    if (!selectedElementId) return;
-    const target = canvasElements.find((el) => el.id === selectedElementId);
-    if (!target) return;
+    const canvas = fabricCanvasRef.current;
+    if (!canvas) return;
 
-    // Filter elements
-    const updatedElements = canvasElements.filter((el) => el.id !== selectedElementId);
-    setCanvasElements(updatedElements);
+    const activeObject = canvas.getActiveObject() as any;
+    if (!activeObject || !activeObject.itemId) return;
+
+    const targetItemId = activeObject.itemId;
+    const targetName = activeObject.name;
+    const targetPhotos = activeObject.photos;
+    const targetSku = activeObject.sku;
+    const targetBarcode = activeObject.barcode;
+    const targetCategory = activeObject.category;
+
+    canvas.remove(activeObject);
+    canvas.discardActiveObject();
+    canvas.renderAll();
     setSelectedElementId(null);
+    setSelectedObjectName(null);
 
     // If no other instance of this item remains on the canvas, release it back to AVAILABLE status
-    const remainingInstances = updatedElements.some((el) => el.itemId === target.itemId);
+    const remainingObjects = canvas.getObjects() as any[];
+    const remainingInstances = remainingObjects.some((obj) => obj.itemId === targetItemId);
+
     if (!remainingInstances) {
       try {
         const res = await fetch(`/api/projects/${project.id}/moodboard/release`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ itemId: target.itemId }),
+          body: JSON.stringify({ itemId: targetItemId }),
         });
         if (!res.ok) throw new Error("Failed to release item");
         
-        // Put back into available list
+        // Put back into available list and sort by SKU
         const releasedItem: InventoryItem = {
-          id: target.itemId,
-          sku: "SKU-TEMP",
-          barcode: "BARCODE-TEMP",
-          name: target.name,
-          category: "Visuals",
-          photos: target.photos
+          id: targetItemId,
+          sku: targetSku || "SKU-TEMP",
+          barcode: targetBarcode || "BARCODE-TEMP",
+          name: targetName,
+          category: targetCategory || "Visuals",
+          photos: targetPhotos
         };
-        setAvailableItems((prev) => [...prev, releasedItem]);
+
+        setAvailableItems((prev) => {
+          const exists = prev.some(i => i.id === releasedItem.id);
+          if (exists) return prev;
+          return [...prev, releasedItem].sort((a, b) => a.sku.localeCompare(b.sku));
+        });
       } catch (err) {
         console.error("Release API failed:", err);
       }
     }
   };
 
-  // Save layout state to SQLite
+  // Save layout state to SQLite database
   const handleSaveLayout = async () => {
+    const canvas = fabricCanvasRef.current;
+    if (!canvas) return;
+
     setIsSaving(true);
     setSaveStatus(null);
+
+    // Filter out title text or non-inventory-item objects
+    const itemsToSave: CanvasElement[] = [];
+    const objects = canvas.getObjects();
+
+    objects.forEach((obj: any) => {
+      if (obj.itemId) {
+        // Re-scale values relative to natural dimensions (img.width/height)
+        const naturalWidth = obj.width || 1;
+        const maxDim = 140;
+        const baseScale = maxDim / Math.max(naturalWidth, obj.height || 1);
+        // Recover original scaling factor (canvas elements relative to the 140 bounds)
+        const relativeScale = obj.scaleX / baseScale;
+
+        itemsToSave.push({
+          id: obj.id,
+          itemId: obj.itemId,
+          name: obj.name,
+          photos: obj.photos,
+          x: obj.left || 0,
+          y: obj.top || 0,
+          scale: Number(relativeScale.toFixed(2)),
+          rotation: obj.angle || 0,
+          zIndex: objects.indexOf(obj),
+          sku: obj.sku,
+          barcode: obj.barcode,
+          category: obj.category
+        });
+      }
+    });
+
     try {
       const res = await fetch(`/api/projects/${project.id}/moodboard/save`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ moodBoardState: canvasElements }),
+        body: JSON.stringify({ moodBoardState: itemsToSave }),
       });
       if (!res.ok) throw new Error("Failed to save layout");
       
@@ -260,131 +557,62 @@ export default function MoodBoardClient({
     }
   };
 
-  // Drag handlers for absolute container
-  const handleDragStart = (e: React.MouseEvent, elementId: string) => {
-    setSelectedElementId(elementId);
-    const target = canvasElements.find((el) => el.id === elementId);
-    if (!target || !workspaceRef.current) return;
-
-    const rect = workspaceRef.current.getBoundingClientRect();
-    const startX = e.clientX - rect.left - target.x;
-    const startY = e.clientY - rect.top - target.y;
-
-    const handleMouseMove = (moveEvent: MouseEvent) => {
-      const newX = moveEvent.clientX - rect.left - startX;
-      const newY = moveEvent.clientY - rect.top - startY;
-
-      setCanvasElements((prev) =>
-        prev.map((el) =>
-          el.id === elementId
-            ? { ...el, x: Math.max(0, Math.min(800 - 150, newX)), y: Math.max(0, Math.min(600 - 150, newY)) }
-            : el
-        )
-      );
-    };
-
-    const handleMouseUp = () => {
-      window.removeEventListener("mousemove", handleMouseMove);
-      window.removeEventListener("mouseup", handleMouseUp);
-    };
-
-    window.addEventListener("mousemove", handleMouseMove);
-    window.addEventListener("mouseup", handleMouseUp);
-  };
-
   // Export Canvas layout as PNG image
   const handleExportPNG = async () => {
+    const canvas = fabricCanvasRef.current;
+    if (!canvas) return;
+
     setIsExporting(true);
     try {
-      // 1. Create native canvas element matching 800x600 specs
-      const canvas = document.createElement("canvas");
-      canvas.width = 800;
-      canvas.height = 600;
-      const ctx = canvas.getContext("2d");
-      if (!ctx) throw new Error("Could not instantiate canvas 2D context");
+      // Temporarily clear selection box to avoid drawing handles in the PNG export
+      canvas.discardActiveObject();
+      canvas.renderAll();
 
-      // Draw background
-      ctx.fillStyle = "#18181b"; // zinc-900 (matches dark theme canvas)
-      ctx.fillRect(0, 0, 800, 600);
+      const dataUrl = canvas.toDataURL({
+        format: "png",
+        quality: 1.0,
+      });
 
-      // Draw subtle grid overlay
-      ctx.strokeStyle = "#27272a"; // zinc-800
-      ctx.lineWidth = 1;
-      for (let x = 0; x < 800; x += 40) {
-        ctx.beginPath();
-        ctx.moveTo(x, 0);
-        ctx.lineTo(x, 600);
-        ctx.stroke();
-      }
-      for (let y = 0; y < 600; y += 40) {
-        ctx.beginPath();
-        ctx.moveTo(0, y);
-        ctx.lineTo(800, y);
-        ctx.stroke();
-      }
-
-      // Draw title text
-      ctx.fillStyle = "#a1a1aa"; // zinc-400
-      ctx.font = "bold 14px Courier New, monospace";
-      ctx.fillText(`STYLING OS - MOODBOARD [${project.projectCode}]`, 30, 40);
-
-      // Sort elements by zIndex to draw back-to-front correctly
-      const sorted = [...canvasElements].sort((a, b) => a.zIndex - b.zIndex);
-
-      // Load all images asynchronously
-      const loadImage = (url: string): Promise<HTMLImageElement> => {
-        return new Promise((resolve, reject) => {
-          const img = new window.Image();
-          img.crossOrigin = "anonymous"; // Bypass CORS if loaded from CDN/Picsum
-          img.onload = () => resolve(img);
-          img.onerror = () => reject();
-          img.src = url;
-        });
-      };
-
-      for (const el of sorted) {
-        try {
-          const imgUrl = getPhotoUrl(el.photos);
-          const img = await loadImage(imgUrl);
-
-          // Renders card dimensions: width=140, height=140
-          const cardW = 140;
-          const cardH = 140;
-
-          ctx.save();
-          // Move context origin to item center
-          ctx.translate(el.x + cardW / 2, el.y + cardH / 2);
-          ctx.rotate((el.rotation * Math.PI) / 180);
-          ctx.scale(el.scale, el.scale);
-
-          // Draw rounded card background wrapper
-          ctx.fillStyle = "#27272a"; // zinc-800
-          ctx.beginPath();
-          ctx.roundRect(-cardW / 2, -cardH / 2, cardW, cardH, 12);
-          ctx.fill();
-
-          // Draw the photo image inside (inset of 6px)
-          const inset = 6;
-          ctx.beginPath();
-          ctx.roundRect(-cardW / 2 + inset, -cardH / 2 + inset, cardW - inset * 2, cardH - inset * 2 - 20, 8);
-          ctx.clip();
-          ctx.drawImage(img, -cardW / 2 + inset, -cardH / 2 + inset, cardW - inset * 2, cardH - inset * 2 - 20);
-
-          ctx.restore();
-        } catch (e) {
-          console.warn("Skipping drawing image for element due to load failure:", el.name);
-        }
-      }
-
-      // Trigger composite image download link
-      const dataUrl = canvas.toDataURL("image/png");
       const link = document.createElement("a");
       link.download = `moodboard-${project.projectCode}.png`;
       link.href = dataUrl;
       link.click();
-    } catch (err: any) {
+    } catch (err) {
       console.error(err);
-      alert("Failed to render mood board layout to image.");
+      alert("Failed to render mood board layout to PNG.");
+    } finally {
+      setIsExporting(false);
+    }
+  };
+
+  // Export Canvas layout as PDF document
+  const handleExportPDF = async () => {
+    const canvas = fabricCanvasRef.current;
+    if (!canvas) return;
+
+    setIsExporting(true);
+    try {
+      // Temporarily clear selection box to avoid drawing handles in the PDF export
+      canvas.discardActiveObject();
+      canvas.renderAll();
+
+      const dataUrl = canvas.toDataURL({
+        format: "png",
+        quality: 1.0,
+      });
+
+      // Instantiate jsPDF with landscape orientation matching the 800x600 pixels bounds
+      const pdf = new jsPDF({
+        orientation: "landscape",
+        unit: "px",
+        format: [800, 600]
+      });
+
+      pdf.addImage(dataUrl, "PNG", 0, 0, 800, 600);
+      pdf.save(`moodboard-${project.projectCode}.pdf`);
+    } catch (err) {
+      console.error(err);
+      alert("Failed to render mood board layout to PDF.");
     } finally {
       setIsExporting(false);
     }
@@ -432,7 +660,7 @@ export default function MoodBoardClient({
           <button
             onClick={handleSaveLayout}
             disabled={isSaving}
-            className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-cyan-500 hover:bg-cyan-600 text-white font-semibold text-xs transition-colors shadow-sm disabled:opacity-50"
+            className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-cyan-500 hover:bg-cyan-600 text-white font-semibold text-xs transition-colors shadow-sm disabled:opacity-50 cursor-pointer"
           >
             <Save className="w-4 h-4" />
             <span>{isSaving ? "Saving..." : "Save Layout"}</span>
@@ -441,7 +669,7 @@ export default function MoodBoardClient({
           <button
             onClick={handleExportPNG}
             disabled={isExporting}
-            className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-zinc-800 hover:bg-zinc-700 border border-zinc-700 text-zinc-200 font-semibold text-xs transition-colors disabled:opacity-50"
+            className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-zinc-800 hover:bg-zinc-700 border border-zinc-700 text-zinc-200 font-semibold text-xs transition-colors disabled:opacity-50 cursor-pointer"
           >
             {isExporting ? (
               <RefreshCw className="w-4 h-4 animate-spin" />
@@ -449,6 +677,19 @@ export default function MoodBoardClient({
               <Download className="w-4 h-4" />
             )}
             <span>Export PNG</span>
+          </button>
+
+          <button
+            onClick={handleExportPDF}
+            disabled={isExporting}
+            className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-zinc-800 hover:bg-zinc-700 border border-zinc-700 text-zinc-200 font-semibold text-xs transition-colors disabled:opacity-50 cursor-pointer"
+          >
+            {isExporting ? (
+              <RefreshCw className="w-4 h-4 animate-spin" />
+            ) : (
+              <Download className="w-4 h-4" />
+            )}
+            <span>Export PDF</span>
           </button>
         </div>
       </div>
@@ -481,14 +722,16 @@ export default function MoodBoardClient({
               filteredAvailable.map((item) => (
                 <div
                   key={item.id}
+                  draggable={true}
+                  onDragStart={(e) => handleDragStartSidebar(e, item)}
                   onClick={() => handleAddItemToCanvas(item)}
-                  className="p-3 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 hover:border-zinc-350 dark:hover:border-zinc-700 transition-all duration-150 flex gap-3 cursor-pointer hover:shadow-sm"
+                  className="p-3 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 hover:border-zinc-350 dark:hover:border-zinc-700 transition-all duration-150 flex gap-3 cursor-grab active:cursor-grabbing hover:shadow-sm"
                 >
                   <div className="w-12 h-12 rounded-lg overflow-hidden shrink-0 bg-zinc-50 dark:bg-zinc-950 border border-zinc-100 dark:border-zinc-850">
                     <img
                       src={getPhotoUrl(item.photos)}
                       alt={item.name}
-                      className="w-full h-full object-cover"
+                      className="w-full h-full object-cover pointer-events-none"
                     />
                   </div>
                   <div className="flex-1 min-w-0 flex flex-col justify-center">
@@ -512,21 +755,21 @@ export default function MoodBoardClient({
             {selectedElementId ? (
               <>
                 <span className="text-xs text-zinc-500 font-semibold truncate max-w-[200px]">
-                  Selection: {canvasElements.find((e) => e.id === selectedElementId)?.name}
+                  Selection: {selectedObjectName}
                 </span>
 
                 <div className="flex items-center gap-2">
                   {/* Scale controls */}
                   <div className="flex border border-zinc-250 dark:border-zinc-700 rounded-lg overflow-hidden">
                     <button 
-                      onClick={() => handleScaleChange(-0.1)} 
-                      className="px-2.5 py-1 text-xs font-bold hover:bg-zinc-200 dark:hover:bg-zinc-800 text-zinc-700 dark:text-zinc-300"
+                      onClick={() => handleScaleChange(-0.05)} 
+                      className="px-2.5 py-1 text-xs font-bold hover:bg-zinc-200 dark:hover:bg-zinc-800 text-zinc-700 dark:text-zinc-300 cursor-pointer"
                     >
                       A-
                     </button>
                     <button 
-                      onClick={() => handleScaleChange(0.1)} 
-                      className="px-2.5 py-1 text-xs font-bold border-l border-zinc-250 dark:border-zinc-700 hover:bg-zinc-200 dark:hover:bg-zinc-800 text-zinc-700 dark:text-zinc-300"
+                      onClick={() => handleScaleChange(0.05)} 
+                      className="px-2.5 py-1 text-xs font-bold border-l border-zinc-250 dark:border-zinc-700 hover:bg-zinc-200 dark:hover:bg-zinc-800 text-zinc-700 dark:text-zinc-300 cursor-pointer"
                     >
                       A+
                     </button>
@@ -536,13 +779,13 @@ export default function MoodBoardClient({
                   <div className="flex border border-zinc-250 dark:border-zinc-700 rounded-lg overflow-hidden">
                     <button 
                       onClick={() => handleRotateChange(-15)} 
-                      className="px-2 py-1 hover:bg-zinc-200 dark:hover:bg-zinc-800 text-zinc-700 dark:text-zinc-300"
+                      className="px-2 py-1 hover:bg-zinc-200 dark:hover:bg-zinc-800 text-zinc-700 dark:text-zinc-300 cursor-pointer"
                     >
                       <RotateCw className="w-3.5 h-3.5 scale-x-[-1]" />
                     </button>
                     <button 
                       onClick={() => handleRotateChange(15)} 
-                      className="px-2 py-1 border-l border-zinc-250 dark:border-zinc-700 hover:bg-zinc-200 dark:hover:bg-zinc-800 text-zinc-700 dark:text-zinc-300"
+                      className="px-2 py-1 border-l border-zinc-250 dark:border-zinc-700 hover:bg-zinc-200 dark:hover:bg-zinc-800 text-zinc-700 dark:text-zinc-300 cursor-pointer"
                     >
                       <RotateCw className="w-3.5 h-3.5" />
                     </button>
@@ -552,13 +795,13 @@ export default function MoodBoardClient({
                   <div className="flex border border-zinc-250 dark:border-zinc-700 rounded-lg overflow-hidden">
                     <button 
                       onClick={() => handleLayerChange("down")} 
-                      className="px-2.5 py-1 hover:bg-zinc-200 dark:hover:bg-zinc-800 text-zinc-700 dark:text-zinc-300"
+                      className="px-2.5 py-1 hover:bg-zinc-200 dark:hover:bg-zinc-800 text-zinc-700 dark:text-zinc-300 cursor-pointer"
                     >
                       <ChevronDown className="w-4 h-4" />
                     </button>
                     <button 
                       onClick={() => handleLayerChange("up")} 
-                      className="px-2.5 py-1 border-l border-zinc-250 dark:border-zinc-700 hover:bg-zinc-200 dark:hover:bg-zinc-800 text-zinc-700 dark:text-zinc-300"
+                      className="px-2.5 py-1 border-l border-zinc-250 dark:border-zinc-700 hover:bg-zinc-200 dark:hover:bg-zinc-800 text-zinc-700 dark:text-zinc-300 cursor-pointer"
                     >
                       <ChevronUp className="w-4 h-4" />
                     </button>
@@ -567,7 +810,7 @@ export default function MoodBoardClient({
                   {/* Duplicate */}
                   <button
                     onClick={handleDuplicateElement}
-                    className="p-1.5 border border-zinc-250 dark:border-zinc-700 rounded-lg text-zinc-650 hover:text-zinc-950 dark:text-zinc-300 dark:hover:text-zinc-50 hover:bg-zinc-200 dark:hover:bg-zinc-850"
+                    className="p-1.5 border border-zinc-250 dark:border-zinc-700 rounded-lg text-zinc-650 hover:text-zinc-950 dark:text-zinc-300 dark:hover:text-zinc-50 hover:bg-zinc-200 dark:hover:bg-zinc-850 cursor-pointer"
                   >
                     <Copy className="w-4 h-4" />
                   </button>
@@ -575,7 +818,7 @@ export default function MoodBoardClient({
                   {/* Delete */}
                   <button
                     onClick={handleDeleteElement}
-                    className="p-1.5 border border-red-500/20 rounded-lg text-red-500 hover:text-white hover:bg-red-500 transition-colors"
+                    className="p-1.5 border border-red-500/20 rounded-lg text-red-500 hover:text-white hover:bg-red-500 transition-colors cursor-pointer"
                   >
                     <Trash2 className="w-4 h-4" />
                   </button>
@@ -589,55 +832,11 @@ export default function MoodBoardClient({
           {/* Absolute HTML5 Canvas Box container */}
           <div
             ref={workspaceRef}
-            onClick={() => setSelectedElementId(null)}
-            className="flex-1 min-h-[500px] max-h-[600px] border border-zinc-250 dark:border-zinc-850 rounded-2xl bg-zinc-900 bg-[radial-gradient(#27272a_1px,transparent_1px)] [background-size:20px_20px] relative overflow-hidden shadow-inner cursor-default"
+            onDragOver={(e) => e.preventDefault()}
+            onDrop={handleDrop}
+            className="flex-1 min-h-[500px] max-h-[600px] border border-zinc-250 dark:border-zinc-850 rounded-2xl bg-zinc-950 overflow-hidden shadow-inner flex items-center justify-center relative"
           >
-            {canvasElements.map((el) => {
-              const isSelected = selectedElementId === el.id;
-              return (
-                <div
-                  key={el.id}
-                  onMouseDown={(e) => {
-                    e.stopPropagation();
-                    handleDragStart(e, el.id);
-                  }}
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    setSelectedElementId(el.id);
-                  }}
-                  className={cn(
-                    "absolute select-none rounded-2xl p-1.5 bg-zinc-850 dark:bg-zinc-900 border flex flex-col items-center justify-between cursor-move shadow-md active:scale-95 transition-shadow",
-                    isSelected 
-                      ? "border-cyan-400 shadow-lg shadow-cyan-500/10 ring-1 ring-cyan-500/30" 
-                      : "border-zinc-750 dark:border-zinc-800"
-                  )}
-                  style={{
-                    left: `${el.x}px`,
-                    top: `${el.y}px`,
-                    width: "140px",
-                    height: "140px",
-                    zIndex: el.zIndex,
-                    transform: `rotate(${el.rotation}deg) scale(${el.scale})`,
-                    transformOrigin: "center center"
-                  }}
-                >
-                  {/* Photo container */}
-                  <div className="w-full h-[96px] bg-zinc-950 rounded-xl overflow-hidden relative">
-                    <img
-                      src={getPhotoUrl(el.photos)}
-                      alt={el.name}
-                      className="w-full h-full object-cover pointer-events-none"
-                    />
-                  </div>
-                  {/* Title overlay label */}
-                  <div className="w-full text-center px-1">
-                    <span className="text-[9px] font-bold text-zinc-300 truncate block w-full pointer-events-none">
-                      {el.name}
-                    </span>
-                  </div>
-                </div>
-              );
-            })}
+            <canvas ref={canvasRef} />
           </div>
         </div>
       </div>
