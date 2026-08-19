@@ -16,10 +16,35 @@ import {
   Edit,
   Trash2,
   Plus,
-  X
+  X,
+  Printer
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { createInventoryItem, updateInventoryItem, deleteInventoryItem } from "./actions";
+import JsBarcode from "jsbarcode";
+
+// Barcode Generator helper component using jsbarcode
+const BarcodeValue: React.FC<{ value: string }> = ({ value }) => {
+  const svgRef = React.useRef<SVGSVGElement>(null);
+
+  React.useEffect(() => {
+    if (svgRef.current && value) {
+      try {
+        JsBarcode(svgRef.current, value, {
+          format: "CODE128",
+          width: 1.8,
+          height: 40,
+          displayValue: false,
+          margin: 0,
+        });
+      } catch (err) {
+        console.error("Failed to generate barcode:", err);
+      }
+    }
+  }, [value]);
+
+  return <svg ref={svgRef} className="mx-auto" />;
+};
 
 // TS Interfaces
 interface InventoryItemData {
@@ -46,6 +71,7 @@ export default function InventoryClient({ initialItems }: { initialItems: Invent
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [editingItemId, setEditingItemId] = useState<string | null>(null);
+  const [printItem, setPrintItem] = useState<InventoryItemData | null>(null);
 
   // Form Fields
   const [name, setName] = useState("");
@@ -371,6 +397,16 @@ export default function InventoryClient({ initialItems }: { initialItems: Invent
                               <Trash2 className="w-3 h-3 text-red-500" />
                               <span>Delete</span>
                             </button>
+                            <button
+                              onClick={() => {
+                                setActiveActionMenuId(null);
+                                setPrintItem(item);
+                              }}
+                              className="w-full px-3 py-1.5 hover:bg-slate-50 hover:text-slate-900 flex items-center gap-1.5 border-t border-slate-100 cursor-pointer"
+                            >
+                              <Printer className="w-3 h-3 text-cyan-500" />
+                              <span>Print Label</span>
+                            </button>
                           </div>
                         </>
                       )}
@@ -496,6 +532,16 @@ export default function InventoryClient({ initialItems }: { initialItems: Invent
                             >
                               <Trash2 className="w-3.5 h-3.5 text-red-500" />
                               <span>Delete</span>
+                            </button>
+                            <button
+                              onClick={() => {
+                                setActiveActionMenuId(null);
+                                setPrintItem(item);
+                              }}
+                              className="w-full px-4 py-2 hover:bg-slate-50 hover:text-slate-900 flex items-center gap-1.5 border-t border-slate-100 cursor-pointer"
+                            >
+                              <Printer className="w-3.5 h-3.5 text-cyan-500" />
+                              <span>Print Label</span>
                             </button>
                           </div>
                         </>
@@ -703,6 +749,140 @@ export default function InventoryClient({ initialItems }: { initialItems: Invent
           </div>
         </div>
       )}
+
+      {/* Printable Preview Modal */}
+      {printItem && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 print:hidden">
+          {/* Backdrop */}
+          <div 
+            className="fixed inset-0 bg-slate-900/40 backdrop-blur-sm"
+            onClick={() => setPrintItem(null)}
+          />
+          
+          {/* Card Container */}
+          <div className="bg-white border border-slate-200 shadow-xl rounded-2xl max-w-md w-full p-6 space-y-4 text-slate-900 relative z-50 animate-scaleUp">
+            <div className="flex items-center justify-between pb-2 border-b border-slate-100">
+              <h3 className="text-base font-bold text-slate-900 flex items-center gap-2">
+                <Printer className="w-5 h-5 text-cyan-500" />
+                <span>Print Barcode Label</span>
+              </h3>
+              <button 
+                onClick={() => setPrintItem(null)}
+                className="p-1 rounded-lg hover:bg-slate-100 text-slate-500 hover:text-slate-900 transition-colors cursor-pointer"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+
+            {/* Print Sticker Preview */}
+            <div className="flex flex-col items-center justify-center py-6 bg-slate-50 border border-slate-200/50 rounded-2xl">
+              <div 
+                className="w-[3.5in] h-[2in] p-4 bg-white border border-slate-300 rounded shadow-md flex flex-col justify-between text-slate-900 font-sans relative overflow-hidden"
+              >
+                {/* Header */}
+                <div className="flex items-center justify-between pb-1 border-b border-slate-200">
+                  <span className="text-[10px] font-bold tracking-wider text-slate-500 uppercase font-mono">3rdiStudio Assets</span>
+                  <span className="text-[8px] font-bold text-cyan-600 px-1.5 py-0.5 bg-cyan-55 rounded border border-cyan-100 uppercase">{printItem.category}</span>
+                </div>
+
+                {/* Name */}
+                <div className="py-1">
+                  <h4 className="text-xs font-bold text-slate-900 truncate leading-tight">{printItem.name}</h4>
+                </div>
+
+                {/* Barcode Render */}
+                <div className="flex flex-col items-center justify-center py-1">
+                  <BarcodeValue value={printItem.barcode} />
+                  <span className="text-[9px] font-mono font-bold tracking-widest text-slate-700 mt-1">{printItem.sku}</span>
+                </div>
+
+                {/* Location Footer */}
+                <div className="flex items-center justify-between pt-1 border-t border-slate-200 text-[9px] font-semibold text-slate-500">
+                  <span>Rack {printItem.rackNumber}, {printItem.shelfNumber}</span>
+                  <span className="font-mono text-slate-700">${printItem.replacementCost.toFixed(2)}</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Actions Footer */}
+            <div className="flex items-center justify-end gap-2 pt-2 border-t border-slate-100">
+              <button
+                onClick={() => setPrintItem(null)}
+                className="px-4 py-2 border border-slate-200 hover:bg-slate-50 text-slate-700 font-bold text-xs rounded-xl transition-colors cursor-pointer"
+              >
+                Close
+              </button>
+              <button
+                onClick={() => window.print()}
+                className="px-4 py-2 bg-cyan-500 hover:bg-cyan-600 text-white font-bold text-xs rounded-xl transition-colors cursor-pointer inline-flex items-center gap-1.5 shadow-sm"
+              >
+                <Printer className="w-4 h-4" />
+                <span>Print Sticker</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Printable Wrapper (Absolute copy rendered only during print output) */}
+      {printItem && (
+        <div id="print-sticker-wrapper" className="hidden print:flex print:items-center print:justify-center">
+          <div 
+            className="w-[3.5in] h-[2in] p-4 bg-white flex flex-col justify-between text-slate-900 font-sans relative overflow-hidden"
+          >
+            {/* Header */}
+            <div className="flex items-center justify-between pb-1 border-b border-slate-350">
+              <span className="text-[10px] font-bold tracking-wider text-slate-600 uppercase font-mono">3rdiStudio Assets</span>
+              <span className="text-[8px] font-bold text-slate-800 px-1.5 py-0.5 bg-slate-100 rounded border border-slate-300 uppercase">{printItem.category}</span>
+            </div>
+
+            {/* Name */}
+            <div className="py-1">
+              <h4 className="text-xs font-bold text-slate-900 truncate leading-tight">{printItem.name}</h4>
+            </div>
+
+            {/* Barcode Render */}
+            <div className="flex flex-col items-center justify-center py-1">
+              <BarcodeValue value={printItem.barcode} />
+              <span className="text-[9px] font-mono font-bold tracking-widest text-slate-700 mt-1">{printItem.sku}</span>
+            </div>
+
+            {/* Location Footer */}
+            <div className="flex items-center justify-between pt-1 border-t border-slate-350 text-[9px] font-semibold text-slate-600">
+              <span>Rack {printItem.rackNumber}, {printItem.shelfNumber}</span>
+              <span className="font-mono text-slate-800">${printItem.replacementCost.toFixed(2)}</span>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Global CSS style override for printing */}
+      <style dangerouslySetInnerHTML={{ __html: `
+        @media print {
+          /* Hide all base styles */
+          body * {
+            visibility: hidden !important;
+          }
+          /* Show print wrapper and all its contents */
+          #print-sticker-wrapper, #print-sticker-wrapper * {
+            visibility: visible !important;
+          }
+          #print-sticker-wrapper {
+            position: fixed !important;
+            top: 0 !important;
+            left: 0 !important;
+            right: 0 !important;
+            bottom: 0 !important;
+            width: 100vw !important;
+            height: 100vh !important;
+            background: white !important;
+            z-index: 9999999 !important;
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+          }
+        }
+      `}} />
     </div>
   );
 }
