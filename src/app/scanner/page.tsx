@@ -101,7 +101,7 @@ export default function ScannerPage() {
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         {/* Scanner Viewfinder Box */}
         <div className="md:col-span-2 space-y-4">
-          <div className="relative aspect-video rounded-3xl bg-zinc-900 border border-zinc-800 overflow-hidden shadow-inner flex flex-col items-center justify-center">
+          <div className="relative aspect-video rounded-3xl bg-slate-900 border border-slate-200 dark:bg-zinc-950 dark:border-zinc-900 overflow-hidden shadow-inner flex flex-col items-center justify-center">
             {/* Camera Video Stream */}
             <video 
               ref={videoRef} 
@@ -111,7 +111,7 @@ export default function ScannerPage() {
             {/* Offline/Not Scanning Screen */}
             {!isScanning && (
               <div className="text-center p-6 space-y-3">
-                <div className="w-12 h-12 rounded-full bg-zinc-800/80 flex items-center justify-center mx-auto text-zinc-500">
+                <div className="w-12 h-12 rounded-full bg-slate-800 flex items-center justify-center mx-auto text-slate-400 border border-slate-700">
                   <VideoOff className="w-6 h-6" />
                 </div>
                 <p className="text-zinc-400 text-sm font-medium">Camera is offline</p>
@@ -141,7 +141,7 @@ export default function ScannerPage() {
           </div>
 
           {/* Action Buttons & Device Selector */}
-          <div className="flex flex-wrap items-center gap-3 p-4 rounded-2xl bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800">
+          <div className="flex flex-wrap items-center gap-3 p-4 rounded-2xl bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800">
             {isScanning ? (
               <button
                 onClick={stopScanner}
@@ -164,7 +164,7 @@ export default function ScannerPage() {
             {/* Camera Select Dropdown */}
             {devices.length > 1 && (
               <div className="flex-1 min-w-[200px] flex items-center gap-2">
-                <span className="text-xs text-zinc-500 dark:text-zinc-400 font-medium">Camera:</span>
+                <span className="text-xs text-slate-500 dark:text-zinc-400 font-medium">Camera:</span>
                 <select
                   value={selectedDevice}
                   onChange={(e) => {
@@ -175,7 +175,7 @@ export default function ScannerPage() {
                       setTimeout(startScanner, 100);
                     }
                   }}
-                  className="flex-1 bg-zinc-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-xl px-3 py-1.5 text-xs focus:outline-none focus:ring-1 focus:ring-cyan-500"
+                  className="flex-1 bg-slate-50 dark:bg-zinc-950 border border-slate-200 dark:border-zinc-800 rounded-xl px-3 py-1.5 text-xs focus:outline-none focus:ring-1 focus:ring-cyan-500 text-slate-800 dark:text-zinc-200"
                 >
                   {devices.map((device) => (
                     <option key={device.deviceId} value={device.deviceId}>
@@ -190,31 +190,31 @@ export default function ScannerPage() {
 
         {/* Results Sidebar */}
         <div className="space-y-4">
-          <div className="p-6 rounded-3xl bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 h-full flex flex-col">
-            <h3 className="font-semibold text-zinc-950 dark:text-zinc-50 text-sm">Decoding Feed</h3>
+          <div className="p-6 rounded-3xl bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 h-full flex flex-col">
+            <h3 className="font-semibold text-slate-900 dark:text-zinc-50 text-sm">Decoding Feed</h3>
             
             <div className="flex-1 flex flex-col items-center justify-center py-8 text-center">
               {scanResult ? (
                 <div className="space-y-4 w-full">
-                  <div className="w-12 h-12 rounded-full bg-emerald-50 dark:bg-emerald-950/30 text-emerald-600 dark:text-emerald-400 flex items-center justify-center mx-auto border border-emerald-100 dark:border-emerald-900/30">
+                  <div className="w-12 h-12 rounded-full bg-emerald-50 dark:bg-emerald-955/30 text-emerald-600 dark:text-emerald-400 flex items-center justify-center mx-auto border border-emerald-100 dark:border-emerald-900/30">
                     <CheckCircle2 className="w-6 h-6" />
                   </div>
                   <div>
-                    <span className="text-[10px] text-zinc-500 dark:text-zinc-400 uppercase tracking-wider font-semibold">Decoded Output</span>
-                    <div className="mt-2 p-4 rounded-xl bg-zinc-50 dark:bg-zinc-950 border border-zinc-100 dark:border-zinc-800 break-all font-mono text-sm text-zinc-900 dark:text-zinc-50 font-bold select-all">
+                    <span className="text-[10px] text-slate-500 dark:text-zinc-400 uppercase tracking-wider font-semibold">Decoded Output</span>
+                    <div className="mt-2 p-4 rounded-xl bg-slate-50 dark:bg-zinc-955 border border-slate-150 dark:border-zinc-800 break-all font-mono text-sm text-slate-900 dark:text-zinc-50 font-bold select-all">
                       {scanResult}
                     </div>
                   </div>
                   <button 
                     onClick={() => setScanResult(null)}
-                    className="text-xs text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-200 underline"
+                    className="text-xs text-slate-500 hover:text-slate-900 dark:hover:text-zinc-200 underline"
                   >
                     Clear Result
                   </button>
                 </div>
               ) : error ? (
                 <div className="space-y-2">
-                  <div className="w-10 h-10 rounded-full bg-rose-50 dark:bg-rose-950/30 text-rose-600 dark:text-rose-400 flex items-center justify-center mx-auto">
+                  <div className="w-10 h-10 rounded-full bg-rose-50 dark:bg-rose-955/30 text-rose-600 dark:text-rose-400 flex items-center justify-center mx-auto">
                     <AlertCircle className="w-5 h-5" />
                   </div>
                   <p className="text-xs text-rose-600 dark:text-rose-400 font-medium">{error}</p>
@@ -222,18 +222,18 @@ export default function ScannerPage() {
               ) : isScanning ? (
                 <div className="space-y-3">
                   <RefreshCw className="w-8 h-8 text-cyan-500 animate-spin mx-auto" />
-                  <p className="text-xs text-zinc-500 dark:text-zinc-400">Position barcode inside red viewfinder line to read...</p>
+                  <p className="text-xs text-slate-500 dark:text-zinc-400">Position barcode inside red viewfinder line to read...</p>
                 </div>
               ) : (
-                <p className="text-xs text-zinc-400">Press Start Camera above to scan</p>
+                <p className="text-xs text-slate-400">Press Start Camera above to scan</p>
               )}
             </div>
 
-            <div className="border-t border-zinc-100 dark:border-zinc-800 pt-4 mt-auto">
-              <span className="text-[10px] text-zinc-400 dark:text-zinc-500 font-semibold uppercase tracking-wider block mb-2">Supported Standards</span>
+            <div className="border-t border-slate-100 dark:border-zinc-800 pt-4 mt-auto">
+              <span className="text-[10px] text-slate-500 dark:text-zinc-505 font-semibold uppercase tracking-wider block mb-2">Supported Standards</span>
               <div className="flex flex-wrap gap-1.5">
                 {["UPC-A", "EAN-13", "QR Code", "Code 128", "Code 39"].map((std) => (
-                  <span key={std} className="px-2 py-0.5 rounded bg-zinc-100 dark:bg-zinc-800 text-[10px] font-medium text-zinc-600 dark:text-zinc-400">
+                  <span key={std} className="px-2 py-0.5 rounded bg-slate-100 dark:bg-zinc-800 text-[10px] font-medium text-slate-650 dark:text-zinc-400">
                     {std}
                   </span>
                 ))}
