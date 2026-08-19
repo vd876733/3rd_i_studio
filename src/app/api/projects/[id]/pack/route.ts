@@ -40,12 +40,17 @@ export async function POST(
       return NextResponse.json({ error: "Target box not found" }, { status: 404 });
     }
 
-    // 3. Find the inventory item by barcode
-    const item = await prisma.inventoryItem.findUnique({
-      where: { barcode },
+    // 3. Find the inventory item by barcode or SKU
+    const item = await prisma.inventoryItem.findFirst({
+      where: {
+        OR: [
+          { barcode },
+          { sku: barcode },
+        ],
+      },
     });
     if (!item) {
-      return NextResponse.json({ error: "Item not found with that barcode" }, { status: 404 });
+      return NextResponse.json({ error: "Item not found with that barcode or SKU" }, { status: 404 });
     }
 
     // 4. Find the project details
@@ -54,6 +59,25 @@ export async function POST(
     });
     if (!project) {
       return NextResponse.json({ error: "Project not found" }, { status: 404 });
+    }
+
+    // 4.5 Verify the item is reserved for this shoot (present in moodboard state)
+    let isReserved = false;
+    if (project.moodBoardState) {
+      try {
+        const elements = typeof project.moodBoardState === "string"
+          ? JSON.parse(project.moodBoardState)
+          : project.moodBoardState;
+        if (Array.isArray(elements)) {
+          isReserved = elements.some((el: any) => el.itemId === item.id);
+        }
+      } catch (e) {
+        console.error("Failed to parse project moodBoardState:", e);
+      }
+    }
+
+    if (!isReserved) {
+      return NextResponse.json({ error: "Invalid Barcode or Item not reserved for this shoot" }, { status: 400 });
     }
 
     // 5. Transaction to create packing link, update item state, and write AuditLog

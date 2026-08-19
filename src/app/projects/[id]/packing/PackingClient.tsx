@@ -78,15 +78,36 @@ export default function PackingClient({
   onAvailableItemsChange?: (items: ReservedItemData[]) => void;
 }) {
   const [project, setProject] = useState<ProjectData>(initialProject);
-  const [availableItems, setAvailableItems] = useState<ReservedItemData[]>(initialAvailableItems);
+  const [availableItems, setAvailableItems] = useState<ReservedItemData[]>([]);
 
   useEffect(() => {
     setProject(initialProject);
   }, [initialProject]);
 
   useEffect(() => {
-    setAvailableItems(initialAvailableItems);
-  }, [initialAvailableItems]);
+    if (!initialAvailableItems || !initialProject) return;
+
+    // Parse moodBoardState to extract reserved item IDs for this project
+    const moodboardItemIds = new Set<string>();
+    if (initialProject.moodBoardState) {
+      try {
+        const elements = typeof initialProject.moodBoardState === "string"
+          ? JSON.parse(initialProject.moodBoardState)
+          : initialProject.moodBoardState;
+        if (Array.isArray(elements)) {
+          elements.forEach((el: any) => {
+            if (el.itemId) moodboardItemIds.add(el.itemId);
+          });
+        }
+      } catch (e) {
+        console.error("Failed to parse moodboard elements:", e);
+      }
+    }
+
+    // Filter available items to only those present in the moodboard (reserved for this project)
+    const filtered = initialAvailableItems.filter((item) => moodboardItemIds.has(item.id));
+    setAvailableItems(filtered);
+  }, [initialAvailableItems, initialProject]);
 
   const [activeBoxId, setActiveBoxId] = useState<string>(
     initialProject.boxes.length > 0 ? initialProject.boxes[0].id : ""
@@ -195,11 +216,28 @@ export default function PackingClient({
     setIsPacking(true);
     setPackStatus(null);
 
+    // Query the project's Pick List for a matching barcode or SKU (case-insensitive)
+    const match = availableItems.find(
+      (item) =>
+        item.barcode.toLowerCase() === barcodeToPack.trim().toLowerCase() ||
+        item.sku.toLowerCase() === barcodeToPack.trim().toLowerCase()
+    );
+
+    if (!match) {
+      setPackStatus({
+        success: false,
+        message: "Invalid Barcode or Item not reserved for this shoot"
+      });
+      playBeep(false);
+      setIsPacking(false);
+      return;
+    }
+
     try {
       const res = await fetch(`/api/projects/${project.id}/pack`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ barcode: barcodeToPack, boxId: activeBoxId }),
+        body: JSON.stringify({ barcode: match.barcode, boxId: activeBoxId }),
       });
 
       if (!res.ok) {
@@ -223,7 +261,7 @@ export default function PackingClient({
 
       // 2. Remove item from the available list of items to pack
       setAvailableItems((prev) => {
-        const updated = prev.filter((item) => item.barcode !== barcodeToPack);
+        const updated = prev.filter((item) => item.barcode !== match.barcode && item.sku !== match.sku);
         if (onAvailableItemsChange) onAvailableItemsChange(updated);
         return updated;
       });
@@ -236,9 +274,11 @@ export default function PackingClient({
       }
 
       // Trigger success confirmation HUD
+      const activeBox = project.boxes.find((b) => b.id === activeBoxId);
+      const activeBoxName = activeBox ? activeBox.boxNumber : "Selected Box";
       setPackStatus({ 
         success: true, 
-        message: `Successfully packed '${newPackedItem.inventoryItem.name}' into ${newPackedItem.box.boxNumber}!` 
+        message: `Successfully packed '${newPackedItem.inventoryItem.name}' into Box ${activeBoxName}!` 
       });
 
       playBeep(true);
