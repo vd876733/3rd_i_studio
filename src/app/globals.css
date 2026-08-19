@@ -1,14 +1,14 @@
 @import "tailwindcss";
 
 :root {
-  --background: #f8fafc;
-  --foreground: #0f172a;
+  --background: hsl(210 40% 98%);
+  --foreground: hsl(222.2 84% 4.9%);
   
-  --card: #ffffff;
-  --card-foreground: #0f172a;
+  --card: hsl(0 0% 100%);
+  --card-foreground: hsl(222.2 84% 4.9%);
   
-  --popover: #ffffff;
-  --popover-foreground: #0f172a;
+  --popover: hsl(0 0% 100%);
+  --popover-foreground: hsl(222.2 84% 4.9%);
   
   --primary: #0f172a;
   --primary-foreground: #ffffff;
@@ -16,8 +16,8 @@
   --secondary: #e2e8f0;
   --secondary-foreground: #0f172a;
   
-  --muted: #f1f5f9;
-  --muted-foreground: #475569;
+  --muted: hsl(210 40% 96.1%);
+  --muted-foreground: hsl(215.4 16.3% 46.9%);
   
   --accent: #f1f5f9;
   --accent-foreground: #0f172a;
@@ -25,9 +25,26 @@
   --destructive: #ef4444;
   --destructive-foreground: #fafafa;
   
-  --border: #e2e8f0;
-  --input: #e2e8f0;
+  --border: hsl(214.3 31.8% 91.4%);
+  --input: hsl(214.3 31.8% 91.4%);
   --ring: #0f172a;
+}
+
+.light {
+  --background: hsl(210 40% 98%);
+  --foreground: hsl(222.2 84% 4.9%);
+  
+  --card: hsl(0 0% 100%);
+  --card-foreground: hsl(222.2 84% 4.9%);
+  
+  --popover: hsl(0 0% 100%);
+  --popover-foreground: hsl(222.2 84% 4.9%);
+  
+  --border: hsl(214.3 31.8% 91.4%);
+  --input: hsl(214.3 31.8% 91.4%);
+  
+  --muted: hsl(210 40% 96.1%);
+  --muted-foreground: hsl(215.4 16.3% 46.9%);
 }
 
 .dark {

@@ -180,35 +180,35 @@ export default function ProductsPage() {
       {/* Filter and Search Bar */}
       <div className="flex flex-col sm:flex-row gap-3">
         <div className="relative flex-1">
-          <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-400" />
+          <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
           <input
             type="text"
             placeholder="Search products, barcodes, states..."
             value={globalFilter}
             onChange={(e) => setGlobalFilter(e.target.value)}
-            className="w-full pl-10 pr-4 py-2.5 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-xl text-sm focus:outline-none focus:ring-1 focus:ring-cyan-500 placeholder-zinc-400"
+            className="w-full pl-10 pr-4 py-2.5 bg-card border border-border rounded-xl text-sm focus:outline-none focus:ring-1 focus:ring-cyan-500 placeholder-muted-foreground text-foreground"
           />
         </div>
-        <button className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 text-zinc-700 dark:text-zinc-300 font-medium text-sm hover:bg-zinc-50 dark:hover:bg-zinc-850 transition-colors">
+        <button className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-card border border-border text-foreground font-medium text-sm hover:bg-muted/40 transition-colors">
           <Filter className="w-4 h-4" />
           <span>Filters</span>
         </button>
       </div>
 
       {/* Table Container */}
-      <div className="border border-zinc-200 dark:border-zinc-800 rounded-2xl bg-white dark:bg-zinc-900/40 shadow-sm overflow-hidden">
+      <div className="border border-border rounded-xl bg-card text-card-foreground shadow-sm overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full border-collapse text-left">
             <thead>
               {table.getHeaderGroups().map((headerGroup) => (
                 <tr 
                   key={headerGroup.id}
-                  className="border-b border-zinc-200 dark:border-zinc-800 bg-zinc-50/50 dark:bg-zinc-900/50"
+                  className="border-b border-border bg-muted/50"
                 >
                   {headerGroup.headers.map((header) => (
                     <th 
                       key={header.id} 
-                      className="px-6 py-4 font-semibold text-zinc-600 dark:text-zinc-400 text-xs"
+                      className="px-6 py-4 font-semibold text-muted-foreground text-xs"
                     >
                       {header.isPlaceholder
                         ? null
@@ -221,12 +221,12 @@ export default function ProductsPage() {
                 </tr>
               ))}
             </thead>
-            <tbody className="divide-y divide-zinc-200 dark:divide-zinc-800">
+            <tbody className="divide-y divide-border">
               {table.getRowModel().rows.length > 0 ? (
                 table.getRowModel().rows.map((row) => (
                   <tr 
                     key={row.id}
-                    className="hover:bg-zinc-50/50 dark:hover:bg-zinc-800/20 transition-colors"
+                    className="hover:bg-muted/30 transition-colors bg-card text-foreground"
                   >
                     {row.getVisibleCells().map((cell) => (
                       <td key={cell.id} className="px-6 py-4 align-middle">
@@ -240,7 +240,7 @@ export default function ProductsPage() {
                 ))
               ) : (
                 <tr>
-                  <td colSpan={columns.length} className="px-6 py-12 text-center text-sm text-zinc-500">
+                  <td colSpan={columns.length} className="px-6 py-12 text-center text-sm text-muted-foreground">
                     No products found. Try adjusting your search query.
                   </td>
                 </tr>
@@ -250,8 +250,8 @@ export default function ProductsPage() {
         </div>
 
         {/* Pagination Section */}
-        <div className="flex items-center justify-between px-6 py-4 border-t border-zinc-200 dark:border-zinc-800 bg-zinc-50/20 dark:bg-zinc-900/20">
-          <span className="text-xs text-zinc-500 dark:text-zinc-400">
+        <div className="flex items-center justify-between px-6 py-4 border-t border-border bg-muted/20">
+          <span className="text-xs text-muted-foreground">
             Showing Page {table.getState().pagination.pageIndex + 1} of{" "}
             {table.getPageCount()}
           </span>
@@ -259,7 +259,7 @@ export default function ProductsPage() {
             <button
               onClick={() => table.previousPage()}
               disabled={!table.getCanPreviousPage()}
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-zinc-200 dark:border-zinc-800 text-zinc-700 dark:text-zinc-300 text-xs font-semibold hover:bg-zinc-50 dark:hover:bg-zinc-800 transition-colors disabled:opacity-40 disabled:hover:bg-transparent"
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-border text-foreground text-xs font-semibold hover:bg-muted/40 transition-colors disabled:opacity-40"
             >
               <ChevronLeft className="w-3.5 h-3.5" />
               <span>Prev</span>
@@ -267,7 +267,7 @@ export default function ProductsPage() {
             <button
               onClick={() => table.nextPage()}
               disabled={!table.getCanNextPage()}
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-zinc-200 dark:border-zinc-800 text-zinc-700 dark:text-zinc-300 text-xs font-semibold hover:bg-zinc-50 dark:hover:bg-zinc-800 transition-colors disabled:opacity-40 disabled:hover:bg-transparent"
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-border text-foreground text-xs font-semibold hover:bg-muted/40 transition-colors disabled:opacity-40"
             >
               <span>Next</span>
               <ChevronRight className="w-3.5 h-3.5" />

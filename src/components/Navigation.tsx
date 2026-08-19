@@ -31,14 +31,14 @@ export default function Navigation() {
   return (
     <>
       {/* Desktop Sidebar Navigation */}
-      <aside className="fixed inset-y-0 left-0 z-20 hidden w-64 border-r border-[#e2e8f0] bg-white dark:border-zinc-800/80 dark:bg-zinc-950/70 lg:flex flex-col">
+      <aside className="fixed inset-y-0 left-0 z-20 hidden w-64 bg-white dark:bg-zinc-955 border-r border-slate-200 dark:border-zinc-800 lg:flex flex-col">
         {/* Brand Header */}
-        <div className="flex h-16 items-center px-6 border-b border-[#e2e8f0] dark:border-zinc-800/80 gap-3">
+        <div className="flex h-16 items-center px-6 border-b border-slate-200 dark:border-zinc-800 gap-3">
           <div className="w-8 h-8 rounded-lg bg-gradient-to-tr from-cyan-500 to-blue-600 flex items-center justify-center shadow-md shadow-blue-500/20">
             <span className="font-bold text-white text-sm">3D</span>
           </div>
           <div>
-            <h1 className="font-semibold text-slate-900 dark:text-zinc-50 leading-none">3rdiStudio</h1>
+            <h1 className="font-semibold text-slate-900 dark:text-white leading-none">3rdiStudio</h1>
             <span className="text-[10px] text-slate-500 font-medium tracking-wider uppercase">Platform</span>
           </div>
         </div>
@@ -70,12 +70,12 @@ export default function Navigation() {
         </nav>
 
         {/* User profile section */}
-        <div className="p-4 border-t border-[#e2e8f0] dark:border-zinc-800/80 bg-slate-50 dark:bg-zinc-950/40 space-y-3">
+        <div className="p-4 border-t border-slate-200 dark:border-zinc-800 bg-slate-50 dark:bg-zinc-950/40 space-y-3">
           <div className="flex items-center justify-between px-2">
             <span className="text-[10px] text-slate-450 dark:text-zinc-500 font-bold uppercase tracking-wider">Appearance</span>
             <ThemeToggle />
           </div>
-          <div className="flex items-center gap-3 p-2 rounded-xl border border-slate-200 dark:border-zinc-800 bg-white dark:bg-zinc-900/10">
+          <div className="flex items-center gap-3 p-2 rounded-xl border border-slate-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 shadow-sm">
             <div className="w-9 h-9 rounded-full bg-slate-100 dark:bg-zinc-800 flex items-center justify-center border border-slate-200 dark:border-zinc-700">
               <User className="w-5 h-5 text-slate-600 dark:text-zinc-400" />
             </div>
@@ -91,21 +91,21 @@ export default function Navigation() {
       </aside>
 
       {/* Mobile Top Navigation Header */}
-      <header className="lg:hidden fixed top-0 left-0 right-0 h-16 border-b border-[#e2e8f0] bg-white dark:border-zinc-800/80 dark:bg-zinc-955/70 z-20 flex items-center justify-between px-6">
+      <header className="lg:hidden fixed top-0 left-0 right-0 h-16 bg-white dark:bg-zinc-955 border-b border-slate-200 dark:border-zinc-800 z-20 flex items-center justify-between px-6">
         <div className="flex items-center gap-3">
           <div className="w-8 h-8 rounded-lg bg-gradient-to-tr from-cyan-500 to-blue-600 flex items-center justify-center">
             <span className="font-bold text-white text-xs">3D</span>
           </div>
-          <span className="font-semibold text-slate-900 dark:text-zinc-50">3rdiStudio</span>
+          <span className="font-semibold text-slate-900 dark:text-white">3rdiStudio</span>
         </div>
         <div className="flex items-center gap-2.5">
           <ThemeToggle />
-          <button className="p-2 text-zinc-550 hover:text-zinc-950 dark:hover:text-zinc-50 rounded-full hover:bg-zinc-100 dark:hover:bg-zinc-900 transition-colors relative">
+          <button className="p-2 text-zinc-550 hover:text-zinc-955 dark:hover:text-zinc-50 rounded-full hover:bg-zinc-105 dark:hover:bg-zinc-900 transition-colors relative">
             <Bell className="w-5 h-5" />
             <span className="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-cyan-500" />
           </button>
           <div className="w-8 h-8 rounded-full bg-zinc-200 dark:bg-zinc-800 flex items-center justify-center">
-            <User className="w-4 h-4 text-zinc-600 dark:text-zinc-400" />
+            <User className="w-4 h-4 text-zinc-650 dark:text-zinc-400" />
           </div>
         </div>
       </header>

@@ -97,23 +97,23 @@ export default function InventoryClient({ initialItems }: { initialItems: Invent
       {/* Search Input and Categories Dropdown */}
       <div className="flex flex-col sm:flex-row gap-3">
         <div className="relative flex-1">
-          <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+          <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
           <input
             type="text"
             placeholder="Search SKU, name, rack (e.g. A1), shelf..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full pl-10 pr-4 py-2.5 bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 rounded-xl text-sm focus:outline-none focus:ring-1 focus:ring-cyan-500 placeholder-slate-400 text-slate-900 dark:text-zinc-100"
+            className="w-full pl-10 pr-4 py-2.5 bg-card border border-border rounded-xl text-sm focus:outline-none focus:ring-1 focus:ring-cyan-500 placeholder-muted-foreground text-foreground"
           />
         </div>
         
         {/* Category Selector */}
         <div className="flex items-center gap-2">
-          <SlidersHorizontal className="w-4 h-4 text-slate-400" />
+          <SlidersHorizontal className="w-4 h-4 text-muted-foreground" />
           <select
             value={activeCategory}
             onChange={(e) => setActiveCategory(e.target.value)}
-            className="bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-1 focus:ring-cyan-500 text-slate-700 dark:text-zinc-300"
+            className="bg-card border border-border rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-1 focus:ring-cyan-500 text-foreground"
           >
             {categories.map((cat) => (
               <option key={cat} value={cat}>
@@ -125,15 +125,15 @@ export default function InventoryClient({ initialItems }: { initialItems: Invent
       </div>
 
       {/* Fast Filter Status Buttons */}
-      <div className="flex flex-wrap items-center gap-2 pb-2 border-b border-slate-200 dark:border-zinc-800/20">
-        <span className="text-xs font-bold text-slate-500 mr-2 uppercase tracking-wide">Status:</span>
+      <div className="flex flex-wrap items-center gap-2 pb-2 border-b border-border">
+        <span className="text-xs font-bold text-muted-foreground mr-2 uppercase tracking-wide">Status:</span>
         <button
           onClick={() => setActiveStatus("ALL")}
           className={cn(
             "px-3 py-1.5 rounded-lg text-xs font-semibold border transition-all duration-150",
             activeStatus === "ALL"
-              ? "bg-slate-100 border-slate-350 text-slate-900 dark:bg-zinc-105 dark:text-zinc-950 dark:border-zinc-100"
-              : "bg-white dark:bg-zinc-900 border-slate-200 dark:border-zinc-800 text-slate-600 dark:text-zinc-400 hover:bg-slate-50 hover:text-slate-900"
+              ? "bg-muted border-border text-foreground"
+              : "bg-card border border-border text-muted-foreground hover:bg-muted/40"
           )}
         >
           All Items ({initialItems.length})
@@ -147,8 +147,8 @@ export default function InventoryClient({ initialItems }: { initialItems: Invent
               className={cn(
                 "px-3 py-1.5 rounded-lg text-xs font-semibold border transition-all duration-150 flex items-center gap-1.5",
                 activeStatus === status
-                  ? "bg-slate-100 border-slate-350 text-slate-900 dark:bg-zinc-105 dark:text-zinc-955 dark:border-zinc-100"
-                  : "bg-white dark:bg-zinc-900 border-slate-200 dark:border-zinc-800 text-slate-600 dark:text-zinc-400 hover:bg-slate-50 hover:text-slate-900"
+                  ? "bg-muted border-border text-foreground"
+                  : "bg-card border border-border text-muted-foreground hover:bg-muted/40"
               )}
             >
               <span>{status.replace("_", " ")}</span>
@@ -165,10 +165,10 @@ export default function InventoryClient({ initialItems }: { initialItems: Invent
           filteredItems.map((item) => (
             <div 
               key={item.id}
-              className="p-4 rounded-xl bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 shadow-sm flex gap-4"
+              className="p-4 rounded-xl bg-card border border-border shadow-sm flex gap-4 text-card-foreground"
             >
               {/* Photo Preview */}
-              <div className="relative w-20 h-20 rounded-lg overflow-hidden border border-slate-100 dark:border-zinc-850 bg-slate-50 dark:bg-zinc-950 shrink-0">
+              <div className="relative w-20 h-20 rounded-lg overflow-hidden border border-border bg-muted shrink-0">
                 <img
                   src={getPhotoUrl(item.photos)}
                   alt={item.name}
@@ -180,17 +180,17 @@ export default function InventoryClient({ initialItems }: { initialItems: Invent
               <div className="flex-1 min-w-0 flex flex-col justify-between">
                 <div className="space-y-0.5">
                   <div className="flex items-center justify-between gap-2">
-                    <code className="text-[10px] font-mono font-bold text-slate-400 truncate">{item.sku}</code>
+                    <code className="text-[10px] font-mono font-bold text-muted-foreground truncate">{item.sku}</code>
                     <span className={cn("px-2 py-0.5 rounded-full text-[9px] font-bold border whitespace-nowrap", getStatusColor(item.currentStatus))}>
                       {item.currentStatus}
                     </span>
                   </div>
-                  <h4 className="text-sm font-bold text-slate-900 dark:text-zinc-100 truncate">{item.name}</h4>
-                  <p className="text-[11px] text-slate-500 dark:text-zinc-400">Cat: {item.category}</p>
+                  <h4 className="text-sm font-bold text-foreground truncate">{item.name}</h4>
+                  <p className="text-[11px] text-muted-foreground">Cat: {item.category}</p>
                 </div>
                 
                 {/* Rack & Shelf */}
-                <div className="flex items-center gap-1.5 text-xs text-slate-600 dark:text-zinc-400 font-semibold pt-1 border-t border-slate-100 dark:border-zinc-850">
+                <div className="flex items-center gap-1.5 text-xs text-muted-foreground font-semibold pt-1 border-t border-border">
                   <MapPin className="w-3.5 h-3.5 text-cyan-500 shrink-0" />
                   <span>Rack: {item.rackNumber} / {item.shelfNumber}</span>
                 </div>
@@ -198,18 +198,18 @@ export default function InventoryClient({ initialItems }: { initialItems: Invent
             </div>
           ))
         ) : (
-          <div className="py-12 text-center border border-dashed border-slate-200 dark:border-zinc-800 rounded-xl bg-white/40 dark:bg-zinc-900/10">
-            <span className="text-xs text-slate-400 italic">No inventory items found.</span>
+          <div className="py-12 text-center border border-dashed border-border rounded-xl bg-card/40">
+            <span className="text-xs text-muted-foreground italic">No inventory items found.</span>
           </div>
         )}
       </div>
 
       {/* Desktop table view (md and up) */}
-      <div className="hidden md:block border border-slate-200 dark:border-zinc-800 rounded-2xl bg-white dark:bg-zinc-900/40 shadow-sm overflow-hidden">
+      <div className="hidden md:block border border-border rounded-xl bg-card text-card-foreground shadow-sm overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full border-collapse text-left text-sm">
             <thead>
-              <tr className="border-b border-slate-200 dark:border-zinc-800 bg-[#f8fafc] dark:bg-zinc-900/50 text-slate-900 dark:text-zinc-400 font-semibold">
+              <tr className="border-b border-border bg-muted/50 text-muted-foreground font-semibold">
                 <th className="px-6 py-4">Item</th>
                 <th className="px-6 py-4">SKU / Barcode</th>
                 <th className="px-6 py-4">Category</th>
@@ -218,34 +218,34 @@ export default function InventoryClient({ initialItems }: { initialItems: Invent
                 <th className="px-6 py-4">Cost</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-slate-200 dark:divide-zinc-800 bg-white dark:bg-zinc-900">
+            <tbody className="divide-y divide-border bg-card">
               {filteredItems.length > 0 ? (
                 filteredItems.map((item) => (
-                  <tr key={item.id} className="hover:bg-slate-50 dark:hover:bg-zinc-850/10 transition-colors">
+                  <tr key={item.id} className="bg-card text-foreground hover:bg-muted/30 transition-colors">
                     {/* Item photo + name */}
                     <td className="px-6 py-4">
                       <div className="flex items-center gap-3">
-                        <div className="relative w-10 h-10 rounded-lg overflow-hidden border border-slate-150 dark:border-zinc-800 bg-slate-50 shrink-0">
+                        <div className="relative w-10 h-10 rounded-lg overflow-hidden border border-border bg-muted shrink-0">
                           <img
                             src={getPhotoUrl(item.photos)}
                             alt={item.name}
                             className="w-full h-full object-cover"
                           />
                         </div>
-                        <span className="font-bold text-slate-900 dark:text-zinc-100">{item.name}</span>
+                        <span className="font-bold text-foreground">{item.name}</span>
                       </div>
                     </td>
                     
                     {/* SKU / Barcode */}
                     <td className="px-6 py-4 font-mono text-xs">
                       <div className="space-y-0.5">
-                        <span className="block text-slate-800 dark:text-zinc-200 font-bold">{item.sku}</span>
-                        <span className="block text-slate-400">{item.barcode}</span>
+                        <span className="block text-foreground font-bold">{item.sku}</span>
+                        <span className="block text-muted-foreground">{item.barcode}</span>
                       </div>
                     </td>
  
                     {/* Category */}
-                    <td className="px-6 py-4 text-slate-600 dark:text-zinc-400 font-medium">
+                    <td className="px-6 py-4 text-muted-foreground font-medium">
                       {item.category}
                     </td>
  
@@ -258,21 +258,21 @@ export default function InventoryClient({ initialItems }: { initialItems: Invent
  
                     {/* Location */}
                     <td className="px-6 py-4">
-                      <div className="flex items-center gap-1.5 text-xs text-slate-700 dark:text-zinc-300 font-semibold">
+                      <div className="flex items-center gap-1.5 text-xs text-muted-foreground font-semibold">
                         <MapPin className="w-4 h-4 text-cyan-500" />
                         <span>Rack {item.rackNumber}, {item.shelfNumber}</span>
                       </div>
                     </td>
  
                     {/* Replacement Cost */}
-                    <td className="px-6 py-4 font-semibold text-slate-900 dark:text-zinc-100">
+                    <td className="px-6 py-4 font-semibold text-foreground">
                       ${item.replacementCost.toFixed(2)}
                     </td>
                   </tr>
                 ))
               ) : (
                 <tr>
-                  <td colSpan={6} className="px-6 py-12 text-center text-slate-400 italic">
+                  <td colSpan={6} className="px-6 py-12 text-center text-muted-foreground italic">
                     No matching inventory records found.
                   </td>
                 </tr>

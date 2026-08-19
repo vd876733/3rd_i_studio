@@ -363,7 +363,7 @@ export default function ProjectDetailClient({
       <div className="space-y-4">
         <Link 
           href="/projects" 
-          className="inline-flex items-center gap-1.5 text-xs text-zinc-500 hover:text-zinc-950 dark:hover:text-zinc-50 transition-colors"
+          className="inline-flex items-center gap-1.5 text-xs text-slate-500 hover:text-slate-900 dark:hover:text-zinc-50 transition-colors"
         >
           <ArrowLeft className="w-3.5 h-3.5" />
           <span>Back to Projects</span>
@@ -372,19 +372,19 @@ export default function ProjectDetailClient({
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div className="space-y-1">
             <div className="flex items-center gap-2">
-              <code className="text-xs font-mono font-bold text-zinc-400 bg-zinc-100 dark:bg-zinc-955 px-2 py-0.5 rounded border border-zinc-200/50 dark:border-zinc-800/50">
+              <code className="text-xs font-mono font-bold text-slate-400 bg-slate-100 dark:bg-zinc-950 px-2 py-0.5 rounded border border-slate-200/50 dark:border-zinc-800/50">
                 {project.projectCode}
               </code>
               {getStatusBadge(project.status)}
             </div>
-            <h1 className="text-2xl font-bold tracking-tight text-zinc-950 dark:text-zinc-50">
+            <h1 className="text-2xl font-bold tracking-tight text-slate-900 dark:text-white">
               {project.name}
             </h1>
           </div>
 
           <button
             onClick={handleOpenEdit}
-            className="inline-flex items-center gap-1.5 px-4.5 py-2.5 border border-zinc-200 dark:border-zinc-800 rounded-xl text-zinc-700 dark:text-zinc-300 hover:bg-zinc-50 dark:hover:bg-zinc-950 font-bold text-xs cursor-pointer transition-all"
+            className="inline-flex items-center gap-1.5 px-4.5 py-2.5 border border-slate-200 dark:border-zinc-800 rounded-xl text-slate-700 dark:text-slate-350 hover:bg-slate-50 dark:hover:bg-zinc-900 font-bold text-xs cursor-pointer transition-all bg-white dark:bg-zinc-900 shadow-sm"
           >
             <Edit className="w-3.5 h-3.5 text-cyan-500" />
             <span>Edit Project Details</span>
@@ -432,9 +432,9 @@ export default function ProjectDetailClient({
             {/* Left Col: Location, Schedule & Parking notes */}
             <div className="md:col-span-2 space-y-6">
               {/* Project Quick Overview */}
-              <div className="p-6 rounded-2xl border border-border bg-card text-card-foreground shadow-sm space-y-5">
+              <div className="bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 shadow-sm rounded-xl p-6 space-y-5">
                 <div className="flex items-center justify-between">
-                  <h3 className="font-bold text-sm text-zinc-900 dark:text-zinc-50 flex items-center gap-2">
+                  <h3 className="font-bold text-sm text-slate-900 dark:text-white flex items-center gap-2">
                     <MapPin className="w-4.5 h-4.5 text-cyan-500" />
                     <span>Shoot Site Location</span>
                   </h3>
@@ -442,26 +442,26 @@ export default function ProjectDetailClient({
 
                 {project.siteDetails ? (
                   <div className="space-y-4">
-                    <div className="p-4 rounded-xl bg-zinc-50 dark:bg-zinc-950 border border-zinc-150 dark:border-zinc-800/85">
-                      <span className="text-[10px] text-zinc-400 uppercase tracking-wider block font-bold">Complete Address</span>
-                      <p className="text-sm font-semibold text-zinc-805 dark:text-zinc-200 mt-1">
+                    <div className="p-4 rounded-xl bg-slate-50 dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 text-slate-900 dark:text-white">
+                      <span className="text-[10px] text-slate-500 dark:text-slate-400 uppercase tracking-wider block font-bold">Complete Address</span>
+                      <p className="text-sm font-medium text-slate-900 dark:text-white mt-1">
                         {project.siteDetails.address}
                       </p>
                     </div>
 
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                       {project.siteDetails.landmark && (
-                        <div className="p-4 rounded-xl bg-zinc-50 dark:bg-zinc-950 border border-zinc-150 dark:border-zinc-800/85">
-                          <span className="text-[10px] text-zinc-400 uppercase tracking-wider block font-bold">Site Landmark</span>
-                          <p className="text-xs font-semibold text-zinc-805 dark:text-zinc-200 mt-1">
+                        <div className="p-4 rounded-xl bg-slate-50 dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 text-slate-900 dark:text-white">
+                          <span className="text-[10px] text-slate-500 dark:text-slate-400 uppercase tracking-wider block font-bold">Site Landmark</span>
+                          <p className="text-xs font-medium text-slate-900 dark:text-white mt-1">
                             {project.siteDetails.landmark}
                           </p>
                         </div>
                       )}
                       
-                      <div className="p-4 rounded-xl bg-zinc-50 dark:bg-zinc-955 border border-zinc-150 dark:border-zinc-800/85">
-                        <span className="text-[10px] text-zinc-400 uppercase tracking-wider block font-bold">Call Time (Reporting)</span>
-                        <p className="text-xs font-mono font-bold text-zinc-805 dark:text-zinc-200 mt-1 flex items-center gap-1.5">
+                      <div className="p-4 rounded-xl bg-slate-50 dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 text-slate-900 dark:text-white">
+                        <span className="text-[10px] text-slate-500 dark:text-slate-400 uppercase tracking-wider block font-bold">Call Time (Reporting)</span>
+                        <p className="text-xs font-mono font-medium text-slate-900 dark:text-white mt-1 flex items-center gap-1.5">
                           <Clock className="w-3.5 h-3.5 text-cyan-500 shrink-0" />
                           <span>{project.reportingTime || "N/A"}</span>
                         </p>
@@ -615,8 +615,8 @@ export default function ProjectDetailClient({
             {/* Right Col: Logistics Instructions & Schedule Details */}
             <div className="space-y-6">
               {/* Parking Rules & Logistics */}
-              <div className="p-6 rounded-2xl border border-border bg-card text-card-foreground shadow-sm space-y-4">
-                <h3 className="font-bold text-sm text-foreground flex items-center gap-2">
+              <div className="bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 shadow-sm rounded-xl p-6 space-y-4">
+                <h3 className="font-bold text-sm text-slate-900 dark:text-white flex items-center gap-2">
                   <Info className="w-4.5 h-4.5 text-cyan-500" />
                   <span>Parking Rules & Site Access</span>
                 </h3>
@@ -635,8 +635,8 @@ export default function ProjectDetailClient({
               </div>
 
               {/* Time Slots Details */}
-              <div className="p-6 rounded-2xl border border-border bg-card text-card-foreground shadow-sm space-y-4">
-                <h3 className="font-bold text-sm text-foreground flex items-center gap-1.5">
+              <div className="bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 shadow-sm rounded-xl p-6 space-y-4">
+                <h3 className="font-bold text-sm text-slate-900 dark:text-white flex items-center gap-1.5">
                   <Calendar className="w-4.5 h-4.5 text-cyan-500" />
                   <span>Production Schedule</span>
                 </h3>
@@ -695,10 +695,10 @@ export default function ProjectDetailClient({
         {activeTab === "checklists" && (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 animate-fadeIn">
             {/* Warehouse Checklist Card */}
-            <div className="p-6 rounded-2xl border border-border bg-card text-card-foreground shadow-sm space-y-4 flex flex-col justify-between">
+            <div className="bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 shadow-sm rounded-xl p-6 space-y-4 flex flex-col justify-between">
               <div className="space-y-4">
                 <div className="flex items-center justify-between">
-                  <h3 className="font-bold text-sm text-foreground flex items-center gap-2">
+                  <h3 className="font-bold text-sm text-slate-900 dark:text-white flex items-center gap-2">
                     <ClipboardCheck className="w-5 h-5 text-amber-500" />
                     <span>Before Leaving Warehouse</span>
                   </h3>
@@ -740,10 +740,10 @@ export default function ProjectDetailClient({
             </div>
 
             {/* Site Wrap Checklist Card */}
-            <div className="p-6 rounded-2xl border border-border bg-card text-card-foreground shadow-sm space-y-4 flex flex-col justify-between">
+            <div className="bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 shadow-sm rounded-xl p-6 space-y-4 flex flex-col justify-between">
               <div className="space-y-4">
                 <div className="flex items-center justify-between">
-                  <h3 className="font-bold text-sm text-foreground flex items-center gap-2">
+                  <h3 className="font-bold text-sm text-slate-900 dark:text-white flex items-center gap-2">
                     <ClipboardCheck className="w-5 h-5 text-indigo-500" />
                     <span>Site Wrapping & Returns</span>
                   </h3>
@@ -788,9 +788,9 @@ export default function ProjectDetailClient({
 
         {/* AUDIT LOG HISTORY TAB */}
         {activeTab === "audit-history" && (
-          <div className="p-6 rounded-2xl border border-border bg-card text-card-foreground shadow-sm space-y-6 animate-fadeIn">
+          <div className="bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 shadow-sm rounded-xl p-6 space-y-6 animate-fadeIn">
             <div className="flex items-center justify-between pb-3 border-b border-border">
-              <h3 className="font-bold text-sm text-foreground flex items-center gap-2">
+              <h3 className="font-bold text-sm text-slate-900 dark:text-white flex items-center gap-2">
                 <History className="w-5 h-5 text-cyan-500" />
                 <span>Project Change Log Audit</span>
               </h3>

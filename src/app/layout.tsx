@@ -26,7 +26,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
       suppressHydrationWarning
     >
-      <body className="min-h-full flex flex-col bg-zinc-50 dark:bg-zinc-950 text-zinc-900 dark:text-zinc-50">
+      <body className="min-h-screen flex flex-col bg-background text-foreground antialiased">
         <ThemeProvider
           attribute="class"
           defaultTheme="dark"
@@ -35,7 +35,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
         >
           <Navigation />
           <div className="flex-1 lg:pl-64 pt-16 lg:pt-0 pb-16 lg:pb-0 flex flex-col">
-            <main className="flex-1 flex flex-col">{children}</main>
+            <main className="flex-1 bg-slate-50 dark:bg-zinc-955 text-slate-900 dark:text-zinc-100 min-h-screen transition-colors duration-200 flex flex-col">{children}</main>
           </div>
         </ThemeProvider>
       </body>

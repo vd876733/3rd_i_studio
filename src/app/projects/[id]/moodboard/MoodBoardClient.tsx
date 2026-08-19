@@ -663,19 +663,19 @@ export default function MoodBoardClient({
           <div className="space-y-1">
             <Link 
               href={`/projects/${project.id}`} 
-              className="inline-flex items-center gap-1.5 text-xs text-zinc-500 hover:text-zinc-950 dark:hover:text-zinc-50 transition-colors"
+              className="inline-flex items-center gap-1.5 text-xs text-slate-500 hover:text-slate-900 dark:hover:text-zinc-50 transition-colors"
             >
               <ArrowLeft className="w-3.5 h-3.5" />
               <span>Back to Project Details</span>
             </Link>
-            <h1 className="text-2xl font-bold tracking-tight text-zinc-950 dark:text-zinc-50 flex items-center gap-2">
+            <h1 className="text-2xl font-bold tracking-tight text-slate-900 dark:text-white flex items-center gap-2">
               <Sparkles className="w-6 h-6 text-cyan-500" />
               <span>Interactive Mood Board Editor</span>
             </h1>
           </div>
         ) : (
           <div className="space-y-1">
-            <h3 className="font-bold text-sm text-zinc-900 dark:text-zinc-50 flex items-center gap-2">
+            <h3 className="font-bold text-sm text-slate-900 dark:text-white flex items-center gap-2">
               <Sparkles className="w-4 h-4 text-cyan-500" />
               <span>Project Design Canvas</span>
             </h3>
@@ -687,7 +687,7 @@ export default function MoodBoardClient({
           {saveStatus && (
             <div className={cn(
               "px-3 py-2 rounded-xl text-xs font-semibold border flex items-center gap-1.5",
-              saveStatus.success ? "bg-emerald-500/5 text-emerald-400 border-emerald-500/10" : "bg-rose-500/5 text-rose-400 border-rose-500/10"
+              saveStatus.success ? "bg-emerald-500/5 text-emerald-455 border-emerald-500/10" : "bg-rose-500/5 text-rose-455 border-rose-500/10"
             )}>
               {saveStatus.success ? <CheckCircle2 className="w-4 h-4" /> : <AlertTriangle className="w-4 h-4" />}
               <span>{saveStatus.message}</span>
@@ -706,7 +706,7 @@ export default function MoodBoardClient({
           <button
             onClick={handleExportPNG}
             disabled={isExporting}
-            className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-zinc-800 hover:bg-zinc-700 border border-zinc-700 text-zinc-200 font-semibold text-xs transition-colors disabled:opacity-50 cursor-pointer"
+            className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-zinc-800 dark:hover:bg-zinc-700 border border-slate-200 dark:border-zinc-700 text-slate-700 dark:text-zinc-200 font-semibold text-xs transition-colors disabled:opacity-50 cursor-pointer"
           >
             {isExporting ? (
               <RefreshCw className="w-4 h-4 animate-spin" />
@@ -719,7 +719,7 @@ export default function MoodBoardClient({
           <button
             onClick={handleExportPDF}
             disabled={isExporting}
-            className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-zinc-800 hover:bg-zinc-700 border border-zinc-700 text-zinc-200 font-semibold text-xs transition-colors disabled:opacity-50 cursor-pointer"
+            className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-zinc-800 dark:hover:bg-zinc-700 border border-slate-200 dark:border-zinc-700 text-slate-700 dark:text-zinc-200 font-semibold text-xs transition-colors disabled:opacity-50 cursor-pointer"
           >
             {isExporting ? (
               <RefreshCw className="w-4 h-4 animate-spin" />
@@ -735,21 +735,21 @@ export default function MoodBoardClient({
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 flex-1 min-h-[600px]">
         
         {/* Left Column: Available picklist sidebar */}
-        <div className="p-5 rounded-2xl border border-zinc-250/20 dark:border-zinc-850/20 bg-white/50 dark:bg-zinc-900/20 flex flex-col gap-4">
+        <div className="bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 shadow-sm rounded-xl p-5 flex flex-col gap-4">
           <div>
-            <h3 className="font-bold text-sm text-zinc-900 dark:text-zinc-50">Props Repository</h3>
-            <p className="text-[10px] text-zinc-500 mt-0.5">Drag/click items to add to board. Placed items are auto-reserved.</p>
+            <h3 className="font-bold text-sm text-slate-900 dark:text-white">Props Repository</h3>
+            <p className="text-[10px] text-slate-500 dark:text-slate-400 mt-0.5">Drag/click items to add to board. Placed items are auto-reserved.</p>
           </div>
 
           {/* Search bar */}
           <div className="relative">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-400" />
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
             <input
               type="text"
               placeholder="Search props name, SKU..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-9 pr-3 py-2 bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-xl text-xs focus:outline-none focus:ring-1 focus:ring-cyan-500"
+              className="w-full pl-9 pr-3 py-2 bg-slate-50 dark:bg-zinc-950 border border-slate-200 dark:border-zinc-800 rounded-xl text-xs focus:outline-none focus:ring-1 focus:ring-cyan-500 text-slate-900 dark:text-white"
             />
           </div>
 
@@ -762,9 +762,9 @@ export default function MoodBoardClient({
                   draggable={true}
                   onDragStart={(e) => handleDragStartSidebar(e, item)}
                   onClick={() => handleAddItemToCanvas(item)}
-                  className="p-3 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 hover:border-zinc-350 dark:hover:border-zinc-700 transition-all duration-150 flex gap-3 cursor-grab active:cursor-grabbing hover:shadow-sm"
+                  className="p-3 rounded-xl bg-slate-50 dark:bg-zinc-800 border border-slate-200 dark:border-zinc-700 text-slate-900 dark:text-white hover:border-slate-300 dark:hover:border-zinc-650 transition-all duration-150 flex gap-3 cursor-grab active:cursor-grabbing hover:shadow-sm"
                 >
-                  <div className="w-12 h-12 rounded-lg overflow-hidden shrink-0 bg-zinc-50 dark:bg-zinc-950 border border-zinc-100 dark:border-zinc-850">
+                  <div className="w-12 h-12 rounded-lg overflow-hidden shrink-0 bg-white dark:bg-zinc-950 border border-slate-200 dark:border-zinc-850">
                     <img
                       src={getPhotoUrl(item.photos)}
                       alt={item.name}
@@ -772,14 +772,14 @@ export default function MoodBoardClient({
                     />
                   </div>
                   <div className="flex-1 min-w-0 flex flex-col justify-center">
-                    <span className="text-[8px] font-mono text-zinc-400 font-bold block">{item.sku}</span>
-                    <span className="text-xs font-bold text-zinc-800 dark:text-zinc-200 truncate block mt-0.5">{item.name}</span>
-                    <span className="text-[10px] text-zinc-400 block">{item.category}</span>
+                    <span className="text-[8px] font-mono text-slate-400 font-bold block">{item.sku}</span>
+                    <span className="text-xs font-bold text-slate-900 dark:text-white truncate block mt-0.5">{item.name}</span>
+                    <span className="text-[10px] text-slate-500 dark:text-slate-400 block">{item.category}</span>
                   </div>
                 </div>
               ))
             ) : (
-              <p className="text-xs text-zinc-400 italic text-center py-12">No available props found.</p>
+              <p className="text-xs text-slate-400 dark:text-zinc-500 italic text-center py-12">No available props found.</p>
             )}
           </div>
         </div>
@@ -788,57 +788,57 @@ export default function MoodBoardClient({
         <div className="lg:col-span-3 flex flex-col gap-4">
           
           {/* Controls Bar for Selected Element */}
-          <div className="p-3.5 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-zinc-100/50 dark:bg-zinc-900/50 flex flex-wrap items-center gap-3 justify-between min-h-[50px]">
+          <div className="p-3.5 rounded-xl border border-slate-200 dark:border-zinc-800 bg-slate-100 dark:bg-zinc-800 text-slate-700 dark:text-slate-300 flex flex-wrap items-center gap-3 justify-between min-h-[50px]">
             {selectedElementId ? (
               <>
-                <span className="text-xs text-zinc-500 font-semibold truncate max-w-[200px]">
+                <span className="text-xs text-slate-700 dark:text-slate-300 font-semibold truncate max-w-[200px]">
                   Selection: {selectedObjectName}
                 </span>
 
                 <div className="flex items-center gap-2">
                   {/* Scale controls */}
-                  <div className="flex border border-zinc-250 dark:border-zinc-700 rounded-lg overflow-hidden">
+                  <div className="flex border border-slate-200 dark:border-zinc-700 rounded-lg overflow-hidden bg-white dark:bg-zinc-950">
                     <button 
                       onClick={() => handleScaleChange(-0.05)} 
-                      className="px-2.5 py-1 text-xs font-bold hover:bg-zinc-200 dark:hover:bg-zinc-800 text-zinc-700 dark:text-zinc-300 cursor-pointer"
+                      className="px-2.5 py-1 text-xs font-bold hover:bg-slate-100 dark:hover:bg-zinc-800 text-slate-700 dark:text-slate-300 cursor-pointer"
                     >
                       A-
                     </button>
                     <button 
                       onClick={() => handleScaleChange(0.05)} 
-                      className="px-2.5 py-1 text-xs font-bold border-l border-zinc-250 dark:border-zinc-700 hover:bg-zinc-200 dark:hover:bg-zinc-800 text-zinc-700 dark:text-zinc-300 cursor-pointer"
+                      className="px-2.5 py-1 text-xs font-bold border-l border-slate-200 dark:border-zinc-700 hover:bg-slate-100 dark:hover:bg-zinc-800 text-slate-700 dark:text-slate-300 cursor-pointer"
                     >
                       A+
                     </button>
                   </div>
 
                   {/* Rotate controls */}
-                  <div className="flex border border-zinc-250 dark:border-zinc-700 rounded-lg overflow-hidden">
+                  <div className="flex border border-slate-200 dark:border-zinc-700 rounded-lg overflow-hidden bg-white dark:bg-zinc-955">
                     <button 
                       onClick={() => handleRotateChange(-15)} 
-                      className="px-2 py-1 hover:bg-zinc-200 dark:hover:bg-zinc-800 text-zinc-700 dark:text-zinc-300 cursor-pointer"
+                      className="px-2 py-1 hover:bg-slate-100 dark:hover:bg-zinc-800 text-slate-700 dark:text-slate-300 cursor-pointer"
                     >
                       <RotateCw className="w-3.5 h-3.5 scale-x-[-1]" />
                     </button>
                     <button 
                       onClick={() => handleRotateChange(15)} 
-                      className="px-2 py-1 border-l border-zinc-250 dark:border-zinc-700 hover:bg-zinc-200 dark:hover:bg-zinc-800 text-zinc-700 dark:text-zinc-300 cursor-pointer"
+                      className="px-2 py-1 border-l border-slate-200 dark:border-zinc-700 hover:bg-slate-100 dark:hover:bg-zinc-800 text-slate-700 dark:text-slate-300 cursor-pointer"
                     >
                       <RotateCw className="w-3.5 h-3.5" />
                     </button>
                   </div>
 
                   {/* Layer controls */}
-                  <div className="flex border border-zinc-250 dark:border-zinc-700 rounded-lg overflow-hidden">
+                  <div className="flex border border-slate-200 dark:border-zinc-700 rounded-lg overflow-hidden bg-white dark:bg-zinc-955">
                     <button 
                       onClick={() => handleLayerChange("down")} 
-                      className="px-2.5 py-1 hover:bg-zinc-200 dark:hover:bg-zinc-800 text-zinc-700 dark:text-zinc-300 cursor-pointer"
+                      className="px-2.5 py-1 hover:bg-slate-100 dark:hover:bg-zinc-800 text-slate-700 dark:text-slate-300 cursor-pointer"
                     >
                       <ChevronDown className="w-4 h-4" />
                     </button>
                     <button 
                       onClick={() => handleLayerChange("up")} 
-                      className="px-2.5 py-1 border-l border-zinc-250 dark:border-zinc-700 hover:bg-zinc-200 dark:hover:bg-zinc-800 text-zinc-700 dark:text-zinc-300 cursor-pointer"
+                      className="px-2.5 py-1 border-l border-slate-200 dark:border-zinc-700 hover:bg-slate-100 dark:hover:bg-zinc-800 text-slate-700 dark:text-slate-300 cursor-pointer"
                     >
                       <ChevronUp className="w-4 h-4" />
                     </button>
@@ -847,7 +847,7 @@ export default function MoodBoardClient({
                   {/* Duplicate */}
                   <button
                     onClick={handleDuplicateElement}
-                    className="p-1.5 border border-zinc-250 dark:border-zinc-700 rounded-lg text-zinc-650 hover:text-zinc-950 dark:text-zinc-300 dark:hover:text-zinc-50 hover:bg-zinc-200 dark:hover:bg-zinc-850 cursor-pointer"
+                    className="p-1.5 border border-slate-200 dark:border-zinc-700 rounded-lg text-slate-600 hover:text-slate-900 dark:text-zinc-300 dark:hover:text-zinc-50 hover:bg-slate-100 dark:hover:bg-zinc-850 bg-white dark:bg-zinc-950 cursor-pointer"
                   >
                     <Copy className="w-4 h-4" />
                   </button>
@@ -855,14 +855,14 @@ export default function MoodBoardClient({
                   {/* Delete */}
                   <button
                     onClick={handleDeleteElement}
-                    className="p-1.5 border border-red-500/20 rounded-lg text-red-500 hover:text-white hover:bg-red-500 transition-colors cursor-pointer"
+                    className="p-1.5 border border-red-500/20 rounded-lg text-red-500 hover:text-white hover:bg-red-500 transition-colors cursor-pointer bg-white dark:bg-zinc-950"
                   >
                     <Trash2 className="w-4 h-4" />
                   </button>
                 </div>
               </>
             ) : (
-              <span className="text-xs text-zinc-400 italic">Select an item on the canvas below to adjust properties.</span>
+              <span className="text-xs text-slate-500 dark:text-slate-400 italic">Select an item on the canvas below to adjust properties.</span>
             )}
           </div>
 
@@ -871,7 +871,7 @@ export default function MoodBoardClient({
             ref={workspaceRef}
             onDragOver={(e) => e.preventDefault()}
             onDrop={handleDrop}
-            className="flex-1 min-h-[500px] max-h-[600px] border border-zinc-250 dark:border-zinc-850 rounded-2xl bg-zinc-950 overflow-hidden shadow-inner flex items-center justify-center relative"
+            className="flex-1 min-h-[500px] max-h-[600px] bg-slate-100 dark:bg-zinc-950 border border-slate-200 dark:border-zinc-800 rounded-2xl overflow-hidden shadow-inner flex items-center justify-center relative"
           >
             <canvas ref={canvasRef} />
           </div>
