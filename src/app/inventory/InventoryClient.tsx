@@ -11,9 +11,15 @@ import {
   AlertTriangle,
   RefreshCw,
   SlidersHorizontal,
-  BookmarkCheck
+  BookmarkCheck,
+  MoreVertical,
+  Edit,
+  Trash2,
+  Plus,
+  X
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { createInventoryItem, updateInventoryItem, deleteInventoryItem } from "./actions";
 
 // TS Interfaces
 interface InventoryItemData {
@@ -33,6 +39,143 @@ export default function InventoryClient({ initialItems }: { initialItems: Invent
   const [searchQuery, setSearchQuery] = useState("");
   const [activeStatus, setActiveStatus] = useState<string>("ALL");
   const [activeCategory, setActiveCategory] = useState<string>("ALL");
+
+  const [activeActionMenuId, setActiveActionMenuId] = useState<string | null>(null);
+
+  // Modal State
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isEditing, setIsEditing] = useState(false);
+  const [editingItemId, setEditingItemId] = useState<string | null>(null);
+
+  // Form Fields
+  const [name, setName] = useState("");
+  const [category, setCategory] = useState("Decor");
+  const [replacementCost, setReplacementCost] = useState("");
+  const [rackNumber, setRackNumber] = useState("Rack A1");
+  const [shelfNumber, setShelfNumber] = useState("Shelf 1");
+  const [sku, setSku] = useState("");
+  const [barcode, setBarcode] = useState("");
+  const [imageUrl, setImageUrl] = useState("");
+  const [status, setStatus] = useState("AVAILABLE");
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [formError, setFormError] = useState<string | null>(null);
+
+  // Auto-generation effect for SKU & Barcode
+  useEffect(() => {
+    if (isEditing) return;
+    if (!name.trim()) {
+      setSku("");
+      setBarcode("");
+      return;
+    }
+    const cleanName = name
+      .replace(/[^a-zA-Z0-9]/g, "")
+      .slice(0, 3)
+      .toUpperCase();
+    const catCode = category.slice(0, 3).toUpperCase();
+    const num = Math.floor(1000 + Math.random() * 9000);
+    setSku(`SKU-${catCode}-${cleanName || "PROP"}-${num}`);
+    setBarcode(`BARCODE-99${num.toString().slice(-3)}`);
+  }, [name, category, isEditing]);
+
+  const handleOpenCreate = () => {
+    setIsEditing(false);
+    setEditingItemId(null);
+    setName("");
+    setCategory("Decor");
+    setReplacementCost("");
+    setRackNumber("Rack A1");
+    setShelfNumber("Shelf 1");
+    setSku("");
+    setBarcode("");
+    setImageUrl("");
+    setStatus("AVAILABLE");
+    setFormError(null);
+    setIsModalOpen(true);
+  };
+
+  const handleOpenEdit = (item: InventoryItemData) => {
+    setIsEditing(true);
+    setEditingItemId(item.id);
+    setName(item.name);
+    setCategory(item.category);
+    setReplacementCost(item.replacementCost.toString());
+    setRackNumber(item.rackNumber);
+    setShelfNumber(item.shelfNumber);
+    setSku(item.sku);
+    setBarcode(item.barcode);
+    setImageUrl(getPhotoUrl(item.photos));
+    setStatus(item.currentStatus);
+    setFormError(null);
+    setIsModalOpen(true);
+  };
+
+  const handleDelete = async (id: string, itemName: string) => {
+    if (!confirm(`Are you sure you want to delete "${itemName}"?`)) return;
+    try {
+      const res = await deleteInventoryItem(id);
+      if (!res.success) {
+        alert(res.error || "Failed to delete item.");
+      }
+    } catch (err: any) {
+      alert("An error occurred while deleting the item.");
+    }
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!name.trim()) {
+      setFormError("Item name is required.");
+      return;
+    }
+    if (!sku.trim()) {
+      setFormError("SKU is required.");
+      return;
+    }
+    if (!barcode.trim()) {
+      setFormError("Barcode is required.");
+      return;
+    }
+
+    setIsSubmitting(true);
+    setFormError(null);
+
+    const photos = imageUrl.trim() ? [imageUrl.trim()] : [];
+
+    const payload = {
+      name: name.trim(),
+      category,
+      rackNumber: rackNumber.trim(),
+      shelfNumber: shelfNumber.trim(),
+      replacementCost: Number(replacementCost) || 0,
+      sku: sku.trim(),
+      barcode: barcode.trim(),
+      photos,
+      currentStatus: status,
+    };
+
+    try {
+      if (isEditing && editingItemId) {
+        const res = await updateInventoryItem(editingItemId, payload);
+        if (res.success) {
+          setIsModalOpen(false);
+        } else {
+          setFormError(res.error || "Failed to update item.");
+        }
+      } else {
+        const res = await createInventoryItem(payload);
+        if (res.success) {
+          setIsModalOpen(false);
+        } else {
+          setFormError(res.error || "Failed to create item.");
+        }
+      }
+    } catch (err: any) {
+      setFormError("An unexpected error occurred.");
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
 
   // Load snapshot in LocalStorage cache for offline scanning capability!
   useEffect(() => {
@@ -122,6 +265,15 @@ export default function InventoryClient({ initialItems }: { initialItems: Invent
             ))}
           </select>
         </div>
+
+        {/* Add Prop Button */}
+        <button
+          onClick={handleOpenCreate}
+          className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-cyan-500 hover:bg-cyan-600 text-white font-bold text-xs transition-colors shadow-sm cursor-pointer whitespace-nowrap"
+        >
+          <Plus className="w-4 h-4" />
+          <span>+ Add New Prop</span>
+        </button>
       </div>
 
       {/* Fast Filter Status Buttons */}
@@ -181,9 +333,48 @@ export default function InventoryClient({ initialItems }: { initialItems: Invent
                 <div className="space-y-0.5">
                   <div className="flex items-center justify-between gap-2">
                     <code className="text-[10px] font-mono font-bold text-slate-500 truncate">{item.sku}</code>
-                    <span className={cn("px-2 py-0.5 rounded-full text-[9px] font-bold border whitespace-nowrap", getStatusColor(item.currentStatus))}>
-                      {item.currentStatus}
-                    </span>
+                    <div className="flex items-center gap-1.5 relative">
+                      <span className={cn("px-2 py-0.5 rounded-full text-[9px] font-bold border whitespace-nowrap", getStatusColor(item.currentStatus))}>
+                        {item.currentStatus}
+                      </span>
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setActiveActionMenuId(activeActionMenuId === `mobile-${item.id}` ? null : `mobile-${item.id}`);
+                        }}
+                        className="p-1 rounded hover:bg-slate-100 text-slate-500 hover:text-slate-900 transition-colors cursor-pointer"
+                      >
+                        <MoreVertical className="w-3.5 h-3.5" />
+                      </button>
+                      
+                      {activeActionMenuId === `mobile-${item.id}` && (
+                        <>
+                          <div className="fixed inset-0 z-10" onClick={() => setActiveActionMenuId(null)} />
+                          <div className="absolute right-0 top-6 bg-white border border-slate-200 rounded-xl shadow-lg py-1 w-32 z-20 text-left text-[10px] font-semibold text-slate-700">
+                            <button
+                              onClick={() => {
+                                setActiveActionMenuId(null);
+                                handleOpenEdit(item);
+                              }}
+                              className="w-full px-3 py-1.5 hover:bg-slate-50 hover:text-slate-900 flex items-center gap-1.5 cursor-pointer"
+                            >
+                              <Edit className="w-3 h-3 text-cyan-500" />
+                              <span>Edit Details</span>
+                            </button>
+                            <button
+                              onClick={() => {
+                                setActiveActionMenuId(null);
+                                handleDelete(item.id, item.name);
+                              }}
+                              className="w-full px-3 py-1.5 hover:bg-slate-50 hover:text-red-600 flex items-center gap-1.5 text-red-500 cursor-pointer"
+                            >
+                              <Trash2 className="w-3 h-3 text-red-500" />
+                              <span>Delete</span>
+                            </button>
+                          </div>
+                        </>
+                      )}
+                    </div>
                   </div>
                   <h4 className="text-sm font-bold text-slate-900 truncate">{item.name}</h4>
                   <p className="text-[11px] text-slate-600">Cat: {item.category}</p>
@@ -216,6 +407,7 @@ export default function InventoryClient({ initialItems }: { initialItems: Invent
                 <th className="px-6 py-4">Status</th>
                 <th className="px-6 py-4">Location</th>
                 <th className="px-6 py-4">Cost</th>
+                <th className="px-6 py-4 text-right">Actions</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-200 bg-white">
@@ -268,11 +460,52 @@ export default function InventoryClient({ initialItems }: { initialItems: Invent
                     <td className="px-6 py-4 font-semibold text-slate-900">
                       ${item.replacementCost.toFixed(2)}
                     </td>
+
+                    {/* Desktop Actions Cell */}
+                    <td className="px-6 py-4 text-right relative">
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setActiveActionMenuId(activeActionMenuId === item.id ? null : item.id);
+                        }}
+                        className="p-1.5 rounded-lg hover:bg-slate-100 text-slate-500 hover:text-slate-900 transition-colors cursor-pointer"
+                      >
+                        <MoreVertical className="w-4 h-4" />
+                      </button>
+                      
+                      {activeActionMenuId === item.id && (
+                        <>
+                          <div className="fixed inset-0 z-10" onClick={() => setActiveActionMenuId(null)} />
+                          <div className="absolute right-6 top-12 bg-white border border-slate-200 rounded-xl shadow-lg py-1 w-32 z-20 text-left text-xs font-semibold text-slate-700">
+                            <button
+                              onClick={() => {
+                                setActiveActionMenuId(null);
+                                handleOpenEdit(item);
+                              }}
+                              className="w-full px-4 py-2 hover:bg-slate-50 hover:text-slate-900 flex items-center gap-1.5 cursor-pointer"
+                            >
+                              <Edit className="w-3.5 h-3.5 text-cyan-500" />
+                              <span>Edit Details</span>
+                            </button>
+                            <button
+                              onClick={() => {
+                                setActiveActionMenuId(null);
+                                handleDelete(item.id, item.name);
+                              }}
+                              className="w-full px-4 py-2 hover:bg-slate-50 hover:text-red-650 flex items-center gap-1.5 text-red-500 cursor-pointer"
+                            >
+                              <Trash2 className="w-3.5 h-3.5 text-red-500" />
+                              <span>Delete</span>
+                            </button>
+                          </div>
+                        </>
+                      )}
+                    </td>
                   </tr>
                 ))
               ) : (
                 <tr>
-                  <td colSpan={6} className="px-6 py-12 text-center text-slate-500 italic">
+                  <td colSpan={7} className="px-6 py-12 text-center text-slate-500 italic">
                     No matching inventory records found.
                   </td>
                 </tr>
@@ -281,6 +514,195 @@ export default function InventoryClient({ initialItems }: { initialItems: Invent
           </table>
         </div>
       </div>
+
+      {/* Modal Dialog */}
+      {isModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+          {/* Backdrop */}
+          <div 
+            className="fixed inset-0 bg-slate-900/40 backdrop-blur-sm"
+            onClick={() => !isSubmitting && setIsModalOpen(false)}
+          />
+          
+          {/* Card Container */}
+          <div className="bg-white border border-slate-200 shadow-xl rounded-2xl max-w-md w-full p-6 space-y-4 text-slate-900 relative z-50 animate-scaleUp">
+            <div className="flex items-center justify-between pb-2 border-b border-slate-100">
+              <h3 className="text-base font-bold text-slate-900">
+                {isEditing ? "Edit Prop Details" : "Add New Prop"}
+              </h3>
+              <button 
+                type="button"
+                disabled={isSubmitting}
+                onClick={() => setIsModalOpen(false)}
+                className="p-1 rounded-lg hover:bg-slate-100 text-slate-500 hover:text-slate-900 transition-colors cursor-pointer"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+
+            <form onSubmit={handleSubmit} className="space-y-4">
+              {formError && (
+                <div className="p-3 bg-red-50 border border-red-100 text-red-600 rounded-xl text-xs font-semibold">
+                  {formError}
+                </div>
+              )}
+
+              {/* Item Name */}
+              <div className="space-y-1">
+                <label className="text-[10px] font-bold text-slate-500 uppercase tracking-wide">Item Name *</label>
+                <input
+                  type="text"
+                  required
+                  placeholder="e.g. Vintage Oak Dining Chair"
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs focus:outline-none focus:ring-1 focus:ring-cyan-500 text-slate-900"
+                />
+              </div>
+
+              {/* Category & Replacement Cost */}
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-1">
+                  <label className="text-[10px] font-bold text-slate-500 uppercase tracking-wide">Category</label>
+                  <select
+                    value={category}
+                    onChange={(e) => setCategory(e.target.value)}
+                    className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs focus:outline-none focus:ring-1 focus:ring-cyan-500 text-slate-900"
+                  >
+                    <option value="Decor">Decor</option>
+                    <option value="Furniture">Furniture</option>
+                    <option value="Lighting">Lighting</option>
+                    <option value="Rugs">Rugs</option>
+                    <option value="Props">Props</option>
+                  </select>
+                </div>
+                
+                <div className="space-y-1">
+                  <label className="text-[10px] font-bold text-slate-500 uppercase tracking-wide">Replacement Cost ($) *</label>
+                  <input
+                    type="number"
+                    step="0.01"
+                    required
+                    placeholder="0.00"
+                    value={replacementCost}
+                    onChange={(e) => setReplacementCost(e.target.value)}
+                    className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs focus:outline-none focus:ring-1 focus:ring-cyan-500 text-slate-900"
+                  />
+                </div>
+              </div>
+
+              {/* Location (Rack / Shelf) */}
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-1">
+                  <label className="text-[10px] font-bold text-slate-500 uppercase tracking-wide">Warehouse Rack</label>
+                  <input
+                    type="text"
+                    placeholder="e.g. Rack A1"
+                    value={rackNumber}
+                    onChange={(e) => setRackNumber(e.target.value)}
+                    className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs focus:outline-none focus:ring-1 focus:ring-cyan-500 text-slate-900"
+                  />
+                </div>
+                
+                <div className="space-y-1">
+                  <label className="text-[10px] font-bold text-slate-500 uppercase tracking-wide">Warehouse Shelf</label>
+                  <input
+                    type="text"
+                    placeholder="e.g. Shelf 1"
+                    value={shelfNumber}
+                    onChange={(e) => setShelfNumber(e.target.value)}
+                    className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs focus:outline-none focus:ring-1 focus:ring-cyan-500 text-slate-900"
+                  />
+                </div>
+              </div>
+
+              {/* SKU & Barcode */}
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-1">
+                  <label className="text-[10px] font-bold text-slate-500 uppercase tracking-wide">SKU Code *</label>
+                  <input
+                    type="text"
+                    required
+                    placeholder="SKU-XXX-XXXX"
+                    value={sku}
+                    onChange={(e) => setSku(e.target.value)}
+                    className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs focus:outline-none focus:ring-1 focus:ring-cyan-500 text-slate-900 font-mono"
+                  />
+                </div>
+                
+                <div className="space-y-1">
+                  <label className="text-[10px] font-bold text-slate-500 uppercase tracking-wide">Barcode *</label>
+                  <input
+                    type="text"
+                    required
+                    placeholder="BARCODE-XXXX"
+                    value={barcode}
+                    onChange={(e) => setBarcode(e.target.value)}
+                    className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs focus:outline-none focus:ring-1 focus:ring-cyan-500 text-slate-900 font-mono"
+                  />
+                </div>
+              </div>
+
+              {/* Image URL */}
+              <div className="space-y-1">
+                <label className="text-[10px] font-bold text-slate-500 uppercase tracking-wide">Image URL</label>
+                <input
+                  type="text"
+                  placeholder="https://picsum.photos/..."
+                  value={imageUrl}
+                  onChange={(e) => setImageUrl(e.target.value)}
+                  className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs focus:outline-none focus:ring-1 focus:ring-cyan-500 text-slate-900"
+                />
+              </div>
+
+              {/* Edit Status Selector */}
+              {isEditing && (
+                <div className="space-y-1">
+                  <label className="text-[10px] font-bold text-slate-500 uppercase tracking-wide">Prop Status</label>
+                  <select
+                    value={status}
+                    onChange={(e) => setStatus(e.target.value)}
+                    className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs focus:outline-none focus:ring-1 focus:ring-cyan-500 text-slate-900"
+                  >
+                    <option value="AVAILABLE">AVAILABLE</option>
+                    <option value="RESERVED">RESERVED</option>
+                    <option value="PACKED">PACKED</option>
+                    <option value="ON_SITE">ON_SITE</option>
+                    <option value="DAMAGED">DAMAGED</option>
+                    <option value="LOST">LOST</option>
+                  </select>
+                </div>
+              )}
+
+              {/* Actions Footer */}
+              <div className="flex items-center justify-end gap-2 pt-2 border-t border-slate-100">
+                <button
+                  type="button"
+                  disabled={isSubmitting}
+                  onClick={() => setIsModalOpen(false)}
+                  className="px-4 py-2 border border-slate-200 hover:bg-slate-50 text-slate-700 font-bold text-xs rounded-xl transition-colors cursor-pointer"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  disabled={isSubmitting}
+                  className="px-4 py-2 bg-cyan-500 hover:bg-cyan-600 text-white font-bold text-xs rounded-xl transition-colors cursor-pointer disabled:opacity-50 inline-flex items-center gap-1.5"
+                >
+                  {isSubmitting ? (
+                    <>
+                      <RefreshCw className="w-3.5 h-3.5 animate-spin" />
+                      <span>Saving...</span>
+                    </>
+                  ) : (
+                    <span>{isEditing ? "Save Changes" : "Create Item"}</span>
+                  )}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
