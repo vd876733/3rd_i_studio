@@ -54,10 +54,12 @@ interface ProjectData {
 
 export default function MoodBoardClient({
   project,
-  availableItems: initialAvailableItems
+  availableItems: initialAvailableItems,
+  embedded = false
 }: {
   project: ProjectData;
   availableItems: InventoryItem[];
+  embedded?: boolean;
 }) {
   const [availableItems, setAvailableItems] = useState<InventoryItem[]>(initialAvailableItems);
   const [canvasElements, setCanvasElements] = useState<CanvasElement[]>([]);
@@ -389,22 +391,31 @@ export default function MoodBoardClient({
   };
 
   return (
-    <div className="flex-1 p-6 md:p-8 space-y-6 max-w-7xl mx-auto w-full flex flex-col">
+    <div className={cn("flex-1 space-y-6 max-w-7xl mx-auto w-full flex flex-col", embedded ? "p-0" : "p-6 md:p-8")}>
       {/* Header bar */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <div className="space-y-1">
-          <Link 
-            href={`/projects/${project.id}`} 
-            className="inline-flex items-center gap-1.5 text-xs text-zinc-500 hover:text-zinc-950 dark:hover:text-zinc-50 transition-colors"
-          >
-            <ArrowLeft className="w-3.5 h-3.5" />
-            <span>Back to Project Details</span>
-          </Link>
-          <h1 className="text-2xl font-bold tracking-tight text-zinc-950 dark:text-zinc-50 flex items-center gap-2">
-            <Sparkles className="w-6 h-6 text-cyan-500" />
-            <span>Interactive Mood Board Editor</span>
-          </h1>
-        </div>
+        {!embedded ? (
+          <div className="space-y-1">
+            <Link 
+              href={`/projects/${project.id}`} 
+              className="inline-flex items-center gap-1.5 text-xs text-zinc-500 hover:text-zinc-950 dark:hover:text-zinc-50 transition-colors"
+            >
+              <ArrowLeft className="w-3.5 h-3.5" />
+              <span>Back to Project Details</span>
+            </Link>
+            <h1 className="text-2xl font-bold tracking-tight text-zinc-950 dark:text-zinc-50 flex items-center gap-2">
+              <Sparkles className="w-6 h-6 text-cyan-500" />
+              <span>Interactive Mood Board Editor</span>
+            </h1>
+          </div>
+        ) : (
+          <div className="space-y-1">
+            <h3 className="font-bold text-sm text-zinc-900 dark:text-zinc-50 flex items-center gap-2">
+              <Sparkles className="w-4 h-4 text-cyan-500" />
+              <span>Project Design Canvas</span>
+            </h3>
+          </div>
+        )}
 
         {/* Action buttons */}
         <div className="flex flex-wrap items-center gap-3">
