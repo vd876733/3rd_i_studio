@@ -8,23 +8,16 @@ export default function LoginPage() {
   const { status } = useSession();
   const router = useRouter();
 
-  // Redirect to dashboard if already authenticated
+  // Redirect to dashboard if session state updates to authenticated
   useEffect(() => {
     if (status === "authenticated") {
       router.push("/dashboard");
     }
   }, [status, router]);
 
-  const handleGoogleLogin = async () => {
-    const res = await signIn("google", { redirect: false, callbackUrl: "/dashboard" });
-
-    if (res?.url) {
-      window.location.href = res.url;
-    } else if (res?.ok) {
-      window.location.href = "/dashboard";
-    } else if (res?.error) {
-      console.error("Login failed:", res.error);
-    }
+  const handleGoogleLogin = () => {
+    // Let NextAuth handle the standard OAuth flow directly
+    signIn("google", { callbackUrl: "/dashboard" });
   };
 
   // Show loading spinner while checking session status
