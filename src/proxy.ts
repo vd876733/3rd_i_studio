@@ -21,5 +21,15 @@ export default withAuth(
 );
 
 export const config = {
-  matcher: ["/dashboard/:path*", "/inventory/:path*", "/projects/:path*"],
+  matcher: [
+    /*
+     * Match all request paths except for the ones starting with:
+     * - api/auth (NextAuth endpoints)
+     * - _next/static (static files)
+     * - _next/image (image optimization files)
+     * - favicon.ico (favicon file)
+     * - login (the login page itself)
+     */
+    "/((?!api/auth|_next/static|_next/image|favicon.ico|login).*)",
+  ],
 };
