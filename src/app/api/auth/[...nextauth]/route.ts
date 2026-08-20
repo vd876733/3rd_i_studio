@@ -12,9 +12,6 @@ if (!process.env.NEXTAUTH_URL && process.env.NODE_ENV !== "production") {
 if (!process.env.GOOGLE_CLIENT_ID || process.env.GOOGLE_CLIENT_ID.includes("placeholder")) {
   console.error("❌ CRITICAL: GOOGLE_CLIENT_ID is missing or set to a placeholder in .env.local!");
 }
-if (!process.env.GOOGLE_CLIENT_SECRET || process.env.GOOGLE_CLIENT_SECRET.includes("placeholder")) {
-  console.error("❌ CRITICAL: GOOGLE_CLIENT_SECRET is missing or set to a placeholder in .env.local!");
-}
 
 const handler = NextAuth({
   adapter: PrismaAdapter(prisma) as any,
