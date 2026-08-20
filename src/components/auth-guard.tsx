@@ -12,6 +12,10 @@ export function AuthGuard({ children }: { children: React.ReactNode }) {
     }
   }, [status]);
 
+  const handleSignIn = async () => {
+    await signIn("google", { callbackUrl: "/dashboard", redirect: true });
+  };
+
   // Show a clean loading state to avoid screen flickering
   if (status === "loading") {
     return (
@@ -24,6 +28,11 @@ export function AuthGuard({ children }: { children: React.ReactNode }) {
         </div>
       </div>
     );
+  }
+
+  // Strictly render children when authenticated
+  if (status === "authenticated") {
+    return <>{children}</>;
   }
 
   // Render the modal overlay with a blurred backdrop previewing the dashboard
@@ -57,7 +66,7 @@ export function AuthGuard({ children }: { children: React.ReactNode }) {
 
             {/* Google Sign In Button */}
             <button
-              onClick={() => signIn("google", { callbackUrl: "/dashboard", redirect: true })}
+              onClick={handleSignIn}
               className="w-full flex items-center justify-center gap-3 px-4 py-3 bg-white border border-slate-200 rounded-xl text-sm font-semibold text-slate-700 hover:text-slate-900 hover:bg-slate-50 hover:border-slate-300 active:scale-[0.98] transition-all duration-200 shadow-sm cursor-pointer"
             >
               <svg className="w-5 h-5 flex-shrink-0" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -74,6 +83,5 @@ export function AuthGuard({ children }: { children: React.ReactNode }) {
     );
   }
 
-  // Strictly render children when authenticated
-  return <>{children}</>;
+  return null;
 }

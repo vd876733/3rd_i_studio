@@ -3,9 +3,10 @@ import GoogleProvider from "next-auth/providers/google";
 import { PrismaAdapter } from "@auth/prisma-adapter";
 import { prisma } from "@/lib/prisma";
 
-// Ensure NEXTAUTH_URL fallback in local development
-if (!process.env.NEXTAUTH_URL && process.env.NODE_ENV !== "production") {
-  process.env.NEXTAUTH_URL = "http://localhost:3000";
+// Handle Vercel deployment URLs and local development URL fallbacks dynamically
+const baseUrl = process.env.NEXTAUTH_URL || (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : "http://localhost:3000");
+if (!process.env.NEXTAUTH_URL) {
+  process.env.NEXTAUTH_URL = baseUrl;
 }
 
 // Runtime environment check to warn developers about placeholders
