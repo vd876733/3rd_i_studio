@@ -98,9 +98,9 @@ export default async function ProjectDetailPage({ params }: PageProps) {
     createdAt: log.createdAt.toISOString(),
     user: {
       id: log.user.id,
-      name: log.user.name,
+      name: log.user.name ?? "",
       role: log.user.role,
-      email: log.user.email,
+      email: log.user.email ?? "",
     },
   }));
 
@@ -136,21 +136,21 @@ export default async function ProjectDetailPage({ params }: PageProps) {
     } : null,
     leadStylist: project.leadStylist ? {
       id: project.leadStylist.id,
-      name: project.leadStylist.name,
+      name: project.leadStylist.name ?? "",
       role: project.leadStylist.role,
-      email: project.leadStylist.email,
+      email: project.leadStylist.email ?? "",
     } : null,
     leadPacker: project.leadPacker ? {
       id: project.leadPacker.id,
-      name: project.leadPacker.name,
+      name: project.leadPacker.name ?? "",
       role: project.leadPacker.role,
-      email: project.leadPacker.email,
+      email: project.leadPacker.email ?? "",
     } : null,
     leadDriver: project.leadDriver ? {
       id: project.leadDriver.id,
-      name: project.leadDriver.name,
+      name: project.leadDriver.name ?? "",
       role: project.leadDriver.role,
-      email: project.leadDriver.email,
+      email: project.leadDriver.email ?? "",
     } : null,
     boxes: project.boxes.map((b) => ({
       id: b.id,
@@ -198,7 +198,7 @@ export default async function ProjectDetailPage({ params }: PageProps) {
 
   const formattedStaff = staff.map((s) => ({
     id: s.id,
-    name: s.name,
+    name: s.name ?? "",
     role: s.role,
   }));
 

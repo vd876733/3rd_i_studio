@@ -41,9 +41,9 @@ export default async function ProjectsPage() {
       name: p.client.name,
       contactNumbers: p.client.contactNumbers,
     },
-    leadStylist: p.leadStylist ? { id: p.leadStylist.id, name: p.leadStylist.name, role: p.leadStylist.role } : null,
-    leadPacker: p.leadPacker ? { id: p.leadPacker.id, name: p.leadPacker.name, role: p.leadPacker.role } : null,
-    leadDriver: p.leadDriver ? { id: p.leadDriver.id, name: p.leadDriver.name, role: p.leadDriver.role } : null,
+    leadStylist: p.leadStylist ? { id: p.leadStylist.id, name: p.leadStylist.name ?? "", role: p.leadStylist.role } : null,
+    leadPacker: p.leadPacker ? { id: p.leadPacker.id, name: p.leadPacker.name ?? "", role: p.leadPacker.role } : null,
+    leadDriver: p.leadDriver ? { id: p.leadDriver.id, name: p.leadDriver.name ?? "", role: p.leadDriver.role } : null,
     siteDetails: p.siteDetails ? { address: p.siteDetails.address } : null,
   }));
 
@@ -54,7 +54,7 @@ export default async function ProjectsPage() {
 
   const formattedStaff = staff.map((s) => ({
     id: s.id,
-    name: s.name,
+    name: s.name ?? "",
     role: s.role,
   }));
 

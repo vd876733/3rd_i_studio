@@ -3,6 +3,7 @@
 import React from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useSession, signOut } from "next-auth/react";
 import { 
   LayoutDashboard, 
   ScanBarcode, 
@@ -27,6 +28,7 @@ const NAV_ITEMS = [
 
 export default function Navigation() {
   const pathname = usePathname();
+  const { data: session } = useSession();
 
   return (
     <>
@@ -76,14 +78,27 @@ export default function Navigation() {
             <ThemeToggle />
           </div>
           <div className="flex items-center gap-3 p-2 rounded-xl border border-slate-200 bg-white shadow-sm">
-            <div className="w-9 h-9 rounded-full bg-slate-100 flex items-center justify-center border border-slate-200">
-              <User className="w-5 h-5 text-slate-600" />
+            <div className="w-9 h-9 rounded-full bg-slate-100 flex items-center justify-center border border-slate-200 overflow-hidden">
+              {session?.user?.image ? (
+                <img 
+                  src={session.user.image} 
+                  alt={session.user.name || "User profile"} 
+                  className="w-full h-full object-cover" 
+                  referrerPolicy="no-referrer"
+                />
+              ) : (
+                <User className="w-5 h-5 text-slate-600" />
+              )}
             </div>
             <div className="flex-1 min-w-0">
-              <p className="text-xs font-semibold text-slate-800 truncate">Administrator</p>
-              <p className="text-[10px] text-slate-500 truncate">admin@3rdistudio.com</p>
+              <p className="text-xs font-semibold text-slate-800 truncate">{session?.user?.name || "User"}</p>
+              <p className="text-[10px] text-slate-500 truncate">{session?.user?.email || "No email"}</p>
             </div>
-            <button className="p-1.5 text-slate-500 hover:text-slate-800 rounded-lg hover:bg-slate-100 transition-colors">
+            <button 
+              onClick={() => signOut({ callbackUrl: "/login" })}
+              className="p-1.5 text-slate-500 hover:text-slate-800 rounded-lg hover:bg-slate-100 transition-colors"
+              title="Sign Out"
+            >
               <LogOut className="w-4 h-4" />
             </button>
           </div>
@@ -104,8 +119,17 @@ export default function Navigation() {
             <Bell className="w-5 h-5" />
             <span className="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-cyan-500" />
           </button>
-          <div className="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center border border-slate-200">
-            <User className="w-4 h-4 text-slate-600" />
+          <div className="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center border border-slate-200 overflow-hidden">
+            {session?.user?.image ? (
+              <img 
+                src={session.user.image} 
+                alt={session.user.name || "User"} 
+                className="w-full h-full object-cover" 
+                referrerPolicy="no-referrer"
+              />
+            ) : (
+              <User className="w-4 h-4 text-slate-600" />
+            )}
           </div>
         </div>
       </header>
