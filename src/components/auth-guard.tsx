@@ -1,10 +1,23 @@
 "use client";
 
-import React from "react";
+import React, { useEffect } from "react";
 import { useSession, signIn } from "next-auth/react";
 
 export function AuthGuard({ children }: { children: React.ReactNode }) {
-  const { status } = useSession();
+  const { data: session, status } = useSession();
+
+  useEffect(() => {
+    if (status === "authenticated") {
+      // Auto-dismiss modal if session updates in background
+    }
+  }, [status]);
+
+  const handleSignIn = async () => {
+    const res = await signIn("google", { redirect: false });
+    if (res?.ok) {
+      window.location.reload(); // Refresh to ensure session cookies trigger layout update
+    }
+  };
 
   // Show a clean loading state to avoid screen flickering
   if (status === "loading") {
@@ -51,7 +64,7 @@ export function AuthGuard({ children }: { children: React.ReactNode }) {
 
             {/* Google Sign In Button */}
             <button
-              onClick={() => signIn("google")}
+              onClick={handleSignIn}
               className="w-full flex items-center justify-center gap-3 px-4 py-3 bg-white border border-slate-200 rounded-xl text-sm font-semibold text-slate-700 hover:text-slate-900 hover:bg-slate-50 hover:border-slate-300 active:scale-[0.98] transition-all duration-200 shadow-sm cursor-pointer"
             >
               <svg className="w-5 h-5 flex-shrink-0" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -68,5 +81,6 @@ export function AuthGuard({ children }: { children: React.ReactNode }) {
     );
   }
 
+  // Strictly render children when authenticated
   return <>{children}</>;
 }
