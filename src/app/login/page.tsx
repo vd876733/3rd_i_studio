@@ -1,9 +1,20 @@
 "use client";
 
-import React from "react";
-import { signIn } from "next-auth/react";
+import React, { useEffect } from "react";
+import { signIn, useSession } from "next-auth/react";
+import { useRouter } from "next/navigation";
 
 export default function LoginPage() {
+  const { status } = useSession();
+  const router = useRouter();
+
+  // Redirect to dashboard if already authenticated
+  useEffect(() => {
+    if (status === "authenticated") {
+      router.push("/dashboard");
+    }
+  }, [status, router]);
+
   const handleGoogleLogin = async () => {
     const res = await signIn("google", { redirect: false, callbackUrl: "/dashboard" });
 
@@ -15,6 +26,20 @@ export default function LoginPage() {
       console.error("Login failed:", res.error);
     }
   };
+
+  // Show loading spinner while checking session status
+  if (status === "loading" || status === "authenticated") {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-[#f8fafc]">
+        <div className="flex flex-col items-center gap-3">
+          <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-cyan-500 to-blue-600 flex items-center justify-center shadow-md shadow-blue-500/20 animate-pulse">
+            <span className="font-bold text-white text-base">3D</span>
+          </div>
+          <span className="text-xs text-slate-500 font-medium">Redirecting to platform...</span>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-[#f8fafc] px-4">
