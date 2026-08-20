@@ -4,8 +4,11 @@ import React from "react";
 import { signIn } from "next-auth/react";
 
 export default function LoginPage() {
-  const handleGoogleSignIn = async () => {
-    await signIn("google", { callbackUrl: "/dashboard", redirect: true });
+  const handleSignIn = async () => {
+    const result = await signIn("google", { callbackUrl: "/dashboard", redirect: false });
+    if (result?.url) {
+      window.location.href = result.url;
+    }
   };
 
   return (
@@ -34,7 +37,7 @@ export default function LoginPage() {
         {/* Authentication Options */}
         <div className="space-y-4">
           <button
-            onClick={handleGoogleSignIn}
+            onClick={handleSignIn}
             className="w-full flex items-center justify-center gap-3 px-4 py-3 bg-white border border-slate-200 rounded-xl text-sm font-semibold text-slate-700 hover:text-slate-900 hover:bg-slate-50 hover:border-slate-300 active:scale-[0.98] transition-all duration-200 shadow-sm cursor-pointer"
           >
             <svg className="w-5 h-5 flex-shrink-0" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
